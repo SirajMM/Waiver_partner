@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "40617336448",
+    "project_id": "waiver-driver-ba8f7",
+    "storage_bucket": "waiver-driver-ba8f7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40617336448:android:12c516da57489a5e4bd065",
+        "android_client_info": {
+          "package_name": "com.waiver.driver"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIsaBfaoXbsC0Q_AXalVJS0fZPHNqSvTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

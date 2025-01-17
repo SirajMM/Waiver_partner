@@ -1,0 +1,1 @@
+enum HeroAnimationKeys { welcomeToLoginKey }

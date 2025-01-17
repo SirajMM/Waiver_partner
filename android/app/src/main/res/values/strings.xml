@@ -1,0 +1,6 @@
+<!-- res/values/strings.xml -->
+
+<resources>
+
+    <string name="basic_notification_channel">High Importance Channel</string>
+</resources>
