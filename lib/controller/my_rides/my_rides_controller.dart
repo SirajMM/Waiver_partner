@@ -1,19 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/model/my_rides/my_rides_model.dart';
+import 'package:waiver_driver/backend/parser/MyRide/myridescreen_parser.dart';
 
 import '../../backend/api/api_services/api_services.dart';
 
-
-
-class MyRidesControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => MyRidesController());
-  }
-}
+// class MyRidesControllerBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => MyRidesController());
+//   }
+// }
 
 class MyRidesController extends GetxController {
+  
+  MyrideScreenParser parser;
+  MyRidesController({required this.parser});
   static MyRidesController get to => Get.find();
   @override
   void onInit() async {

@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/model/registration/registration_model.dart';
+import 'package:waiver_driver/backend/parser/Registration/registration_parser.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
+import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:waiver_driver/helper/validator/app_extensions/app_extensions.dart';
 
 import 'package:waiver_driver/main.dart';
-
 
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/constants/enums/enums.dart';
 import '../../core/constants/get_storage_constants.dart';
 import '../../helper/router/app_routes/app_routes.dart';
 
-
-
-
-class RegistrationControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => RegistrationController());
-  }
-}
+// class RegistrationControllerBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => RegistrationController());
+//   }
+// }
 
 class RegistrationController extends GetxController {
+  RegistrationParser parser;
+  RegistrationController({required this.parser});
+
   static RegistrationController get to => Get.find();
 
   String? userTypeCode;
@@ -42,7 +43,7 @@ class RegistrationController extends GetxController {
               getWorkLocation(),
               getTransmissionTypes(),
               getVehicleTypes(),
-        getAllDistricts(),
+              getAllDistricts(),
             ]
           : [
               getAllStates(),
@@ -84,6 +85,7 @@ class RegistrationController extends GetxController {
   DistrictModel? selectedDistrict;
   WorkExperience? selectedYearsOfDrivingExperience;
   WorkLocation? selectedWorkingLocation;
+  StatesModel? selectStatelist;
   VehicleType? selectedVehicleType;
   Transmission? selectedTransmissionType;
 
@@ -194,7 +196,7 @@ class RegistrationController extends GetxController {
           "gender": selectedGender!.code,
           "alternative_phone": controllerAlternativeNumber.text.trim(),
           "whatsapp_phone": controllerWhatsAppNumber.text.trim(),
-          "state": "53",
+          "state": selectStatelist?.id,
           "district": selectedDistrict?.id.toString(),
           "address": controllerAddress.text.trim(),
           "work_location": selectedWorkingLocation?.id,
@@ -226,12 +228,11 @@ class RegistrationController extends GetxController {
             response.data?.profileImage ?? "",
           );
           if (userTypeCode == UserTypeCode.fleet) {
-            Get.offAllNamed(AppRoutes.fleetHomePage);
+            Get.offAllNamed(AppRoutes1.getFleetHomePageInRoute());
           } else {
-            Get.offAllNamed(AppRoutes.chauffeurProof);
+            Get.offAllNamed(AppRoutes1.getChauffeurProofInRoute());
           }
-        }
-        else{
+        } else {
           Get.showSnackbar(
             const GetSnackBar(
               duration: Duration(seconds: 5),

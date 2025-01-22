@@ -3,6 +3,7 @@ import 'package:flutter_custom_utils/util/utils.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/model/fleet_home_page/fleet_home_page_model.dart';
 import 'package:waiver_driver/backend/model/setting/setting_model.dart';
+import 'package:waiver_driver/backend/parser/FleetHomePage/fleet_home_page_parser.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
 
@@ -13,14 +14,18 @@ import '../../core/constants/get_storage_constants.dart';
 
 
 
-class FleetHomePageControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => FleetHomePageController());
-  }
-}
+// class FleetHomePageControllerBinding extends Bindings {
+
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => FleetHomePageController());
+//   }
+// }
 
 class FleetHomePageController extends GetxController {
+
+      final FleetHomePageParser parser;
+  FleetHomePageController({required this.parser});
   static FleetHomePageController get to => Get.find();
   RxList<FleetVehicle> fleet = <FleetVehicle>[].obs;
 

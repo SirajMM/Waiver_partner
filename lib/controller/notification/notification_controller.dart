@@ -2,16 +2,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/api/api_services/api_services.dart';
 import 'package:waiver_driver/backend/model/notification/notification_model.dart';
+import 'package:waiver_driver/view/notification/notification_view.dart';
 
+import '../../backend/parser/Notification/notification_parser.dart';
 
-class NotificationControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => NotificationController());
-  }
-}
+// class NotificationControllerBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => NotificationController());
+//   }
+// }
 
 class NotificationController extends GetxController {
+  NotificationParser parser;
+  NotificationController({required this.parser});
+
   @override
   void onInit() async {
     super.onInit();

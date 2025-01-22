@@ -11,13 +11,13 @@ import 'package:mobility_features/mobility_features.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:waiver_driver/backend/model/home/home_model.dart';
 import 'package:waiver_driver/backend/model/setting/setting_model.dart';
+import 'package:waiver_driver/backend/parser/FleetHomePage/fleet_home_page_parser.dart';
+import 'package:waiver_driver/backend/parser/Home/home_parser.dart';
 import 'package:waiver_driver/core/themes/assets/audio.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
-
 import 'package:waiver_driver/main.dart';
 import 'package:waiver_driver/view/home/home_view.dart';
-
 
 import '../../backend/api/api_services/api_services.dart';
 import '../../backend/api/api_services/web_socket_services.dart';
@@ -25,16 +25,17 @@ import '../../core/colors/app_colors.dart';
 import '../../core/constants/enums/enums.dart';
 import '../../core/constants/get_storage_constants.dart';
 
-
-
-class HomeControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => HomeController());
-  }
-}
+// class HomeControllerBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => HomeController());
+//   }
+// }
 
 class HomeController extends GetxController {
+  final HomeParser parser;
+  HomeController({required this.parser});
+
   static HomeController get to => Get.find();
   void onInit() async {
     super.onInit();

@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/model/view_bank_account/view_bank_model.dart';
+import 'package:waiver_driver/backend/parser/ViewBankAccount/viewbanckaccount_parser.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
-
 
 import '../../backend/api/api_services/api_services.dart';
 
-
-
-
-class ViewBankAccountControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => ViewBankAccountController());
-  }
-}
+// class ViewBankAccountControllerBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => ViewBankAccountController());
+//   }
+// }
 
 class ViewBankAccountController extends GetxController {
+  ViewbankaccountParser parser;
+  ViewBankAccountController({required this.parser});
   @override
   void onInit() async {
     super.onInit();

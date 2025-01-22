@@ -20,7 +20,6 @@ import '../../main.dart';
 // }
 
 class SplashController extends GetxController {
-
   @override
   void onInit() async {
     super.onInit();
@@ -72,6 +71,4 @@ class SplashController extends GetxController {
   // }
 
   // static SplashController get to => Get.find();
-
-
 }

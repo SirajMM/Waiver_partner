@@ -2,32 +2,34 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-
 import 'package:waiver_driver/backend/model/earning/earning_model.dart';
+import 'package:waiver_driver/backend/parser/Earning/earningscreen_parser.dart';
 import 'package:waiver_driver/core/themes/assets/icons.dart';
 import 'package:waiver_driver/helper/validator/app_extensions/app_extensions.dart';
 
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/colors/app_colors.dart';
 import '../../core/widgets/circle_with_gradient/circle_with_gradient.dart';
+import '../../helper/router/app_routes/route.dart';
 
-
-
-
-class EarningControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.put(EarningController());
-  }
-}
+// class EarningControllerBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.put(EarningController());
+//   }
+// }
 
 class EarningController extends GetxController
     with GetSingleTickerProviderStateMixin {
+  EarningscreenParser parser;
+  EarningController({required this.parser});
+
   static EarningController get to => Get.find();
 
   @override
   void onInit() async {
     super.onInit();
+    Get.put(AppRoutes1.getEraningScreenInRoute());
 
     try {
       isLoading.value = true;
@@ -203,17 +205,18 @@ class EarningController extends GetxController
       value: 55.0.obs,
       text: 'Trips');
   EarningItemModel weeklyOnlineHours = EarningItemModel(
-      icon: CircleWithIcon(
-        height: 40.sp,
-        color: AppColors.blue,
-        child: Image.asset(
-          AppIcons.clock,
-          height: 20.sp,
-          color: AppColors.white,
-        ),
+    icon: CircleWithIcon(
+      height: 40.sp,
+      color: AppColors.blue,
+      child: Image.asset(
+        AppIcons.clock,
+        height: 20.sp,
+        color: AppColors.white,
       ),
-      value: 8.40.obs,
-      text: 'Online Hours',);
+    ),
+    value: 8.40.obs,
+    text: 'Online Hours',
+  );
   EarningItemModel weeklyDistance = EarningItemModel(
       icon: CircleWithIcon(
         height: 40.sp,

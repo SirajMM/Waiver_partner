@@ -6,22 +6,23 @@ import 'package:image_picker/image_picker.dart';
 import 'package:waiver_driver/backend/model/aadhar_card/aadhar_card_model.dart';
 import 'package:waiver_driver/backend/model/chauffeur_proof/chauffeur_proof_model.dart';
 import 'package:waiver_driver/backend/model/registration_certificate/registration_certificate_model.dart';
+import 'package:waiver_driver/backend/parser/Aadhar/aadhart_parser.dart';
 
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/colors/app_colors.dart';
 import '../../core/constants/enums/enums.dart';
 
-
-
-
-class AadharCardControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => AadharCardController());
-  }
-}
+// class AadharCardControllerBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => AadharCardController());
+//   }
+// }
 
 class AadharCardController extends GetxController {
+  AadharParser parser;
+  AadharCardController({required this.parser});
+
   static AadharCardController get to => Get.find();
 
   @override

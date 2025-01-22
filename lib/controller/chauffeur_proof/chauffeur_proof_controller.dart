@@ -5,31 +5,33 @@ import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:waiver_driver/backend/model/chauffeur_proof/chauffeur_proof_model.dart';
 import 'package:waiver_driver/backend/model/registration_certificate/registration_certificate_model.dart';
+import 'package:waiver_driver/backend/parser/ChauffeurProof/ChauffeurProof_parser.dart';
 import 'package:waiver_driver/core/constants/get_storage_constants.dart';
-
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
 import '../../backend/api/api_services/api_services.dart';
+import '../../backend/api/api_services/urls.dart';
 import '../../core/constants/enums/enums.dart';
 import '../../helper/router/app_routes/app_routes.dart';
 import '../../main.dart';
 
-
-
-class ChauffeurProofControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => ChauffeurProofController());
-  }
-}
+// class ChauffeurProofControllerBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => ChauffeurProofController());
+//   }
+// }
 
 class ChauffeurProofController extends GetxController {
+  final ChauffeurProof_parser parser;
+  ChauffeurProofController({required this.parser});
   @override
   void onInit() async {
     super.onInit();
+    Get.lazyPut(() => ApiServices(appBaseUrl: AppUrls.base));
     try {
       isLoading.value = true;
       await Future.wait([getDocument(), getProfileImage(), getBankAccount()]);
@@ -226,8 +228,8 @@ class ChauffeurProofController extends GetxController {
           policeClearanceCertificate.status.value ==
               ApprovalStatus.waitingForApproval &&
           bankAccount.status.value == ApprovalStatus.waitingForApproval) {
-        // Get.toNamed(AppRoutes.waitingForAuthorization);
-        Get.toNamed(AppRoutes.home);
+        Get.toNamed(AppRoutes.waitingForAuthorization);
+        // Get.toNamed(AppRoutes.home);
         Get.showSnackbar(
           const GetSnackBar(
             duration: Duration(seconds: 5),

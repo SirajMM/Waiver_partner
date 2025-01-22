@@ -7,6 +7,7 @@ import 'package:waiver_driver/backend/model/login/login_model.dart';
 import 'package:waiver_driver/backend/parser/Login/login_parser.dart';
 import 'package:waiver_driver/core/themes/assets/images.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
+import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:waiver_driver/main.dart';
 
 import '../../backend/api/api_services/api_services.dart';
@@ -22,7 +23,7 @@ import '../../helper/router/app_routes/app_routes.dart';
 
 class LoginController extends GetxController {
   static LoginController get to => Get.find();
-    final LoginParser parser;
+  final LoginParser parser;
   LoginController({required this.parser});
 
   @override
@@ -55,7 +56,7 @@ class LoginController extends GetxController {
             await ApiServices.sendPhoneOtp(body: body);
         if (response.status == 200) {
           Get.toNamed(
-            AppRoutes.otp,
+            AppRoutes1.getOtpInRoute(),
             arguments: ArgumentModelForOtpPage(
               mobileCode: selectedCountry?.mobileCode ?? "",
               mobilePhoneNumber: controllerPhoneNumber.text.trim(),

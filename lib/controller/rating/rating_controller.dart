@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/model/home/home_model.dart';
 import 'package:waiver_driver/backend/model/rating/rating_model.dart';
-
-
+import 'package:waiver_driver/backend/parser/Rating/ratingscreen_parser.dart';
 
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/colors/app_colors.dart';
 
-
-
-class RatingControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => RatingController());
-  }
-}
+// class RatingControllerBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => RatingController());
+//   }
+// }
 
 class RatingController extends GetxController {
+  RatingscreenParser parser;
+  RatingController({required this.parser});
+
   @override
   void onInit() async {
     super.onInit();

@@ -17,6 +17,7 @@ import 'package:waiver_driver/main.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
 import '../../controller/left_menu_driver/left_menu_driver_controller.dart';
+import '../../helper/router/app_routes/route.dart';
 
 
 
@@ -60,28 +61,28 @@ class LeftMenuDriver extends StatelessWidget {
           ),
           LeftMenuItem(
             item: LeftMenuControllerDriver.to.myEarning,
-            onTap: () => Get.toNamed(AppRoutes.earning),
+            onTap: () => Get.toNamed(AppRoutes1.getEraningScreenInRoute()),
           ),
           SizedBox(
             height: 30.sp,
           ),
           LeftMenuItem(
             item: LeftMenuControllerDriver.to.bankDetails,
-            onTap: () => Get.toNamed(AppRoutes.viewBankAccount),
+            onTap: () => Get.toNamed(AppRoutes1.getViewBankAccountScreenInRoute()),
           ),
           SizedBox(
             height: 30.sp,
           ),
           LeftMenuItem(
             item: LeftMenuControllerDriver.to.rating,
-            onTap: () => Get.toNamed(AppRoutes.rating),
+            onTap: () => Get.toNamed(AppRoutes1.getRatingScreenInRoute()),
           ),
           SizedBox(
             height: 30.sp,
           ),
           LeftMenuItem(
             item: LeftMenuControllerDriver.to.myRides,
-            onTap: () => Get.toNamed(AppRoutes.myRides),
+            onTap: () => Get.toNamed(AppRoutes1.getMyRideScreenInRoute()),
           ),
           SizedBox(
             height: 30.sp,
@@ -95,7 +96,7 @@ class LeftMenuDriver extends StatelessWidget {
           // ),
           LeftMenuItem(
             item: LeftMenuControllerDriver.to.notification,
-            onTap: () => Get.toNamed(AppRoutes.notification),
+            onTap: () => Get.toNamed(AppRoutes1.getNotificationInRoute()),
           ),
           SizedBox(
             height: 30.sp,
@@ -104,7 +105,7 @@ class LeftMenuDriver extends StatelessWidget {
             item: LeftMenuControllerDriver.to.setting,
             onTap: () {
               Scaffold.of(context).openEndDrawer();
-              Get.toNamed(AppRoutes.setting);
+              Get.toNamed(AppRoutes1.getSettingsScreeenInRoute());
             },
           ),
           SizedBox(
@@ -131,7 +132,7 @@ class LeftMenuDriver extends StatelessWidget {
                       await FirebaseMessaging.instance.deleteToken();
                       await box.erase();
                       await box.write(BoxKeys.userTypeCode, UserTypeCode.fleet);
-                      Get.offAllNamed(AppRoutes.signIn,
+                      Get.offAllNamed(AppRoutes1.getSignInRoute(),
                           arguments: UserType.fleet);
                     }
                   },
@@ -157,7 +158,7 @@ class LeftMenuProfileItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Get.offAndToNamed(AppRoutes.profile),
+      onTap: () => Get.offAndToNamed(AppRoutes1.getProfileScreenInRoute()),
       child: Container(
         color: Get.theme.primaryColor,
         child: Column(

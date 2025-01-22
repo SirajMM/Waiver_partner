@@ -6,6 +6,7 @@ import 'package:waiver_driver/core/colors/app_colors.dart';
 import 'package:waiver_driver/core/themes/assets/images.dart';
 import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
+import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:waiver_driver/main.dart';
 
 
@@ -42,7 +43,7 @@ class WaitingForAuthorizationScreen extends StatelessWidget {
           text: "Back to login",
           onTap: () {
             box.erase();
-            Get.offAndToNamed(AppRoutes.driverTypeSelection);
+            Get.offAndToNamed(AppRoutes1.getDriverTypeSelectionRoute());
           },
         )
       ],

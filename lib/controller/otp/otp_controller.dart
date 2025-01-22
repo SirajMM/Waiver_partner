@@ -7,25 +7,26 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:waiver_driver/backend/model/login/login_model.dart';
 import 'package:waiver_driver/backend/model/otp/otp_model.dart';
+import 'package:waiver_driver/backend/parser/otp/otp_parser.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
-
+import 'package:waiver_driver/helper/router/app_routes/route.dart';
 
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/constants/get_storage_constants.dart';
 import '../../helper/router/app_routes/app_routes.dart';
 import '../../main.dart';
 
-
-
-
-class OtpControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => OtpController());
-  }
-}
+// class OtpControllerBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => OtpController());
+//   }
+// }
 
 class OtpController extends GetxController {
+  final OtpParser parser;
+  OtpController({required this.parser});
+
   @override
   Future<void> onInit() async {
     super.onInit();
@@ -122,7 +123,7 @@ class OtpController extends GetxController {
           if (userTypeCode == UserTypeCode.fleet) {
             if (isRegistered ?? false) {
               box.write(BoxKeys.token, response.data?.accessToken);
-              Get.offAllNamed(AppRoutes.fleetHomePage);
+              Get.offAllNamed(AppRoutes1.getFleetHomePageInRoute());
             } else {
               box.write(BoxKeys.token, response.data?.accessToken);
               Get.toNamed(AppRoutes.registration, arguments: user ?? "");
@@ -131,16 +132,18 @@ class OtpController extends GetxController {
             box.write(BoxKeys.token, response.data?.accessToken);
 
             if (isVerifed ?? false) {
-              Get.offAllNamed(AppRoutes.home);
+              Get.offAllNamed(AppRoutes1.getHomeInRoute());
             } else if (isRegistered ?? false) {
-              Get.toNamed(AppRoutes.chauffeurProof, arguments: user ?? "");
+              Get.toNamed(AppRoutes1.getChauffeurProofInRoute(),
+                  arguments: user ?? "");
             } else {
-              Get.toNamed(AppRoutes.registration, arguments: user ?? "");
+              Get.toNamed(AppRoutes1.registration, arguments: user ?? "");
             }
           }
         }
       }
     } catch (error) {
+      log(error.toString());
       Get.showSnackbar(const GetSnackBar(
           duration: Duration(seconds: 5),
           backgroundColor: Colors.transparent,

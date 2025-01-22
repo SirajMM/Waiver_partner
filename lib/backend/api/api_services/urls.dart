@@ -1,10 +1,13 @@
 class WebSocketUrl {
-  static String base = "wss://waiver-api.ajmalk.com";
+  static String base = "wss://api.waiverapp.in";
   static String liveLocation = "/ws/live-location/?";
 }
 
 class AppUrls {
-  static String base = "waiver-api.ajmalk.com";
+  // static String base = "waiver-api.ajmalk.com";
+  // static String base = "165.22.221.172";
+  static String base = "api.waiverapp.in";
+
   static String baseUrlForImage = "https://waiver-api.ajmalk.com";
   static String googleLocationUrl =
       "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
@@ -58,5 +61,4 @@ class AppUrls {
   static String paymentType = "/api/v1/ride/payment-type/";
   static String getRidePayment = "/api/v1/ride/ride-payment/";
   static String addStop = "/api/v1/ride/add-ride-stop/";
-
 }

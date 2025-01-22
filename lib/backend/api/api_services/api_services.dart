@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as https;
 
 import 'package:waiver_driver/backend/api/api_services/urls.dart';
 import 'package:waiver_driver/backend/model/add_vehicle/add_vehicle_model.dart';
@@ -44,7 +44,7 @@ class ApiServices {
   static Future<SendPhoneOtpResponseModel> sendPhoneOtp({
     required Map<String, String> body,
   }) async {
-    http.Response response = await http.post(
+    https.Response response = await https.post(
       Uri.https(AppUrls.base, AppUrls.sendPhoneOtp),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -63,7 +63,7 @@ class ApiServices {
   static Future<VerifyOtpResponseModel> phoneAuth({
     required Map<String, String> body,
   }) async {
-    http.Response response = await http.post(
+    https.Response response = await https.post(
       Uri.https(AppUrls.base, AppUrls.phoneAuth),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -81,7 +81,7 @@ class ApiServices {
   static Future<CreateDriverProfileResponseModel> createProfile({
     required Map<String, dynamic> body,
   }) async {
-    http.Response response = await http.post(
+    https.Response response = await https.post(
       Uri.https(AppUrls.base, AppUrls.createProfile),
       headers: {
         'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ class ApiServices {
   }
 
   static Future<GetAllStatesResponseModel> getAllStates() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.states),
       headers: {
         'Content-Type': 'application/json',
@@ -120,7 +120,7 @@ class ApiServices {
   static Future<GetAllDistrictsResponseModel> getAllDistricts({
     required Map<String, String> queryParameter,
   }) async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.districts, queryParameter),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -138,7 +138,7 @@ class ApiServices {
   }
 
   static Future<GetAllWorkLocationsResponseModel> getWorkLocation() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.workLocations),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -155,7 +155,7 @@ class ApiServices {
   }
 
   static Future<GetAllWorkExperienceResponseModel> getWorkExperience() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.workExperience),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -172,7 +172,7 @@ class ApiServices {
   }
 
   static Future<GetVehicleTypeResponseModel> getVehicleTypes() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.vehicleTypes),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -189,7 +189,7 @@ class ApiServices {
   }
 
   static Future<GetTransmissionTypeResponseModel> getTransmissionTypes() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.transmissionTypes),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -208,7 +208,7 @@ class ApiServices {
   static Future<GetDocumentsResponseModel> getDocument({
     Map<String, String>? queryParameter,
   }) async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.document, queryParameter ?? {}),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -227,7 +227,7 @@ class ApiServices {
   static Future<UploadDocumentResponseModel> uploadDocument({
     required body,
   }) async {
-    http.Response response = await http.put(
+    https.Response response = await https.put(
       Uri.https(AppUrls.base, AppUrls.document),
       body: json.encode(body),
       headers: {
@@ -248,7 +248,7 @@ class ApiServices {
   static Future<UploadDocumentResponseModel> addVehicleProof({
     required body,
   }) async {
-    http.Response response = await http.put(
+    https.Response response = await https.put(
       Uri.https(AppUrls.base, AppUrls.vehicleProof),
       body: json.encode(body),
       headers: {
@@ -273,7 +273,7 @@ class ApiServices {
       'Content-Type': 'application/json',
       "Authorization": getToken()
     };
-    http.Response response = await http.post(
+    https.Response response = await https.post(
       Uri.https(AppUrls.base, AppUrls.vehicleDriver),
       body: json.encode(body),
       headers: headers,
@@ -296,7 +296,7 @@ class ApiServices {
       'Content-Type': 'application/json',
       "Authorization": getToken()
     };
-    http.Response response = await http.put(
+    https.Response response = await https.put(
       Uri.https(AppUrls.base, AppUrls.vehicleDriver),
       body: json.encode(body),
       headers: headers,
@@ -314,7 +314,7 @@ class ApiServices {
 
   static Future<UploadDocumentResponseModel> viewVehicleProof(
       {required Map<String, String> body}) async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.vehicleProof, body),
       headers: {
         'Content-Type': 'application/json',
@@ -332,17 +332,17 @@ class ApiServices {
   }
 
   static Future<UploadFileResponseModel> uploadFile({
-    required http.MultipartFile files,
+    required https.MultipartFile files,
     required Map<String, String> fields,
   }) async {
-    var request = http.MultipartRequest(
+    var request = https.MultipartRequest(
       "POST",
       Uri.https(AppUrls.base, AppUrls.uploadFile),
     );
     request.files.add(files);
     request.fields.addAll((fields));
     request.headers.addAll({"Authorization": getToken()});
-    http.StreamedResponse response = await request.send();
+    https.StreamedResponse response = await request.send();
     log("${Uri.https(AppUrls.base, AppUrls.uploadFile)}===============>$fields");
     log("${Uri.https(AppUrls.base, AppUrls.uploadFile)}===============>$files");
     if (response.statusCode == 200) {
@@ -357,15 +357,15 @@ class ApiServices {
   }
 
   static Future<UploadProfilePhotoResponseModel> profileImage(
-    http.MultipartFile file,
+    https.MultipartFile file,
   ) async {
-    var request = http.MultipartRequest(
+    var request = https.MultipartRequest(
       "PUT",
       Uri.https(AppUrls.base, AppUrls.profileImage),
     );
     request.files.add(file);
     request.headers.addAll({"Authorization": getToken()});
-    http.StreamedResponse response = await request.send();
+    https.StreamedResponse response = await request.send();
     print(response.statusCode);
     if (response.statusCode == 200) {
       String responseString = await response.stream.bytesToString();
@@ -378,7 +378,7 @@ class ApiServices {
   }
 
   static Future<GetProfilePhotoResponseModel> getProfileImage() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.profileImage),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -398,7 +398,7 @@ class ApiServices {
   }
 
   static Future<GetBankAccountResponseModel> getBankAccount() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.bankAccount),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -416,7 +416,7 @@ class ApiServices {
 
   static Future<UpdateBanksResponseModel> updateBankAccount(
       {required Map<String, String> body}) async {
-    http.Response response = await http.put(
+    https.Response response = await https.put(
         Uri.https(AppUrls.base, AppUrls.bankAccount),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -434,7 +434,7 @@ class ApiServices {
   }
 
   static Future<GetBanksResponseModel> getBanks() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.banks),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -451,7 +451,7 @@ class ApiServices {
   }
 
   static Future<GetProfileResponseModel> getProfile() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.profile),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -469,7 +469,7 @@ class ApiServices {
 
   static Future<UpdateProfileResponseModel> upDateProfile(
       {required Map<String, String> body}) async {
-    http.Response response = await http.put(
+    https.Response response = await https.put(
       Uri.https(AppUrls.base, AppUrls.profile),
       body: body,
       headers: {
@@ -488,7 +488,7 @@ class ApiServices {
 
   static Future<AddBankAccountResponseModel> addBankAccount(
       {required Map<String, String> body}) async {
-    var response = await http.post(
+    var response = await https.post(
       Uri.https(AppUrls.base, AppUrls.bankAccount),
       headers: {"Authorization": getToken()},
       body: body,
@@ -506,7 +506,7 @@ class ApiServices {
 
   static Future<GetEarningStatusResponseModel> getEarningStatus(
       {required Map<String, String> queryParameter}) async {
-    var response = await http.get(
+    var response = await https.get(
       Uri.https(AppUrls.base, AppUrls.earningStatus, queryParameter),
       headers: {"Authorization": getToken()},
     );
@@ -522,7 +522,7 @@ class ApiServices {
   }
 
   static Future<GetReviewStatusResponseModel> getReviewsStatus() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.reviewsStatus),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -539,7 +539,7 @@ class ApiServices {
   }
 
   static Future<GetReviewResponseModel> getReviews() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.reviews),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -557,7 +557,7 @@ class ApiServices {
 
   static Future<GetReviewResponseModel> verifyRideOtp(
       {required Map<String, dynamic> body}) async {
-    http.Response response = await http.post(
+    https.Response response = await https.post(
         Uri.https(AppUrls.base, AppUrls.verifyRideOtp),
         headers: {
           'Content-Type': 'application/json',
@@ -575,7 +575,7 @@ class ApiServices {
   }
 
   static Future<GetRidesResponseModel> getRides() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.rides),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -593,7 +593,7 @@ class ApiServices {
 
   static Future<GetRidesDetailsResponseModel> getRideDetails(
       {required Map<String, dynamic> queryParameter}) async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.rideOrderDetails, queryParameter),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -610,7 +610,7 @@ class ApiServices {
   }
 
   static Future<GetNotificationsResponseModel> getNotifications() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.notifications),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -627,7 +627,7 @@ class ApiServices {
   }
 
   static Future<GetHelpCategoriesResponseModel> getHelpCategories() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.helpCategories),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -645,7 +645,7 @@ class ApiServices {
 
   static Future<FaqResponseModel> getFaqs(
       {required Map<String, String> queryParameter}) async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.faqs, queryParameter),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -664,7 +664,7 @@ class ApiServices {
 
   static Future<GetEarningListResponseModel> getEarnings(
       {required Map<String, String> queryParameter}) async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.earnings, queryParameter),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -683,7 +683,7 @@ class ApiServices {
 
   static Future<UpdatePreferenceResponseModel> savePreference(
       {required Map<String, String> body}) async {
-    http.Response response = await http.put(
+    https.Response response = await https.put(
       Uri.https(
         AppUrls.base,
         AppUrls.savePreference,
@@ -705,7 +705,7 @@ class ApiServices {
   }
 
   static Future<UpdatePreferenceResponseModel> getPreference() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(
         AppUrls.base,
         AppUrls.savePreference,
@@ -726,7 +726,7 @@ class ApiServices {
 
   static Future<LogoutResponseModel> logout(
       {required Map<String, String> body}) async {
-    http.Response response = await http.post(
+    https.Response response = await https.post(
       Uri.https(
         AppUrls.base,
         AppUrls.logout,
@@ -747,7 +747,7 @@ class ApiServices {
 
   static Future<LogoutResponseModel> deleteAccount(
       {required Map<String, String> body}) async {
-    http.Response response = await http.post(
+    https.Response response = await https.post(
       Uri.https(
         AppUrls.base,
         AppUrls.deleteAccount,
@@ -768,7 +768,7 @@ class ApiServices {
 
   static Future<LogoutResponseModel> documentRejectionResponse(
       {required Map<String, String> body}) async {
-    http.Response response = await http.post(
+    https.Response response = await https.post(
       Uri.https(
         AppUrls.base,
         AppUrls.documentRejectionResponse,
@@ -788,7 +788,7 @@ class ApiServices {
   }
 
   static Future<GetVehicleListResponseModel> getVehicles() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(
         AppUrls.base,
         AppUrls.vehicles,
@@ -808,7 +808,7 @@ class ApiServices {
   }
 
   static Future<String> getVehicle({required Map<String, String> body}) async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.vehicle, body),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -826,7 +826,7 @@ class ApiServices {
   }
 
   static Future<LogoutResponseModel> getVehicleDetail() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(
         AppUrls.base,
         AppUrls.vehicles,
@@ -847,7 +847,7 @@ class ApiServices {
 
   static Future<AddVehicleResponseModel> addVehicle(
       {required Map<String, String> body}) async {
-    http.Response response = await http.post(
+    https.Response response = await https.post(
       Uri.https(
         AppUrls.base,
         AppUrls.addVehicles,
@@ -869,7 +869,7 @@ class ApiServices {
 
   static Future<LogoutResponseModel> blockVehicle(
       {required Map<String, dynamic> body}) async {
-    http.Response response = await http.put(
+    https.Response response = await https.put(
       Uri.https(
         AppUrls.base,
         AppUrls.blockVehicle,
@@ -891,7 +891,7 @@ class ApiServices {
 
   static Future<LogoutResponseModel> changeOnlineStatus(
       {required Map<String, dynamic> body}) async {
-    http.Response response = await http.put(
+    https.Response response = await https.put(
       Uri.https(
         AppUrls.base,
         AppUrls.onlineStatus,
@@ -913,7 +913,7 @@ class ApiServices {
   }
 
   static Future<GetOnlineStatusResponseModel> getOnlineStatus() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(
         AppUrls.base,
         AppUrls.onlineStatus,
@@ -935,7 +935,7 @@ class ApiServices {
 
   static Future<GetRideDetailsResponseModel> rideOrderDetails(
       {required Map<String, dynamic> queryParameters}) async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.rideOrderDetails, queryParameters),
       headers: {"Authorization": getToken()},
     );
@@ -949,7 +949,7 @@ class ApiServices {
   }
 
   static Future<ReasonForCancelModel> reasonForCancel() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.rideCancelReasons),
       headers: {"Authorization": getToken()},
     );
@@ -964,7 +964,7 @@ class ApiServices {
 
   static Future<ChangeRideStatusModel> changeRideStatus(
       {required Map<String, dynamic> body}) async {
-    http.Response response = await http.put(
+    https.Response response = await https.put(
       Uri.https(AppUrls.base, AppUrls.changeRideStatus),
       body: json.encode(body),
       headers: {
@@ -983,7 +983,7 @@ class ApiServices {
   }
 
   static Future<GetRideDetailsResponseModel> latestActiveRide() async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.latestActiveRide),
       headers: {
         "Authorization": getToken(),
@@ -1002,7 +1002,7 @@ class ApiServices {
   static Future<GetDriverProfileResponseModel> driverProfile({
     required Map<String, dynamic> queryParameter,
   }) async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.driverProfile, queryParameter),
       headers: {
         "Authorization": getToken(),
@@ -1021,7 +1021,7 @@ class ApiServices {
   static Future<ProfileImageModel> getProfilePhoto({
     required Map<String, dynamic> queryParameter,
   }) async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.profilePhoto, queryParameter),
       headers: {
         "Authorization": getToken(),
@@ -1040,7 +1040,7 @@ class ApiServices {
   static Future<PaymentSuccessModel> getPaymentType({
     required Map<String, dynamic> queryParameter,
   }) async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.paymentType),
       headers: {
         "Authorization": getToken(),
@@ -1059,7 +1059,7 @@ class ApiServices {
 
   static Future<RidePaymentResponseModel> getRidePayment(
       {required Map<String, dynamic> queryParameter}) async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.getRidePayment, queryParameter),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -1077,7 +1077,7 @@ class ApiServices {
 
   static Future<AddStopResponseModel> addStop(
       {required Map<String, dynamic> body}) async {
-    http.Response response = await http.post(
+    https.Response response = await https.post(
       Uri.https(AppUrls.base, AppUrls.addStop),
       body: json.encode(body),
       headers: {
@@ -1097,7 +1097,7 @@ class ApiServices {
 
   static Future<GoogleLocationResponse> getCurrentLocation(
       double latitude, double longitude) async {
-    http.Response response = await http.get(
+    https.Response response = await https.get(
       Uri.parse(
           "${AppUrls.googleLocationUrl}$latitude,$longitude${AppUrls.googleApiKeyUrl}"),
     );

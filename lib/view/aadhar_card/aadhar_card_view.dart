@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:waiver_driver/backend/api/api_services/urls.dart';
 import 'package:waiver_driver/controller/aadhar_card/aadhar_card_controller.dart';
 import 'package:waiver_driver/core/colors/app_colors.dart';
 import 'package:waiver_driver/core/constants/enums/enums.dart';
@@ -14,14 +15,15 @@ import 'package:waiver_driver/core/widgets/upload_image_template/upload_image_te
 import 'package:waiver_driver/helper/validator/validators/validators.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
+import '../../backend/api/api_services/api_services.dart';
 import '../profile_photo/profile_photo_view.dart';
-
 
 class AadharCardScreen extends StatelessWidget {
   const AadharCardScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Get.lazyPut(() => ApiServices(appBaseUrl: AppUrls.base));
     return Scaffold(
         appBar: appBar(title: ""),
         body: GetX<AadharCardController>(builder: (controller) {

@@ -11,15 +11,17 @@ import 'package:waiver_driver/core/widgets/app_bar/app_bar.dart';
 import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_gradient.dart';
 import 'package:waiver_driver/core/widgets/empty_page/empty_page.dart';
 import 'package:waiver_driver/core/widgets/error_page/error_page.dart';
+import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:waiver_driver/helper/validator/app_extensions/app_extensions.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
-
 
 class EarningScreen extends StatelessWidget {
   const EarningScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Get.put(AppRoutes1.getEraningScreenInRoute());
+
     return Scaffold(
         appBar: appBar(title: "Earnings"),
         body: DefaultTabController(
@@ -154,7 +156,7 @@ class WeeklyTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(EarningController());
+    Get.put(AppRoutes1.getEraningScreenInRoute());
     return ListView(
       padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 25.sp),
       shrinkWrap: true,
@@ -194,6 +196,8 @@ class TodayTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(AppRoutes1.getEraningScreenInRoute());
+
     return GetX<EarningController>(builder: (controller) {
       return controller.isLoading.value
           ? const LoadingBarsAnimation()
@@ -289,7 +293,7 @@ class EarningListingItem extends StatelessWidget {
             ],
           ),
           Text(
-            "₹ +${earning.amount??"0.0"}",
+            "₹ +${earning.amount ?? "0.0"}",
             style: TextStyle(color: AppColors.green40),
           )
         ],
@@ -316,7 +320,7 @@ class BalanceAmountToday extends StatelessWidget {
             style: TextStyle(fontSize: 14.sp),
           ),
           Text(
-            "₹ ${EarningController.to.todayBalanceAmount??"0"}",
+            "₹ ${EarningController.to.todayBalanceAmount ?? "0"}",
             style: TextStyle(fontSize: 23.sp, fontWeight: FontWeight.w600),
           ),
           Text(
@@ -349,7 +353,7 @@ class BalanceAmount extends StatelessWidget {
             ),
           ),
           Text(
-            "₹ ${EarningController.to.todayBalanceAmount??"0"}",
+            "₹ ${EarningController.to.todayBalanceAmount ?? "0"}",
             style: TextStyle(fontSize: 23.sp, fontWeight: FontWeight.w600),
           ),
           Text(
@@ -553,12 +557,11 @@ class EarningItem extends StatelessWidget {
           ),
           GetX<EarningController>(builder: (controller) {
             return Text(
-              item.value.toString(),
+              item.value.toString() ?? "0",
               style: TextStyle(
-                fontSize: 14.sp,
-                fontWeight: FontWeight.w500,
-                color: AppColors.black
-              ),
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.black),
             );
           }),
           Text(
@@ -590,7 +593,7 @@ class EarningSummaryToday extends StatelessWidget {
           Text(DateFormat("EEE dd MMM yyyy").format(DateTime.now()),
               style: TextStyle(fontSize: 14.sp)),
           Text(
-            "₹ ${EarningController.to.todayEarning}",
+            "₹ ${EarningController.to.todayEarning ?? 0}",
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22.sp),
           ),
           SizedBox(
@@ -675,7 +678,7 @@ class DetailsItemView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            text,
+            text ?? "",
             style: TextStyle(
               fontSize: 14.sp,
             ),

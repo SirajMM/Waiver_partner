@@ -15,7 +15,6 @@ import 'package:waiver_driver/core/widgets/test_fields/app_text_form_fields.dart
 import 'package:waiver_driver/helper/validator/validators/validators.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
-
 class RegistrationScreen extends StatelessWidget {
   const RegistrationScreen({Key? key}) : super(key: key);
 
@@ -62,8 +61,8 @@ class RegistrationScreen extends StatelessWidget {
                                 height: 30.sp,
                               ),
                               AppTextFormField(
-                                controller:
-                                    RegistrationController.to.controllerFullName,
+                                controller: RegistrationController
+                                    .to.controllerFullName,
                                 header: 'Full Name',
                                 placeHolder: "e.g. Alex",
                                 validator: (value) => Validators.isEmpty(
@@ -91,7 +90,8 @@ class RegistrationScreen extends StatelessWidget {
                                 placeHolder: 'Select',
                                 itemList: RegistrationController.to.genderList,
                                 onChange: (GenderModel? gender) {
-                                  RegistrationController.to.selectedGender = gender;
+                                  RegistrationController.to.selectedGender =
+                                      gender;
                                 },
                                 value: RegistrationController.to.selectedGender,
                                 label: (GenderModel gender) => gender.label,
@@ -103,7 +103,8 @@ class RegistrationScreen extends StatelessWidget {
                                   ? Column(
                                       children: [
                                         AppDatePickerFormField(
-                                          header: 'Date of Birth as per Documents',
+                                          header:
+                                              'Date of Birth as per Documents',
                                           placeHolder: "Select",
                                           initialDate: DateTime.now().subtract(
                                               const Duration(days: 365 * 23)),
@@ -172,8 +173,10 @@ class RegistrationScreen extends StatelessWidget {
                               SizedBox(
                                 height: 12.sp,
                               ),
-                              GetX<RegistrationController>(builder: (controller) {
-                                switch (controller.districtDropDownState.value) {
+                              GetX<RegistrationController>(
+                                  builder: (controller) {
+                                switch (
+                                    controller.districtDropDownState.value) {
                                   case DropDownState.hidden:
                                     return const SizedBox();
                                   case DropDownState.loading:
@@ -226,7 +229,8 @@ class RegistrationScreen extends StatelessWidget {
                                   ? Column(
                                       children: [
                                         AppDropDownFormField(
-                                          header: 'Experience in driving (Years)',
+                                          header:
+                                              'Experience in driving (Years)',
                                           placeHolder: 'Select',
                                           itemList: RegistrationController
                                               .to.yearsOfDrivingExperience,
@@ -236,8 +240,8 @@ class RegistrationScreen extends StatelessWidget {
                                                     .selectedYearsOfDrivingExperience =
                                                 yearsOfDrivingExperience;
                                           },
-                                          value: RegistrationController
-                                              .to.selectedYearsOfDrivingExperience,
+                                          value: RegistrationController.to
+                                              .selectedYearsOfDrivingExperience,
                                           label: (WorkExperience
                                                   yearsOfDrivingExperience) =>
                                               (yearsOfDrivingExperience
@@ -249,20 +253,19 @@ class RegistrationScreen extends StatelessWidget {
                                           height: 12.sp,
                                         ),
                                         AppDropDownFormField(
-                                          header: 'Where you wish to work with us',
+                                          header:
+                                              'Where you wish to work with us',
                                           placeHolder: 'Select',
                                           itemList: RegistrationController
-                                              .to.workingLocations,
-                                          onChange:
-                                              (WorkLocation? workingLocation) {
-                                            RegistrationController
-                                                    .to.selectedWorkingLocation =
-                                                workingLocation;
+                                              .to.statesList,
+                                          onChange: (StatesModel? statesList) {
+                                            RegistrationController.to
+                                                .selectStatelist = statesList;
                                           },
                                           value: RegistrationController
-                                              .to.selectedWorkingLocation,
-                                          label: (WorkLocation workingLocation) =>
-                                              workingLocation.name,
+                                              .to.selectStatelist,
+                                          label: (StatesModel statesList) =>
+                                              statesList.name,
                                         ),
                                         SizedBox(
                                           height: 12.sp,
@@ -291,7 +294,8 @@ class RegistrationScreen extends StatelessWidget {
                                             backgroundColor: AppColors.white,
                                             collapsedBackgroundColor:
                                                 AppColors.white,
-                                            collapsedShape: RoundedRectangleBorder(
+                                            collapsedShape:
+                                                RoundedRectangleBorder(
                                               side: BorderSide(
                                                   color: AppColors.grey155),
                                               borderRadius:
@@ -327,13 +331,15 @@ class RegistrationScreen extends StatelessWidget {
                                                     ),
                                                     Row(
                                                       mainAxisAlignment:
-                                                          MainAxisAlignment.start,
+                                                          MainAxisAlignment
+                                                              .start,
                                                       children: [
                                                         Text(
                                                           "Please select at least one vehicle type",
                                                           style: TextStyle(
                                                               fontSize: 12.sp,
-                                                              color: Colors.red),
+                                                              color:
+                                                                  Colors.red),
                                                         ),
                                                       ],
                                                     ),
@@ -345,19 +351,21 @@ class RegistrationScreen extends StatelessWidget {
                                           height: 12.sp,
                                         ),
                                         AppDropDownFormField(
-                                          header: 'Familiar transmission types?',
+                                          header:
+                                              'Familiar transmission types?',
                                           placeHolder: 'Select',
                                           itemList: RegistrationController
                                               .to.transmissionTypes,
                                           onChange:
                                               (Transmission? transmissionType) {
-                                            RegistrationController
-                                                    .to.selectedTransmissionType =
+                                            RegistrationController.to
+                                                    .selectedTransmissionType =
                                                 transmissionType;
                                           },
                                           value: RegistrationController
                                               .to.selectedTransmissionType,
-                                          label: (Transmission? transmissionType) =>
+                                          label: (Transmission?
+                                                  transmissionType) =>
                                               transmissionType?.name,
                                         ),
                                         SizedBox(
@@ -391,12 +399,14 @@ class RegistrationScreen extends StatelessWidget {
                               SizedBox(
                                 height: 25.sp,
                               ),
-                              GetX<RegistrationController>(builder: (controller) {
+                              GetX<RegistrationController>(
+                                  builder: (controller) {
                                 return BlueButton(
                                   text: "Continue",
                                   isLoading:
                                       controller.isRegisterButtonLoading.value,
-                                  onTap: () => RegistrationController.to.register(),
+                                  onTap: () =>
+                                      RegistrationController.to.register(),
                                 );
                               }),
                               SizedBox(

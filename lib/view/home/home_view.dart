@@ -19,17 +19,14 @@ import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 import 'package:waiver_driver/main.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
-
-
 import '../left_menu_driver/left_menu_driver_view.dart';
-
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Get.put(HomeController());
+    Get.put(HomeController(parser: Get.find()));
     return GetX<HomeController>(builder: (controller) {
       return controller.isLoading.value
           ? LoadingBarsAnimation()

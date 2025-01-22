@@ -1,16 +1,47 @@
 import 'package:get/get.dart';
+import 'package:waiver_driver/backend/binding/Aadhar/aadhar_binding.dart';
+import 'package:waiver_driver/backend/binding/BankAccount/bankaccount_binding.dart';
+import 'package:waiver_driver/backend/binding/ChauffeurProof/chauffeurproof_binding.dart';
 import 'package:waiver_driver/backend/binding/DriverTypeSelection/DriverTypeSelection_binding.dart';
+import 'package:waiver_driver/backend/binding/Earning/earningscreen_binding.dart';
+import 'package:waiver_driver/backend/binding/FleetHomePage/FleetHomePage_binding.dart';
+import 'package:waiver_driver/backend/binding/Home/home_binding.dart';
 import 'package:waiver_driver/backend/binding/Login/login_binding.dart';
+import 'package:waiver_driver/backend/binding/Notification/notification_binding.dart';
+import 'package:waiver_driver/backend/binding/Otp/otp_binding.dart';
+import 'package:waiver_driver/backend/binding/Profile/profilescreen_binding.dart';
+import 'package:waiver_driver/backend/binding/Rating/ratingscreen_binding.dart';
+import 'package:waiver_driver/backend/binding/Registraion/registration_binding.dart';
+import 'package:waiver_driver/backend/binding/WaitingForAuthorization/waitingforauthorization_binding.dart';
 import 'package:waiver_driver/backend/binding/signIn/signin_binding.dart';
 import 'package:waiver_driver/backend/binding/splash/splash_binding.dart';
 import 'package:waiver_driver/controller/driver_type_selection/driver_type_selection_controller.dart';
 import 'package:waiver_driver/controller/registration_certificate/registration_certificate_controller.dart';
 import 'package:waiver_driver/controller/splash/splash_controller.dart';
+import 'package:waiver_driver/view/chauffeur_proof/chauffeur_proof_view.dart';
 import 'package:waiver_driver/view/driver_type_selection/driver_type_selection_view.dart';
+import 'package:waiver_driver/view/fleet_home_page/fleet_home_page_view.dart';
+import 'package:waiver_driver/view/home/home_view.dart';
 import 'package:waiver_driver/view/login/login_view.dart';
+import 'package:waiver_driver/view/my_rides/my_rides_view.dart';
+import 'package:waiver_driver/view/notification/notification_view.dart';
+import 'package:waiver_driver/view/otp/otp_view.dart';
+import 'package:waiver_driver/view/registration/registration_view.dart';
 import 'package:waiver_driver/view/registration_certificate/registration_certificate_view.dart';
 import 'package:waiver_driver/view/sign_in/sign_in_view.dart';
 import 'package:waiver_driver/view/splash/splash_view.dart';
+
+import '../../../backend/binding/MyRide/myridescreen_binding.dart';
+import '../../../backend/binding/Settings/settings_binding.dart';
+import '../../../backend/binding/ViewBankAccount/viewbankaccount_binding.dart';
+import '../../../view/aadhar_card/aadhar_card_view.dart';
+import '../../../view/bank_account/bank_account_view.dart';
+import '../../../view/earning/earning_view.dart';
+import '../../../view/profile/profile_view.dart';
+import '../../../view/rating/rating_view.dart';
+import '../../../view/setting/setting_view.dart';
+import '../../../view/view_bank_account/view_bank_bank_view.dart';
+import '../../../view/waiting_for_authorization/waiting_for_authorization_view.dart';
 
 class AppRoutes1 {
   static String splash = "/splash";
@@ -60,9 +91,24 @@ class AppRoutes1 {
   static String vehiclePermit = "/vehiclePermit";
 
   static String getInitialRoute() => splash;
-   static String getLoginRoute() => login;
-    static String getSignInRoute() => signIn;
-    static String getDriverTypeSelectionRoute() => driverTypeSelection;
+  static String getLoginRoute() => login;
+  static String getSignInRoute() => signIn;
+  static String getDriverTypeSelectionRoute() => driverTypeSelection;
+  static String getOtpInRoute() => otp;
+  static String getFleetHomePageInRoute() => fleetHomePage;
+  static String getHomeInRoute() => home;
+  static String getChauffeurProofInRoute() => chauffeurProof;
+  static String getRegistraionInRoute() => registration;
+  static String getWaitingForAuthorizationInRoute() => waitingForAuthorization;
+  static String getAadharCardInRoute() => aadharCard;
+  static String getBankAccountInRoute() => bankAccount;
+  static String getProfileScreenInRoute() => profile;
+  static String getEraningScreenInRoute() => earning;
+  static String getViewBankAccountScreenInRoute() => viewBankAccount;
+  static String getRatingScreenInRoute() => rating;
+  static String getMyRideScreenInRoute() => myRides;
+  static String getNotificationInRoute() => notification;
+  static String getSettingsScreeenInRoute() => setting;
 
   static List<GetPage> appPages1 = <GetPage>[
     GetPage(
@@ -88,47 +134,47 @@ class AppRoutes1 {
       page: () => const LoginScreen(),
       binding: LoginBinding(),
     ),
-    // GetPage(
-    //   name: AppRoutes.otp,
-    //   page: () => const OtpScreen(),
-    //   binding: OtpControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.otp,
+      page: () => const OtpScreen(),
+      binding: OtpBinging(),
+    ),
     // GetPage(
     //   name: AppRoutes.welcome,
     //   page: () => const DriverTypeSelectionScreen(),
     //   binding: DriverProfileControllerBinding(),
     // ),
     // // OMS: 2024-06-08 registration page as common
-    // GetPage(
-    //   name: AppRoutes.registration,
-    //   page: () => const RegistrationScreen(),
-    //   binding: RegistrationControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.registration,
+      page: () => const RegistrationScreen(),
+      binding: RegistrationBinding(),
+    ),
     // GetPage(
     //   name: AppRoutes.fleetRegistration,
     //   page: () => const FleetRegistrationScreen(),
     //   binding: FleetRegistrationControllerBinding(),
     // ),
-    // GetPage(
-    //   name: AppRoutes.chauffeurProof,
-    //   page: () => const ChauffeurProofScreen(),
-    //   binding: ChauffeurProofControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.chauffeurProof,
+      page: () => const ChauffeurProofScreen(),
+      binding: ChauffeurProof_Binding(),
+    ),
     // GetPage(
     //   name: AppRoutes.profilePhoto,
     //   page: () => const ProfilePhotoScreen(),
     //   binding: ProfilePhotoControllerBinding(),
     // ),
-    // GetPage(
-    //   name: AppRoutes.aadharCard,
-    //   page: () => const AadharCardScreen(),
-    //   binding: AadharCardControllerBinding(),
-    // ),
-    // GetPage(
-    //   name: AppRoutes.bankAccount,
-    //   page: () => const BankAccountScreen(),
-    //   binding: BankAccountControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.aadharCard,
+      page: () => const AadharCardScreen(),
+      binding: AadharBinding(),
+    ),
+    GetPage(
+      name: AppRoutes1.bankAccount,
+      page: () => const BankAccountScreen(),
+      binding: BankaccountBinding(),
+    ),
     // GetPage(
     //   name: AppRoutes.successFullRegister,
     //   page: () => const SuccessFullRegister(),
@@ -143,51 +189,51 @@ class AppRoutes1 {
     //   page: () => const DrivingLicenceScreen(),
     //   binding: DrivingLicenceControllerBinding(),
     // ),
-    // GetPage(
-    //   name: AppRoutes.waitingForAuthorization,
-    //   page: () => const WaitingForAuthorizationScreen(),
-    //   binding: WaitingForAuthorizationControllerBinding(),
-    // ),
-    // GetPage(
-    //   name: AppRoutes.viewBankAccount,
-    //   page: () => const ViewBankAccountScreen(),
-    //   binding: ViewBankAccountControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.waitingForAuthorization,
+      page: () => const WaitingForAuthorizationScreen(),
+      binding: WaitingForAuthorizationBinding(),
+    ),
+    GetPage(
+      name: AppRoutes1.viewBankAccount,
+      page: () => const ViewBankAccountScreen(),
+      binding: ViewBankAccountScreenBinding(),
+    ),
     // GetPage(
     //   name: AppRoutes.locationNotEnabled,
     //   page: () => const LocationNotEnabledScreen(),
     //   binding: LocationNotEnabledControllerBinding(),
     // ),
-    // GetPage(
-    //   name: AppRoutes.home,
-    //   page: () => const HomeScreen(),
-    //   binding: HomeControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.home,
+      page: () => const HomeScreen(),
+      binding: HomeBinding(),
+    ),
     // GetPage(
     //   name: AppRoutes.reasonForCancel,
     //   page: () => const ReasonForCancelScreen(),
     //   binding: ReasonForCancelControllerBinding(),
     // ),
-    // GetPage(
-    //   name: AppRoutes.profile,
-    //   page: () => const ProfileScreen(),
-    //   binding: ProfileControllerBinding(),
-    // ),
-    // GetPage(
-    //   name: AppRoutes.earning,
-    //   page: () => const EarningScreen(),
-    //   binding: EarningControllerBinding(),
-    // ),
-    // GetPage(
-    //   name: AppRoutes.rating,
-    //   page: () => const RatingScreen(),
-    //   binding: RatingControllerBinding(),
-    // ),
-    // GetPage(
-    //   name: AppRoutes.myRides,
-    //   page: () => const MyRidesScreen(),
-    //   binding: MyRidesControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.profile,
+      page: () => const ProfileScreen(),
+      binding: ProfilescreenBinding(),
+    ),
+    GetPage(
+      name: AppRoutes1.earning,
+      page: () => const EarningScreen(),
+      binding: EarningscreenBinding(),
+    ),
+    GetPage(
+      name: AppRoutes1.rating,
+      page: () => const RatingScreen(),
+      binding: RatingscreenBinding(),
+    ),
+    GetPage(
+      name: AppRoutes1.myRides,
+      page: () => const MyRidesScreen(),
+      binding: MyrideScreenBinding(),
+    ),
     // GetPage(
     //   name: AppRoutes.receipt,
     //   page: () => const ReceiptScreen(),
@@ -198,21 +244,21 @@ class AppRoutes1 {
     //   page: () => const ReferAndEarnScreen(),
     //   binding: ReferAndEarnControllerBinding(),
     // ),
-    // GetPage(
-    //   name: AppRoutes.notification,
-    //   page: () => const NotificationScreen(),
-    //   binding: NotificationControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.notification,
+      page: () => const NotificationScreen(),
+      binding: NotificationBinding(),
+    ),
     // GetPage(
     //   name: AppRoutes.help,
     //   page: () => const HelpScreen(),
     //   binding: HelpControllerBinding(),
     // ),
-    // GetPage(
-    //   name: AppRoutes.setting,
-    //   page: () => const SettingScreen(),
-    //   binding: SettingControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.setting,
+      page: () => const SettingScreen(),
+      binding: SettingScreenBinding(),
+    ),
     // GetPage(
     //   name: AppRoutes.faq,
     //   page: () => const FaqTopicsScreen(),
@@ -238,11 +284,11 @@ class AppRoutes1 {
     //   page: () => const AccountRelatedScreen(),
     //   binding: AccountRelatedControllerBinding(),
     // ),
-    // GetPage(
-    //   name: AppRoutes.fleetHomePage,
-    //   page: () => const FleetHomePageScreen(),
-    //   binding: FleetHomePageControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.fleetHomePage,
+      page: () => const FleetHomePageScreen(),
+      binding: FleetHomePageBinding(),
+    ),
     // GetPage(
     //   name: AppRoutes.addVehicle,
     //   page: () => const AddVehicleScreen(),

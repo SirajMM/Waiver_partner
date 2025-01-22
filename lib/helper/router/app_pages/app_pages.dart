@@ -110,47 +110,47 @@ class AppPages {
     //   page: () => const LoginScreen(),
     //   binding: LoginControllerBinding(),
     // ),
-    GetPage(
-      name: AppRoutes.otp,
-      page: () => const OtpScreen(),
-      binding: OtpControllerBinding(),
-    ),
+    // GetPage(
+    //   name: AppRoutes.otp,
+    //   page: () => const OtpScreen(),
+    //   binding: OtpControllerBinding(),
+    // ),
     GetPage(
       name: AppRoutes.welcome,
       page: () => const DriverTypeSelectionScreen(),
       binding: DriverProfileControllerBinding(),
     ),
     // OMS: 2024-06-08 registration page as common
-    GetPage(
-      name: AppRoutes.registration,
-      page: () => const RegistrationScreen(),
-      binding: RegistrationControllerBinding(),
-    ),
+    // GetPage(
+    //   name: AppRoutes.registration,
+    //   page: () => const RegistrationScreen(),
+    //   binding: RegistrationControllerBinding(),
+    // ),
     GetPage(
       name: AppRoutes.fleetRegistration,
       page: () => const FleetRegistrationScreen(),
       binding: FleetRegistrationControllerBinding(),
     ),
-    GetPage(
-      name: AppRoutes.chauffeurProof,
-      page: () => const ChauffeurProofScreen(),
-      binding: ChauffeurProofControllerBinding(),
-    ),
+    // GetPage(
+    //   name: AppRoutes.chauffeurProof,
+    //   page: () => const ChauffeurProofScreen(),
+    //   binding: ChauffeurProofControllerBinding(),
+    // ),
     GetPage(
       name: AppRoutes.profilePhoto,
       page: () => const ProfilePhotoScreen(),
       binding: ProfilePhotoControllerBinding(),
     ),
-    GetPage(
-      name: AppRoutes.aadharCard,
-      page: () => const AadharCardScreen(),
-      binding: AadharCardControllerBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.bankAccount,
-      page: () => const BankAccountScreen(),
-      binding: BankAccountControllerBinding(),
-    ),
+    // GetPage(
+    //   name: AppRoutes.aadharCard,
+    //   page: () => const AadharCardScreen(),
+    //   binding: AadharCardControllerBinding(),
+    // ),
+    // GetPage(
+    //   name: AppRoutes.bankAccount,
+    //   page: () => const BankAccountScreen(),
+    //   binding: BankAccountControllerBinding(),
+    // ),
     GetPage(
       name: AppRoutes.successFullRegister,
       page: () => const SuccessFullRegister(),
@@ -165,51 +165,51 @@ class AppPages {
       page: () => const DrivingLicenceScreen(),
       binding: DrivingLicenceControllerBinding(),
     ),
-    GetPage(
-      name: AppRoutes.waitingForAuthorization,
-      page: () => const WaitingForAuthorizationScreen(),
-      binding: WaitingForAuthorizationControllerBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.viewBankAccount,
-      page: () => const ViewBankAccountScreen(),
-      binding: ViewBankAccountControllerBinding(),
-    ),
+    // GetPage(
+    //   name: AppRoutes.waitingForAuthorization,
+    //   page: () => const WaitingForAuthorizationScreen(),
+    //   binding: WaitingForAuthorizationControllerBinding(),
+    // ),
+    // GetPage(
+    //   name: AppRoutes.viewBankAccount,
+    //   page: () => const ViewBankAccountScreen(),
+    //   binding: ViewBankAccountControllerBinding(),
+    // ),
     GetPage(
       name: AppRoutes.locationNotEnabled,
       page: () => const LocationNotEnabledScreen(),
       binding: LocationNotEnabledControllerBinding(),
     ),
-    GetPage(
-      name: AppRoutes.home,
-      page: () => const HomeScreen(),
-      binding: HomeControllerBinding(),
-    ),
+    // GetPage(
+    //   name: AppRoutes.home,
+    //   page: () => const HomeScreen(),
+    //   binding: HomeControllerBinding(),
+    // ),
     GetPage(
       name: AppRoutes.reasonForCancel,
       page: () => const ReasonForCancelScreen(),
       binding: ReasonForCancelControllerBinding(),
     ),
-    GetPage(
-      name: AppRoutes.profile,
-      page: () => const ProfileScreen(),
-      binding: ProfileControllerBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.earning,
-      page: () => const EarningScreen(),
-      binding: EarningControllerBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.rating,
-      page: () => const RatingScreen(),
-      binding: RatingControllerBinding(),
-    ),
-    GetPage(
-      name: AppRoutes.myRides,
-      page: () => const MyRidesScreen(),
-      binding: MyRidesControllerBinding(),
-    ),
+    // GetPage(
+    //   name: AppRoutes.profile,
+    //   page: () => const ProfileScreen(),
+    //   binding: ProfileControllerBinding(),
+    // ),
+    // GetPage(
+    //   name: AppRoutes.earning,
+    //   page: () => const EarningScreen(),
+    //   binding: EarningControllerBinding(),
+    // ),
+    // GetPage(
+    //   name: AppRoutes.rating,
+    //   page: () => const RatingScreen(),
+    //   binding: RatingControllerBinding(),
+    // ),
+    // GetPage(
+    //   name: AppRoutes.myRides,
+    //   page: () => const MyRidesScreen(),
+    //   binding: MyRidesControllerBinding(),
+    // ),
     GetPage(
       name: AppRoutes.receipt,
       page: () => const ReceiptScreen(),
@@ -220,21 +220,21 @@ class AppPages {
       page: () => const ReferAndEarnScreen(),
       binding: ReferAndEarnControllerBinding(),
     ),
-    GetPage(
-      name: AppRoutes.notification,
-      page: () => const NotificationScreen(),
-      binding: NotificationControllerBinding(),
-    ),
+    // GetPage(
+    //   name: AppRoutes.notification,
+    //   page: () => const NotificationScreen(),
+    //   binding: NotificationControllerBinding(),
+    // ),
     GetPage(
       name: AppRoutes.help,
       page: () => const HelpScreen(),
       binding: HelpControllerBinding(),
     ),
-    GetPage(
-      name: AppRoutes.setting,
-      page: () => const SettingScreen(),
-      binding: SettingControllerBinding(),
-    ),
+    // GetPage(
+    //   name: AppRoutes.setting,
+    //   page: () => const SettingScreen(),
+    //   binding: SettingControllerBinding(),
+    // ),
     GetPage(
       name: AppRoutes.faq,
       page: () => const FaqTopicsScreen(),
@@ -260,11 +260,11 @@ class AppPages {
       page: () => const AccountRelatedScreen(),
       binding: AccountRelatedControllerBinding(),
     ),
-    GetPage(
-      name: AppRoutes.fleetHomePage,
-      page: () => const FleetHomePageScreen(),
-      binding: FleetHomePageControllerBinding(),
-    ),
+    // GetPage(
+    //   name: AppRoutes.fleetHomePage,
+    //   page: () => const FleetHomePageScreen(),
+    //   binding: FleetHomePageControllerBinding(),
+    // ),
     GetPage(
       name: AppRoutes.addVehicle,
       page: () => const AddVehicleScreen(),

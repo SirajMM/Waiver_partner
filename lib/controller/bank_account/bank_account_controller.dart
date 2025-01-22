@@ -2,23 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/api/api_services/api_services.dart';
 import 'package:waiver_driver/backend/model/bank_account/bank_account_model.dart';
+import 'package:waiver_driver/backend/parser/BankAccount/bankaccount_parser.dart';
 import 'package:waiver_driver/controller/chauffeur_proof/chauffeur_proof_controller.dart';
 import 'package:waiver_driver/core/constants/enums/enums.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
-
 import '../../backend/model/view_bank_account/view_bank_model.dart';
 
-
-
-class BankAccountControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => BankAccountController());
-  }
-}
+// class BankAccountControllerBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => BankAccountController());
+//   }
+// }
 
 class BankAccountController extends GetxController {
+  BankaccountParser parser;
+
+  BankAccountController({required this.parser});
   static BankAccountController get to => Get.find();
 
   @override

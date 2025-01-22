@@ -13,15 +13,19 @@ import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_gradient.dart';
 import 'package:waiver_driver/core/widgets/error_page/error_page.dart';
 import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
+import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
+import '../../backend/api/api_services/api_services.dart';
+import '../../backend/api/api_services/urls.dart';
 
 class ChauffeurProofScreen extends StatelessWidget {
   const ChauffeurProofScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ChauffeurProofController());
+       Get.lazyPut(() => ApiServices(appBaseUrl: AppUrls.base));
+    Get.put(ChauffeurProofController(parser: Get.find()));
     return Scaffold(
       appBar: appBar(title: ""),
       body: GetX<ChauffeurProofController>(
@@ -168,7 +172,7 @@ class ChauffeurProofItemList extends StatelessWidget {
               onTap: () async {
                 // await ChauffeurProofController.to.isConnectedToInternet();
                 // if (ChauffeurProofController.to.isInternetConnected.value) {
-                Get.toNamed(AppRoutes.aadharCard,
+                Get.toNamed(AppRoutes1.getAadharCardInRoute(),
                     arguments: ChauffeurProofController.to.profilePhoto);
                 // } else {
                 //   Get.snackbar("No Internet", "Please check your connection!");
@@ -180,7 +184,7 @@ class ChauffeurProofItemList extends StatelessWidget {
           ),
           AddProofItem(
             proof: ChauffeurProofController.to.aadharCard,
-            onTap: () => Get.toNamed(AppRoutes.aadharCard,
+            onTap: () => Get.toNamed(AppRoutes1.getAadharCardInRoute(),
                 arguments: ChauffeurProofController.to.aadharCard),
           ),
           Container(
@@ -189,7 +193,7 @@ class ChauffeurProofItemList extends StatelessWidget {
           ),
           AddProofItem(
             proof: ChauffeurProofController.to.drivingLicense,
-            onTap: () => Get.toNamed(AppRoutes.aadharCard,
+            onTap: () => Get.toNamed(AppRoutes1.getAadharCardInRoute(),
                 arguments: ChauffeurProofController.to.drivingLicense),
           ),
           Container(
@@ -198,7 +202,7 @@ class ChauffeurProofItemList extends StatelessWidget {
           ),
           AddProofItem(
             proof: ChauffeurProofController.to.policeClearanceCertificate,
-            onTap: () => Get.toNamed(AppRoutes.aadharCard,
+            onTap: () => Get.toNamed(AppRoutes1.getAadharCardInRoute(),
                 arguments:
                     ChauffeurProofController.to.policeClearanceCertificate),
           ),
@@ -208,7 +212,7 @@ class ChauffeurProofItemList extends StatelessWidget {
           ),
           AddProofItem(
             proof: ChauffeurProofController.to.bankAccount,
-            onTap: () => Get.toNamed(AppRoutes.bankAccount),
+            onTap: () => Get.toNamed(AppRoutes1.getBankAccountInRoute()),
           ),
           Container(
             height: 1,

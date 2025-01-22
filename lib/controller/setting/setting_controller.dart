@@ -2,29 +2,29 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/model/setting/setting_model.dart';
+import 'package:waiver_driver/backend/parser/Settings/settings_parser.dart';
 import 'package:waiver_driver/core/themes/assets/icons.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
-
-
 import 'package:waiver_driver/main.dart';
-
 
 import '../../backend/api/api_services/api_services.dart';
 import '../../helper/router/app_routes/app_routes.dart';
 
 import '../../view/loading_animation/loading_animation.dart';
 
-
-
-class SettingControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => SettingController());
-  }
-}
+// class SettingControllerBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => SettingController());
+//   }
+// }
 
 class SettingController extends GetxController {
+  SettingsParser parser;
+
+  SettingController({required this.parser});
+
   static SettingController get to => Get.find();
   void onInit() {
     darkMode.value = Get.theme == ThemeData.dark;
@@ -81,8 +81,7 @@ class SettingController extends GetxController {
   logout() async {
     try {
       var response = await ApiServices.logout(body: {});
-    }
-    finally {
+    } finally {
       await FirebaseMessaging.instance.deleteToken();
       await box.erase();
       Get.offAllNamed(AppRoutes.driverTypeSelection);
