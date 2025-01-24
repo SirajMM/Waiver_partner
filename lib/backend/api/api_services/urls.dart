@@ -12,11 +12,11 @@ class AppUrls {
   static String googleLocationUrl =
       "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
   static String googleApiKeyUrl =
-      "&key=AIzaSyDGa942xDZUmJf9N6JuUnEy42aLwUTukNo";
+      "&key=AIzaSyCRcNjpMR7vF2ZWUDE-Wue_QsZ0HRxM1VQ";
   static String sendPhoneOtp = "/api/v1/core/send-phone-otp/";
   static String rideOrderDetails = "/api/v1/ride/ride-details/";
-  static String phoneAuth = "/api/v1/core/phone-auth/";
-  static String driverProfile = "/api/v1/fleet/driver-profile/";
+  static String phoneAuth = "/api/v1/core/phone-auth/"; 
+  static String driverProfile = "/api/v1/fleet/driver-profile/"; 
   static String createProfile = "/api/v1/core/profile/";
   static String onlineStatus = "api/v1/core/change-online-status/";
   static String states = "/api/v1/core/states/";

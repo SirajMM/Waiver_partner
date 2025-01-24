@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
 
 class DashBoardItemModel {
   Widget icon;
@@ -768,4 +769,16 @@ class AddStopResponseModelData {
       AddStopResponseModelData();
 
   Map<String, dynamic> toJson() => {};
+}
+
+class TripsLocations {
+  Rx<String?> name;
+  Rx<double?> latitude;
+  Rx<double?> longitude;
+
+  TripsLocations({
+    required this.name,
+    required this.latitude,
+    required this.longitude,
+  });
 }

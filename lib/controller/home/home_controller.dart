@@ -18,6 +18,7 @@ import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
 import 'package:waiver_driver/main.dart';
 import 'package:waiver_driver/view/home/home_view.dart';
+import 'package:location/location.dart' as loc;
 
 import '../../backend/api/api_services/api_services.dart';
 import '../../backend/api/api_services/web_socket_services.dart';
@@ -45,6 +46,29 @@ class HomeController extends GetxController {
       isLoading.value = true;
       await getDriverOnlineStatus();
       sendLiveLocation();
+      loc.Location location = loc.Location();
+
+      await location.getLocation().then((location) {
+        currentPosition.value = Position(
+          latitude: location.latitude ?? 0.0, // Default to 0.0 if null
+          longitude: location.longitude ?? 0.0, // Default to 0.0 if null
+          timestamp: DateTime.now(), // Set current timestamp
+          accuracy: location.accuracy ?? 0.0,
+          altitude: location.altitude ?? 0.0,
+          heading: location.heading ?? 0.0,
+          speed: location.speed ?? 0.0,
+          speedAccuracy: location.speedAccuracy ?? 0.0,
+          altitudeAccuracy: 0.0,
+          headingAccuracy: 0.0,
+        );
+      });
+      pickUpLocation1 = TripsLocations(
+          latitude: Rx(currentPosition.value?.latitude),
+          longitude: Rx(currentPosition.value?.longitude),
+          name: "".obs);
+
+      pickUpLocation1?.name.value = await getLocationDetails(
+          currentPosition.value!.latitude, currentPosition.value!.longitude);
       latestActiveRide();
       // WakelockPlus.enable();
 
@@ -213,6 +237,9 @@ class HomeController extends GetxController {
   String? pickUpLocation;
   String? dropOffLocation;
   String? passengerName;
+  TripsLocations? pickUpLocation1 =
+      TripsLocations(name: "".obs, latitude: 0.0.obs, longitude: 0.0.obs);
+
   getAndShowOrderDetails({required String id, bool? fromBackGroundCall}) async {
     player.play(AssetSource(AppAudio.notification));
     GetRideDetailsResponseModel response =
@@ -491,6 +518,50 @@ class HomeController extends GetxController {
     }
 
     return null; // Return null if no sublocality or subpremise is found
+  }
+
+  Future<String?> getLocationDetails1() async {
+    if (driverState.value == DriverState.idle) {
+      GoogleLocationResponse response = await ApiServices.getCurrentLocation(
+          pickUpLocation1?.latitude.value ?? 0.0,
+          pickUpLocation1?.longitude.value ?? 0.0);
+
+      String? neighborhood = response.results?.firstOrNull?.addressComponents
+          ?.firstWhereOrNull(
+              (address) => ((address.types ?? []).contains("neighborhood")))
+          ?.longName;
+
+      String? political = response.results?.firstOrNull?.addressComponents
+          ?.firstWhereOrNull(
+              (address) => ((address.types ?? []).contains("political")))
+          ?.longName;
+      String? sublocality = response.results?.firstOrNull?.addressComponents
+          ?.firstWhereOrNull(
+              (address) => ((address.types ?? []).contains("sublocality")))
+          ?.longName;
+      String? locality = response.results?.firstOrNull?.addressComponents
+          ?.firstWhereOrNull(
+              (address) => ((address.types ?? []).contains("locality")))
+          ?.longName;
+      String? postalCode = response.results?.firstOrNull?.addressComponents
+          ?.firstWhereOrNull(
+              (address) => ((address.types ?? []).contains("postal_code")))
+          ?.longName;
+      String? premise = response.results?.firstOrNull?.addressComponents
+          ?.firstWhereOrNull(
+              (address) => ((address.types ?? []).contains("premise")))
+          ?.longName;
+      return ({
+        premise,
+        neighborhood,
+        political,
+        sublocality,
+        locality,
+        postalCode
+      }.toList().where((name) => name != null).join(","));
+    } else {
+      return "";
+    }
   }
 
   paymentInitiated() async {

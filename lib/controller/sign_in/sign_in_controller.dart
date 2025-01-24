@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_custom_utils/flutter_custom_utils.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:waiver_driver/backend/api/api_services/urls.dart';
 import 'package:waiver_driver/backend/parser/Signin/signin_parser.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
+import '../../backend/api/api_services/api_services.dart';
 import '../../helper/router/app_routes/app_routes.dart';
 
 // class SignInControllerBinding extends Bindings {
@@ -15,10 +17,11 @@ import '../../helper/router/app_routes/app_routes.dart';
 // }
 
 class SignInController extends GetxController {
-    final SignInParser parser;
+  final SignInParser parser;
   SignInController({required this.parser});
   @override
   void onInit() {
+    Get.put(ApiServices(appBaseUrl: AppUrls.base));
     userType = Get.arguments;
     cLog("login userType : $userType");
     super.onInit();

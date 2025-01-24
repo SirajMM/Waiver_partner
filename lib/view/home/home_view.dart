@@ -425,11 +425,18 @@ class HomeScreen extends StatelessWidget {
                           Marker(
                               markerId: const MarkerId("1"),
                               position: LatLng(
-                                controller.currentPosition.value?.latitude ?? 0,
+                                controller.currentPosition.value?.latitude ??
+                                    0.0,
                                 controller.currentPosition.value?.longitude ??
                                     0,
                               )),
                         },
+                        onCameraIdle: () async => controller
+                                .pickUpLocation1?.name.value =
+                            await controller.getLocationDetails(
+                                controller.currentPosition.value?.latitude ?? 0,
+                                controller.currentPosition.value?.longitude ??
+                                    0.0),
                         initialCameraPosition: CameraPosition(
                           target: LatLng(
                             controller.currentPosition.value?.latitude ?? 0,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:waiver_driver/backend/api/api_services/api_services.dart';
+import 'package:waiver_driver/backend/api/api_services/urls.dart';
 import 'package:waiver_driver/core/colors/app_colors.dart';
 import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 import 'package:waiver_driver/core/themes/assets/icons.dart';
@@ -16,6 +18,7 @@ class DriverTypeSelectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(ApiServices(appBaseUrl: AppUrls.base));
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
