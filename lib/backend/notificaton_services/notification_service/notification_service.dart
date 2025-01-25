@@ -12,7 +12,6 @@ import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 
 import 'package:waiver_driver/main.dart';
 
-
 class NotificationService {
   static Future<void> onInit() async {
     await AwesomeNotifications().initialize(
@@ -67,8 +66,8 @@ class NotificationService {
     OrderDetailsModel data = OrderDetailsModel.fromJson(notification.data);
     HomeController.to.driverState.value = DriverState.loading;
     print("notification.data");
-    print(notification.data??"No message");
-    box.write(BoxKeys.paymentType,data.paymentType);
+    print(notification.data ?? "No message");
+    box.write(BoxKeys.paymentType, data.paymentType);
     print(data.rideStatus);
     if (data.rideStatus == "RED") {
       HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
@@ -76,29 +75,23 @@ class NotificationService {
       final player = AudioPlayer();
       player.stop();
       HomeController.to.resetDistance();
-      HomeController.to.isTracking=false;
-      HomeController.to.rideIsActive=false;
+      HomeController.to.isTracking = false;
+      HomeController.to.rideIsActive = false;
       HomeController.to.driverState.value = DriverState.idle;
       // Get.bottomSheet(OrderCompletedBottomSheet());
-    }else if (data.rideStatus == RideStatus.paymentInitiated) {
-      HomeController.to.isTracking=false;
-      HomeController.to.rideIsActive=true;
+    } else if (data.rideStatus == RideStatus.paymentInitiated) {
+      HomeController.to.isTracking = false;
+      HomeController.to.rideIsActive = true;
       HomeController.to.driverState.value = DriverState.paymentInitiated;
-
-    }else if (data.rideStatus == RideStatus.completed) {
-      HomeController.to.isTracking=false;
-      HomeController.to.rideIsActive=true;
-      await  HomeController.to.getRidePayment();
+    } else if (data.rideStatus == RideStatus.completed) {
+      HomeController.to.isTracking = false;
+      HomeController.to.rideIsActive = true;
+      await HomeController.to.getRidePayment();
       HomeController.to.driverState.value = DriverState.completed;
-    }
-    else {
+    } else {
       HomeController.to.driverState.value = DriverState.idle;
     }
-
   }
-
-
-
 
   static onMessageOpenedApp({required RemoteMessage notification}) async {
     OrderDetailsModel data = OrderDetailsModel.fromJson(notification.data);
@@ -110,25 +103,21 @@ class NotificationService {
       final player = AudioPlayer();
       player.stop();
       HomeController.to.resetDistance();
-      HomeController.to.isTracking=false;
-      HomeController.to.rideIsActive=false;
+      HomeController.to.isTracking = false;
+      HomeController.to.rideIsActive = false;
       HomeController.to.driverState.value = DriverState.idle;
       // Get.bottomSheet(OrderCompletedBottomSheet());
-    }else if (data.rideStatus == RideStatus.paymentInitiated) {
-      HomeController.to.isTracking=false;
-      HomeController.to.rideIsActive=true;
+    } else if (data.rideStatus == RideStatus.paymentInitiated) {
+      HomeController.to.isTracking = false;
+      HomeController.to.rideIsActive = true;
       HomeController.to.driverState.value = DriverState.paymentInitiated;
-
-    }else if (data.rideStatus == RideStatus.completed) {
-      HomeController.to.isTracking=false;
-      HomeController.to.rideIsActive=true;
-      await  HomeController.to.getRidePayment();
+    } else if (data.rideStatus == RideStatus.completed) {
+      HomeController.to.isTracking = false;
+      HomeController.to.rideIsActive = true;
+      await HomeController.to.getRidePayment();
       HomeController.to.driverState.value = DriverState.completed;
-    }
-
-    else {
+    } else {
       HomeController.to.driverState.value = DriverState.idle;
-
     }
   }
 
