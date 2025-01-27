@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_utils/flutter_custom_utils.dart';
 import 'package:get/get.dart';
+import 'package:waiver_driver/backend/api/api_services/urls.dart';
 import 'package:waiver_driver/backend/model/left_menu_driver/left_menu_driver_model.dart';
 import 'package:waiver_driver/core/themes/assets/icons.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
@@ -15,6 +16,12 @@ import '../../main.dart';
 import '../../view/loading_animation/loading_animation.dart';
 
 class LeftMenuControllerDriver extends GetxController {
+  @override
+  void onInit() {
+    Get.put(ApiServices(appBaseUrl: AppUrls.base));
+    super.onInit();
+  }
+
   static LeftMenuControllerDriver get to => Get.find();
 
   LeftMenuItemModel myEarning = LeftMenuItemModel(

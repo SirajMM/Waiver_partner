@@ -8,6 +8,7 @@ import 'package:waiver_driver/backend/parser/splash/splash_parser.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 
 import '../../core/constants/get_storage_constants.dart';
+import '../../helper/init/init.dart';
 import '../../helper/no_internet_view.dart';
 import '../../helper/router/app_routes/app_routes.dart';
 import '../../main.dart';
@@ -22,6 +23,7 @@ import '../../main.dart';
 class SplashController extends GetxController {
   @override
   void onInit() async {
+    await MainBinding().dependencies();
     super.onInit();
 
     await Future.delayed(const Duration(seconds: 3), () {
