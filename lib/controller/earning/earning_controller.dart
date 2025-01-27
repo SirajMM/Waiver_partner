@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -44,7 +46,7 @@ class EarningController extends GetxController
       ]);
       isError.value = false;
     } catch (error) {
-      print(error);
+      log(error.toString());
       isError.value = true;
     } finally {
       isLoading.value = false;
@@ -71,7 +73,8 @@ class EarningController extends GetxController
       "end_date": DateTime.now().changeDateFormat(),
     });
     todayEarningList.addAll(response.data?.results ?? []);
-    isTodayEarningsIsListCompleted.value = response.data?.next ?? false;
+    // isTodayEarningsIsListCompleted.value = response.data?.next ?? false;
+    isTodayEarningsIsListCompleted.value = false;
   }
 
   Future<void> getEarningsWeekly() async {
@@ -83,7 +86,8 @@ class EarningController extends GetxController
     });
 
     weeklyEarningList.addAll(response.data?.results ?? []);
-    isWeeklyEarningsIsListCompleted.value = response.data?.next ?? false;
+    // isWeeklyEarningsIsListCompleted.value = response.data?.next ?? false;
+    isWeeklyEarningsIsListCompleted.value = false;
   }
 
   RxBool isLoading = false.obs;

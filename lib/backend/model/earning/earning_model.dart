@@ -219,8 +219,11 @@ class Data {
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
         count: json["count"],
-        next: json["next"]??false,
-        previous: json["previous"]??false,
+        // next: json["next"]??false,
+        // previous: json["previous"]??false,
+
+        next: json["next"] ?? false,
+        previous: json["previous"] ?? false,
         results: json["results"] == null
             ? []
             : List<EarningListItem>.from(

@@ -59,10 +59,10 @@ class LeftMenuDriver extends StatelessWidget {
           SizedBox(
             height: 14.sp,
           ),
-          LeftMenuItem(
-            item: LeftMenuControllerDriver.to.myEarning,
-            onTap: () => Get.toNamed(AppRoutes1.getEraningScreenInRoute()),
-          ),
+          // LeftMenuItem(
+          //   item: LeftMenuControllerDriver.to.myEarning,
+          //   onTap: () => Get.toNamed(AppRoutes1.getEraningScreenInRoute()),
+          // ),
           SizedBox(
             height: 30.sp,
           ),
