@@ -32,11 +32,13 @@ import 'package:waiver_driver/view/sign_in/sign_in_view.dart';
 import 'package:waiver_driver/view/splash/splash_view.dart';
 
 import '../../../backend/binding/MyRide/myridescreen_binding.dart';
+import '../../../backend/binding/Preferences/preferences_binding.dart';
 import '../../../backend/binding/Settings/settings_binding.dart';
 import '../../../backend/binding/ViewBankAccount/viewbankaccount_binding.dart';
 import '../../../view/aadhar_card/aadhar_card_view.dart';
 import '../../../view/bank_account/bank_account_view.dart';
 import '../../../view/earning/earning_view.dart';
+import '../../../view/preferences/preferences_view.dart';
 import '../../../view/profile/profile_view.dart';
 import '../../../view/rating/rating_view.dart';
 import '../../../view/setting/setting_view.dart';
@@ -109,6 +111,7 @@ class AppRoutes1 {
   static String getMyRideScreenInRoute() => myRides;
   static String getNotificationInRoute() => notification;
   static String getSettingsScreeenInRoute() => setting;
+  static String getPreferencesInRoute() => preferences;
 
   static List<GetPage> appPages1 = <GetPage>[
     GetPage(
@@ -274,11 +277,11 @@ class AppRoutes1 {
     //   page: () => const FaqListingScreen(),
     //   binding: FaqListingControllerBinding(),
     // ),
-    // GetPage(
-    //   name: AppRoutes.preferences,
-    //   page: () => const PreferencesScreen(),
-    //   binding: PreferencesControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.preferences,
+      page: () => const PreferencesScreen(),
+      binding: PreferencesBinding(),
+    ),
     // GetPage(
     //   name: AppRoutes.accountRelated,
     //   page: () => const AccountRelatedScreen(),

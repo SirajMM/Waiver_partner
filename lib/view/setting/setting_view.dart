@@ -13,6 +13,8 @@ import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_grad
 import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 import 'package:waiver_driver/main.dart';
 
+import '../../helper/router/app_routes/route.dart';
+
 class SettingScreen extends StatelessWidget {
   const SettingScreen({Key? key}) : super(key: key);
 
@@ -46,7 +48,7 @@ class SettingScreen extends StatelessWidget {
             ),
             SettingListingItem(
               setting: SettingController.to.preferencesItem,
-              onTap: () => Get.toNamed(AppRoutes.preferences),
+              onTap: () => Get.toNamed(AppRoutes1.getPreferencesInRoute()),
             ),
             SizedBox(
               height: 15.sp,

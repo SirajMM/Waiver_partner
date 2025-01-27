@@ -21,13 +21,14 @@ import 'package:waiver_driver/backend/parser/otp/otp_parser.dart';
 import 'package:waiver_driver/backend/parser/splash/splash_parser.dart';
 
 import '../../backend/parser/BankAccount/bankaccount_parser.dart';
+import '../../backend/parser/Preference/preference_parser.dart';
 
 class MainBinding extends Bindings {
   @override
   Future<void> dependencies() async {
     // Get.put<NetworkController>(NetworkController(), permanent: true);
 
-      Get.lazyPut(() => ApiServices(appBaseUrl: AppUrls.base));
+    Get.lazyPut(() => ApiServices(appBaseUrl: AppUrls.base));
 
     Get.lazyPut(() => SplashParser(apiService: Get.find()), fenix: true);
 
@@ -55,6 +56,7 @@ class MainBinding extends Bindings {
     Get.lazyPut(() => MyrideScreenParser(apiService: Get.find()), fenix: true);
     Get.lazyPut(() => NotificationParser(apiService: Get.find()), fenix: true);
     Get.lazyPut(() => SettingsParser(apiService: Get.find()), fenix: true);
+    Get.lazyPut(() => PreferencesParser(apiService: Get.find()), fenix: true);
 
     //   Get.lazyPut(() => ConnectivityBinding(), fenix: true);
     //   Get.lazyPut(

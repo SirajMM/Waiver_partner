@@ -669,6 +669,7 @@ class EarningSummaryToday extends StatelessWidget {
 class DetailsItemView extends StatelessWidget {
   String text;
   String value;
+  
   DetailsItemView({super.key, required this.text, required this.value});
   @override
   Widget build(BuildContext context) {

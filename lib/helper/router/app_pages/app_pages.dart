@@ -250,11 +250,11 @@ class AppPages {
       page: () => const FaqListingScreen(),
       binding: FaqListingControllerBinding(),
     ),
-    GetPage(
-      name: AppRoutes.preferences,
-      page: () => const PreferencesScreen(),
-      binding: PreferencesControllerBinding(),
-    ),
+    // GetPage(
+    //   name: AppRoutes.preferences,
+    //   page: () => const PreferencesScreen(),
+    //   binding: PreferencesControllerBinding(),
+    // ),
     GetPage(
       name: AppRoutes.accountRelated,
       page: () => const AccountRelatedScreen(),
