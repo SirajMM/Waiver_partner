@@ -113,14 +113,16 @@ class EarningGraphBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final EarningController controller = Get.find();
+
     return GestureDetector(
       onTap: () {
-        if (EarningController.to.selectGraphValue.value == graphValue) {
-          EarningController.to.selectGraphValue.value = null;
+        if (controller.selectGraphValue.value == graphValue) {
+          controller.selectGraphValue.value = null;
         } else {
-          EarningController.to.selectGraphValue.value = graphValue;
+          controller.selectGraphValue.value = graphValue;
         }
-        EarningController.to.startAnimation(amount: graphValue?.total ?? 0.0);
+        controller.startAnimation(amount: graphValue?.total ?? 0.0);
       },
       child: GetX<EarningController>(builder: (controller) {
         return Column(
@@ -169,13 +171,13 @@ class WeeklyTab extends StatelessWidget {
         SizedBox(
           height: 25.sp,
         ),
-        // EarningController.to.weeklyEarningList.isEmpty
+        // controller.weeklyEarningList.isEmpty
         //     ? EmptyPage(
         //         text: "No Earning found",
         //       )
         //     :
         // Column(
-        //         children: EarningController.to.weeklyEarningList
+        //         children: controller.weeklyEarningList
         //             .map((earning) => EarningListingItem(
         //                   earning: earning,
         //                 ))
@@ -196,7 +198,7 @@ class TodayTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(AppRoutes1.getEraningScreenInRoute());
+    Get.put(EarningController(parser: Get.find()));
 
     return GetX<EarningController>(builder: (controller) {
       return controller.isLoading.value
@@ -216,12 +218,12 @@ class TodayTab extends StatelessWidget {
                     SizedBox(
                       height: 25.sp,
                     ),
-                    // EarningController.to.weeklyEarningList.isEmpty
+                    // controller.weeklyEarningList.isEmpty
                     //     ? EmptyPage(
                     //         text: "No Earning found",
                     //       )
                     //     : Column(
-                    //         children: EarningController.to.todayEarningList
+                    //         children: controller.todayEarningList
                     //             .map((earning) => EarningListingItem(
                     //                   earning: earning,
                     //                 ))
@@ -307,6 +309,7 @@ class BalanceAmountToday extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final EarningController controller = Get.find();
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 20.sp),
       decoration: BoxDecoration(
@@ -320,11 +323,11 @@ class BalanceAmountToday extends StatelessWidget {
             style: TextStyle(fontSize: 14.sp),
           ),
           Text(
-            "₹ ${EarningController.to.todayBalanceAmount ?? "0"}",
+            "₹ ${controller.todayBalanceAmount ?? "0"}",
             style: TextStyle(fontSize: 23.sp, fontWeight: FontWeight.w600),
           ),
           Text(
-            "Payout scheduled: ${DateFormat("dd MMMM").format(EarningController.to.payOutDate)}",
+            "Payout scheduled: ${DateFormat("dd MMMM").format(controller.payOutDate)}",
             style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
           ),
         ],
@@ -338,6 +341,7 @@ class BalanceAmount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final EarningController controller = Get.find();
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 20.sp),
       decoration: BoxDecoration(
@@ -353,11 +357,11 @@ class BalanceAmount extends StatelessWidget {
             ),
           ),
           Text(
-            "₹ ${EarningController.to.todayBalanceAmount ?? "0"}",
+            "₹ ${controller.todayBalanceAmount ?? "0"}",
             style: TextStyle(fontSize: 23.sp, fontWeight: FontWeight.w600),
           ),
           Text(
-            "Payout scheduled: ${DateFormat("dd MMMM").format(EarningController.to.payOutDate)}",
+            "Payout scheduled: ${DateFormat("dd MMMM").format(controller.payOutDate)}",
             style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
           ),
         ],
@@ -371,8 +375,10 @@ class PreviousWeek extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final EarningController controller = Get.find();
+
     return GestureDetector(
-        onTap: () => EarningController.to.getPreviousWeekData(),
+        onTap: () => controller.getPreviousWeekData(),
         child: const Icon(Icons.arrow_back_ios));
   }
 }
@@ -382,8 +388,10 @@ class NextWeek extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final EarningController controller = Get.find();
+
     return GestureDetector(
-        onTap: () => EarningController.to.getNextWeekData(),
+        onTap: () => controller.getNextWeekData(),
         child: const Icon(Icons.arrow_forward_ios_rounded));
   }
 }
@@ -405,16 +413,15 @@ class DateForGraphWeekly extends StatelessWidget {
               : const PreviousWeek();
         }),
         GetX<EarningController>(builder: (controller) {
-          return EarningController.to.selectGraphValue.value?.day == null
+          return controller.selectGraphValue.value?.day == null
               ? Text(
-                  "${EarningController.to.weeklyDateEnd.value.subtract(const Duration(days: 7)).changeDateFormat(format: "EEE dd MMM yyyy")} to ${EarningController.to.weeklyDateEnd.value.changeDateFormat(format: "EEE dd MMM yyyy")}",
+                  "${controller.weeklyDateEnd.value.subtract(const Duration(days: 7)).changeDateFormat(format: "EEE dd MMM yyyy")} to ${controller.weeklyDateEnd.value.changeDateFormat(format: "EEE dd MMM yyyy")}",
                   style: TextStyle(
                       color: Get.theme.indicatorColor.withOpacity(0.5),
                       fontSize: 14.sp))
               : Text(
                   DateFormat("EEE dd MMM yyyy").format(
-                      EarningController.to.selectGraphValue.value?.day ??
-                          DateTime.now()),
+                      controller.selectGraphValue.value?.day ?? DateTime.now()),
                   style: TextStyle(
                       color: Get.theme.indicatorColor.withOpacity(.05),
                       fontSize: 14.sp));
@@ -431,6 +438,8 @@ class DateForGraphWeekly extends StatelessWidget {
 }
 
 class EarningSummaryWeekly extends StatelessWidget {
+  final EarningController controller = Get.find();
+
   bool? isWeekly;
   EarningSummaryWeekly({super.key, this.isWeekly});
   @override
@@ -444,11 +453,10 @@ class EarningSummaryWeekly extends StatelessWidget {
         children: [
           const DateForGraphWeekly(),
           AnimatedBuilder(
-              animation: EarningController.to.controller,
+              animation: controller.controller,
               builder: (BuildContext context, Widget? child) {
                 return Text(
-                    (EarningController.to.animation.value.roundToDouble())
-                        .toString(),
+                    (controller.animation.value.roundToDouble()).toString(),
                     style: TextStyle(
                         fontWeight: FontWeight.w600, fontSize: 22.sp));
               }),
@@ -462,9 +470,9 @@ class EarningSummaryWeekly extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              EarningItem(item: EarningController.to.weeklyTrips),
-              EarningItem(item: EarningController.to.weeklyOnlineHours),
-              EarningItem(item: EarningController.to.weeklyDistance),
+              EarningItem(item: controller.weeklyTrips),
+              EarningItem(item: controller.weeklyOnlineHours),
+              EarningItem(item: controller.weeklyDistance),
             ],
           ),
           GetX<EarningController>(builder: (controller) {
@@ -482,23 +490,23 @@ class EarningSummaryWeekly extends StatelessWidget {
                     children: [
                       DetailsItemView(
                         text: "Trip Fare",
-                        value: "₹ ${EarningController.to.weeklyTripFare}",
+                        value: "₹ ${controller.weeklyTripFare}",
                       ),
                       DetailsItemView(
                         text: "Waiver Charge",
-                        value: "- ₹ ${EarningController.to.weeklyWaiverCharge}",
+                        value: "- ₹ ${controller.weeklyWaiverCharge}",
                       ),
                       DetailsItemView(
                         text: "Tax",
-                        value: "- ₹ ${EarningController.to.weeklyWaiverCharge}",
+                        value: "- ₹ ${controller.weeklyWaiverCharge}",
                       ),
                       DetailsItemView(
                         text: "Incentives",
-                        value: "- ₹ ${EarningController.to.weeklyIncentives}",
+                        value: "- ₹ ${controller.weeklyIncentives}",
                       ),
                       DetailsItemView(
                         text: "Refer Earnings",
-                        value: "₹ ${EarningController.to.weeklyReferEarnings}",
+                        value: "₹ ${controller.weeklyReferEarnings}",
                       ),
                       SizedBox(
                         height: 10.sp,
@@ -521,7 +529,7 @@ class EarningSummaryWeekly extends StatelessWidget {
               ),
               GetX<EarningController>(builder: (controller) {
                 return Text(
-                  "₹ ${EarningController.to.weeklyPayment.value}",
+                  "₹ ${controller.weeklyPayment.value}",
                   style:
                       TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
                 );
@@ -583,6 +591,8 @@ class EarningSummaryToday extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final EarningController controller = Get.find();
+
     return Container(
       padding: EdgeInsets.all(15.sp),
       decoration: BoxDecoration(
@@ -593,7 +603,7 @@ class EarningSummaryToday extends StatelessWidget {
           Text(DateFormat("EEE dd MMM yyyy").format(DateTime.now()),
               style: TextStyle(fontSize: 14.sp)),
           Text(
-            "₹ ${EarningController.to.todayEarning ?? 0}",
+            "₹ ${controller.todayEarning ?? 0}",
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22.sp),
           ),
           SizedBox(
@@ -602,9 +612,9 @@ class EarningSummaryToday extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              EarningItem(item: EarningController.to.todayTrips),
-              EarningItem(item: EarningController.to.todayOnlineHours),
-              EarningItem(item: EarningController.to.todayDistance),
+              EarningItem(item: controller.todayTrips),
+              EarningItem(item: controller.todayOnlineHours),
+              EarningItem(item: controller.todayDistance),
             ],
           ),
           ExpansionTile(
@@ -618,23 +628,23 @@ class EarningSummaryToday extends StatelessWidget {
             children: [
               DetailsItemView(
                 text: "Trip Fare",
-                value: "₹ ${EarningController.to.todayTripFare}",
+                value: "₹ ${controller.todayTripFare}",
               ),
               DetailsItemView(
                 text: "Waiver Charge",
-                value: "- ₹ ${EarningController.to.todayWaiverCharge}",
+                value: "- ₹ ${controller.todayWaiverCharge}",
               ),
               DetailsItemView(
                 text: "Tax",
-                value: "- ₹ ${EarningController.to.todayWaiverCharge}",
+                value: "- ₹ ${controller.todayWaiverCharge}",
               ),
               DetailsItemView(
                 text: "Incentives",
-                value: "- ₹ ${EarningController.to.todayIncentives}",
+                value: "- ₹ ${controller.todayIncentives}",
               ),
               DetailsItemView(
                 text: "Refer Earnings",
-                value: "₹ ${EarningController.to.todayReferEarnings}",
+                value: "₹ ${controller.todayReferEarnings}",
               ),
               SizedBox(
                 height: 10.sp,
@@ -655,7 +665,7 @@ class EarningSummaryToday extends StatelessWidget {
                 style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
               ),
               Text(
-                "₹ ${EarningController.to.todayPayment}",
+                "₹ ${controller.todayPayment}",
                 style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
               ),
             ],

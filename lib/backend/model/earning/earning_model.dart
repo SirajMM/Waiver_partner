@@ -88,12 +88,12 @@ class Earnings {
   });
 
   factory Earnings.fromJson(Map<String, dynamic> json) => Earnings(
-        rideFare: json["ride_fare"].toDouble(),
-        waiverCharge: json["waiver_charge"].toDouble(),
-        tax: json["tax"].toDouble(),
-        incentives: json["incentives"].toDouble(),
-        referrals: json["referrals"].toDouble(),
-        total: json["total"].toDouble(),
+        rideFare: double.tryParse(json["ride_fare"]) ?? 0.0,
+        waiverCharge: double.tryParse(json["waiver_charge"]) ?? 0.0,
+        tax: double.tryParse(json["tax"]) ?? 0.0,
+        incentives: double.tryParse(json["incentives"]) ?? 0.0,
+        referrals: double.tryParse(json["referrals"]) ?? 0.0,
+        total: double.tryParse(json["total"]) ?? 0.0,
         earningsByDay: json["earnings_by_day"] == null
             ? []
             : List<EarningsByDay>.from(
@@ -124,7 +124,7 @@ class EarningsByDay {
 
   factory EarningsByDay.fromJson(Map<String, dynamic> json) => EarningsByDay(
         day: json["day"] == null ? null : DateTime.parse(json["day"]),
-        total: json["total"].toDouble(),
+        total: double.tryParse(json["total"]) ?? 0.0,
       );
 
   Map<String, dynamic> toJson() => {
@@ -155,9 +155,9 @@ class Rides {
   });
 
   factory Rides.fromJson(Map<String, dynamic> json) => Rides(
-        totalRides: json["total_rides"].toDouble(),
-        totalDistance: json["total_distance"].toDouble(),
-        totalDuration: json["total_duration"].toDouble(),
+        totalRides: double.tryParse(json["total_rides"]) ?? 0.0,
+        totalDistance: double.tryParse(json["total_distance"]) ?? 0.0,
+        totalDuration: double.tryParse(json["total_duration"]) ?? 0.0,
       );
 
   Map<String, dynamic> toJson() => {
@@ -180,7 +180,7 @@ String getEarningListResponseModelToJson(GetEarningListResponseModel data) =>
     json.encode(data.toJson());
 
 class GetEarningListResponseModel {
-  int? status;
+  String? status;
   String? message;
   Data? data;
 
@@ -206,8 +206,8 @@ class GetEarningListResponseModel {
 
 class Data {
   int? count;
-  bool? next;
-  bool? previous;
+  String? next;
+  String? previous;
   List<EarningListItem>? results;
 
   Data({
@@ -222,8 +222,8 @@ class Data {
         // next: json["next"]??false,
         // previous: json["previous"]??false,
 
-        next: json["next"] ?? false,
-        previous: json["previous"] ?? false,
+        next: json["next"] ?? null,
+        previous: json["previous"] ?? null,
         results: json["results"] == null
             ? []
             : List<EarningListItem>.from(

@@ -26,7 +26,7 @@ class EarningController extends GetxController
   EarningscreenParser parser;
   EarningController({required this.parser});
 
-  static EarningController get to => Get.find();
+  // static EarningController get to => Get.find();
 
   @override
   void onInit() async {
@@ -74,7 +74,7 @@ class EarningController extends GetxController
     });
     todayEarningList.addAll(response.data?.results ?? []);
     // isTodayEarningsIsListCompleted.value = response.data?.next ?? false;
-    isTodayEarningsIsListCompleted.value = false;
+    // isTodayEarningsIsListCompleted.value = false;
   }
 
   Future<void> getEarningsWeekly() async {
@@ -87,7 +87,7 @@ class EarningController extends GetxController
 
     weeklyEarningList.addAll(response.data?.results ?? []);
     // isWeeklyEarningsIsListCompleted.value = response.data?.next ?? false;
-    isWeeklyEarningsIsListCompleted.value = false;
+    // isWeeklyEarningsIsListCompleted.value = false;
   }
 
   RxBool isLoading = false.obs;
@@ -128,8 +128,8 @@ class EarningController extends GetxController
   getPreviousWeekData() async {
     try {
       isGraphLoading.value = true;
-      weeklyDateEnd.value = EarningController.to.weeklyDateEnd.value
-          .subtract(const Duration(days: 7));
+      weeklyDateEnd.value =
+          weeklyDateEnd.value.subtract(const Duration(days: 7));
       selectGraphValue.value = null;
       await getEarningStatusWeekly();
     } finally {
@@ -140,8 +140,7 @@ class EarningController extends GetxController
   getNextWeekData() async {
     try {
       isGraphLoading.value = true;
-      weeklyDateEnd.value =
-          EarningController.to.weeklyDateEnd.value.add(const Duration(days: 7));
+      weeklyDateEnd.value = weeklyDateEnd.value.add(const Duration(days: 7));
       selectGraphValue.value = null;
       await getEarningStatusWeekly();
     } finally {

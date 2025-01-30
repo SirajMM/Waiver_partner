@@ -41,49 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDUWye4BjtlH_mam7O7akbjnVtYFI4SWnI',
-    appId: '1:40617336448:web:b5e4bc42cce43e224bd065',
-    messagingSenderId: '40617336448',
-    projectId: 'waiver-driver-ba8f7',
-    authDomain: 'waiver-driver-ba8f7.firebaseapp.com',
-    storageBucket: 'waiver-driver-ba8f7.firebasestorage.app',
-    measurementId: 'G-7L5JRSG72G',
+    apiKey: 'AIzaSyCfn7tTzkR_Hewf375mc77TZsiuXVUFHQY',
+    appId: '1:999943752611:web:bf6c2464bc7f5a6af22816',
+    messagingSenderId: '999943752611',
+    projectId: 'waiver-partner-cdc85',
+    authDomain: 'waiver-partner-cdc85.firebaseapp.com',
+    storageBucket: 'waiver-partner-cdc85.firebasestorage.app',
+    measurementId: 'G-PE2WMZ18V9',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCIsaBfaoXbsC0Q_AXalVJS0fZPHNqSvTQ',
-    appId: '1:40617336448:android:12c516da57489a5e4bd065',
-    messagingSenderId: '40617336448',
-    projectId: 'waiver-driver-ba8f7',
-    storageBucket: 'waiver-driver-ba8f7.firebasestorage.app',
+    apiKey: 'AIzaSyCso01auc8tRp0ATdydKsTcyqybwyolmJ8',
+    appId: '1:999943752611:android:beee42f6ccab6a31f22816',
+    messagingSenderId: '999943752611',
+    projectId: 'waiver-partner-cdc85',
+    storageBucket: 'waiver-partner-cdc85.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyC8hqlBJmXCsVu546oHqW61edtLvbUlZXs',
-    appId: '1:40617336448:ios:41cf96c9d79c715d4bd065',
-    messagingSenderId: '40617336448',
-    projectId: 'waiver-driver-ba8f7',
-    storageBucket: 'waiver-driver-ba8f7.firebasestorage.app',
+    apiKey: 'AIzaSyA2ES_j2YkyXU4HxF27JO7cZS7uP6MQe0I',
+    appId: '1:999943752611:ios:f3ebcbc446bd646ef22816',
+    messagingSenderId: '999943752611',
+    projectId: 'waiver-partner-cdc85',
+    storageBucket: 'waiver-partner-cdc85.firebasestorage.app',
     iosBundleId: 'com.waiver.driver',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyC8hqlBJmXCsVu546oHqW61edtLvbUlZXs',
-    appId: '1:40617336448:ios:5e035436885f91514bd065',
-    messagingSenderId: '40617336448',
-    projectId: 'waiver-driver-ba8f7',
-    storageBucket: 'waiver-driver-ba8f7.firebasestorage.app',
+    apiKey: 'AIzaSyA2ES_j2YkyXU4HxF27JO7cZS7uP6MQe0I',
+    appId: '1:999943752611:ios:2ef9a91957ccfbbbf22816',
+    messagingSenderId: '999943752611',
+    projectId: 'waiver-partner-cdc85',
+    storageBucket: 'waiver-partner-cdc85.firebasestorage.app',
     iosBundleId: 'com.waiver.driver.waiverDriver',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyDUWye4BjtlH_mam7O7akbjnVtYFI4SWnI',
-    appId: '1:40617336448:web:235b55ff5b5751a04bd065',
-    messagingSenderId: '40617336448',
-    projectId: 'waiver-driver-ba8f7',
-    authDomain: 'waiver-driver-ba8f7.firebaseapp.com',
-    storageBucket: 'waiver-driver-ba8f7.firebasestorage.app',
-    measurementId: 'G-FDEQQK632Q',
+    apiKey: 'AIzaSyCfn7tTzkR_Hewf375mc77TZsiuXVUFHQY',
+    appId: '1:999943752611:web:eea5bba159d11c42f22816',
+    messagingSenderId: '999943752611',
+    projectId: 'waiver-partner-cdc85',
+    authDomain: 'waiver-partner-cdc85.firebaseapp.com',
+    storageBucket: 'waiver-partner-cdc85.firebasestorage.app',
+    measurementId: 'G-T277CMQBPP',
   );
 
 }
