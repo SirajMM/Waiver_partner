@@ -94,8 +94,8 @@ class NotificationService {
   }
 
   static onMessageOpenedApp({required RemoteMessage notification}) async {
-    OrderDetailsModel data = OrderDetailsModel.fromJson(notification.data);
     showNotification(notification: notification);
+    OrderDetailsModel data = OrderDetailsModel.fromJson(notification.data);
     print(notification.data);
     if (data.rideStatus == "RED") {
       HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
