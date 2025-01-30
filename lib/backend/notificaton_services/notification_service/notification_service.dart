@@ -68,7 +68,7 @@ class NotificationService {
     print("notification.data");
     print(notification.data ?? "No message");
     box.write(BoxKeys.paymentType, data.paymentType);
-    print(data.rideStatus);
+    print("***********************${data.rideStatus}");
     if (data.rideStatus == "RED") {
       HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
     } else if (data.rideStatus == RideStatus.cancelled) {
@@ -126,7 +126,7 @@ class NotificationService {
     AwesomeNotifications().createNotification(
       content: NotificationContent(
           notificationLayout: NotificationLayout.BigPicture,
-          icon: "assets/icons/app_icon.png",
+          // icon: "assets/icons/app_icon.png",
           id: Random().nextInt(100000000),
           backgroundColor: AppColors.white,
           channelKey: "basic_notification_channel",
