@@ -3,14 +3,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-
 import 'package:waiver_driver/main.dart';
 
 import '../../colors/app_colors.dart';
 import '../../constants/get_storage_constants.dart';
 import '../../themes/assets/icons.dart';
-
-
 
 class BlueButton extends StatelessWidget {
   final String text;
@@ -85,6 +82,76 @@ class BlueButton extends StatelessWidget {
     );
   }
 }
+
+class GreenButton extends StatelessWidget {
+  final String text;
+  final double? height;
+  final double? width;
+  final double? fontSize;
+  final double? radius;
+  final void Function()? onTap;
+  final bool? isLoading;
+  final Widget? icon;
+  const GreenButton({
+    super.key,
+    required this.text,
+    this.height,
+    this.fontSize,
+    this.onTap,
+    this.width,
+    this.radius,
+    this.isLoading,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: height,
+      width: width,
+      child: GestureDetector(
+        onTap: (isLoading ?? false) ? null : onTap,
+        child: Center(
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 250),
+            height: (isLoading ?? false) ? height ?? 60.sp : height ?? 52.sp,
+            width: (isLoading ?? false) ? height ?? 60.sp : width ?? 370.sp,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(
+                  (isLoading ?? false) ? 55.sp : radius ?? 8.sp),
+              color: AppColors.black10,
+            ),
+            child: Center(
+              child: isLoading ?? false
+                  ? CircularProgressIndicator(
+                      color: AppColors.white,
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        icon != null
+                            ? Container(
+                                padding: EdgeInsets.only(right: 10.sp),
+                                child: icon,
+                              )
+                            : const SizedBox(),
+                        Text(
+                          text,
+                          style: TextStyle(
+                              fontSize: fontSize ?? 16.sp,
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class BlueOnlyButton extends StatelessWidget {
   final String text;
   final double? height;
@@ -128,28 +195,28 @@ class BlueOnlyButton extends StatelessWidget {
           child: Center(
             child: isLoading ?? false
                 ? CircularProgressIndicator(
-              color: AppColors.white,
-            )
-                : Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                prefixIcon ??
-                    SizedBox(
-                      width: 0.sp,
-                    ),
-                Text(
-                  text,
-                  style: TextStyle(
-                    fontSize: fontSize ?? 16.sp,
                     color: AppColors.white,
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      prefixIcon ??
+                          SizedBox(
+                            width: 0.sp,
+                          ),
+                      Text(
+                        text,
+                        style: TextStyle(
+                          fontSize: fontSize ?? 16.sp,
+                          color: AppColors.white,
+                        ),
+                      ),
+                      suffixIcon ??
+                          SizedBox(
+                            width: 0.sp,
+                          ),
+                    ],
                   ),
-                ),
-                suffixIcon ??
-                    SizedBox(
-                      width: 0.sp,
-                    ),
-              ],
-            ),
           ),
         ),
       ),

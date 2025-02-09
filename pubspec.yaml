@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.0
 
 environment:
-  sdk: '>=2.19.5 <4.0.0'
+  sdk: ^3.6.0
 
 dependencies:
   flutter:
@@ -39,7 +39,7 @@ dependencies:
   websocket_universal: ^1.2.5
   flutter_overlay_window: ^0.4.4
   mobility_features: ^6.0.0
-  location: ^7.0.1
+  location: ^8.0.0
 #  carp_background_location: ^4.0.0
   external_app_launcher: ^4.0.0
   upgrader: ^11.3.0

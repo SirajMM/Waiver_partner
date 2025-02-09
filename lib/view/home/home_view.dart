@@ -16,6 +16,7 @@ import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_gradient.dart';
 import 'package:waiver_driver/core/widgets/count_down/count_down_view.dart';
 import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
+import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:waiver_driver/main.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
@@ -627,11 +628,13 @@ class EnterOtpBottomSheet extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           SizedBox(
-            height: 15.sp,
+            height: 20.sp,
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 55.sp),
-            height: 45.sp,
+            margin: EdgeInsets.symmetric(
+              horizontal: 55.sp,
+            ),
+            height: 55.sp,
             child: TextFieldPinAutoFill(
               decoration: InputDecoration(
                 border: OutlineInputBorder(
@@ -647,7 +650,8 @@ class EnterOtpBottomSheet extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8.sp),
                     borderSide: BorderSide(color: AppColors.grey155)),
               ),
-              currentCode: HomeController.to.code,
+              // currentCode: HomeController.to.code,
+              currentCode: "",
               onCodeSubmitted: (code) {
                 HomeController.to.code = code;
               },
@@ -660,21 +664,24 @@ class EnterOtpBottomSheet extends StatelessWidget {
           ),
           GetX<HomeController>(builder: (controller) {
             return controller.showIsOtpValid.value
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: 10.sp,
-                      ),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 55.sp),
-                        child: Text(
-                          "Please enter full Otp",
-                          style:
-                              TextStyle(fontSize: 14.sp, color: AppColors.red),
+                ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: 10.sp,
                         ),
-                      ),
-                    ],
+                        Container(
+                          margin: EdgeInsets.symmetric(horizontal: 55.sp),
+                          child: Text(
+                            "Please enter full Otp",
+                            style: TextStyle(
+                                fontSize: 14.sp, color: AppColors.red),
+                          ),
+                        ),
+                      ],
+                    ),
                   )
                 : const SizedBox();
           }),
@@ -1631,7 +1638,7 @@ class CancelOrder extends StatelessWidget {
           RedButton(
             text: "Yes, Cancel",
             onTap: () => Get.toNamed(
-              AppRoutes.reasonForCancel,
+              AppRoutes1.getreasonForCancelInRoute(),
               arguments: HomeController.to.rideId,
             ),
           ),

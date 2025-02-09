@@ -12,6 +12,7 @@ import 'package:waiver_driver/backend/parser/MyRide/myridescreen_parser.dart';
 import 'package:waiver_driver/backend/parser/Notification/notification_parser.dart';
 import 'package:waiver_driver/backend/parser/Profile/profilescreen_parser.dart';
 import 'package:waiver_driver/backend/parser/Rating/ratingscreen_parser.dart';
+import 'package:waiver_driver/backend/parser/ReasonForCancel/reason_for_cancel_parser.dart';
 import 'package:waiver_driver/backend/parser/Registration/registration_parser.dart';
 import 'package:waiver_driver/backend/parser/Settings/settings_parser.dart';
 import 'package:waiver_driver/backend/parser/Signin/signin_parser.dart';
@@ -57,6 +58,7 @@ class MainBinding extends Bindings {
     Get.lazyPut(() => NotificationParser(apiService: Get.find()), fenix: true);
     Get.lazyPut(() => SettingsParser(apiService: Get.find()), fenix: true);
     Get.lazyPut(() => PreferencesParser(apiService: Get.find()), fenix: true);
+    Get.lazyPut(() => ReasonForCancelParser(apiService: Get.find()), fenix: true);
 
     //   Get.lazyPut(() => ConnectivityBinding(), fenix: true);
     //   Get.lazyPut(

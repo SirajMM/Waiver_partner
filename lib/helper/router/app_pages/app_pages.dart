@@ -185,11 +185,11 @@ class AppPages {
     //   page: () => const HomeScreen(),
     //   binding: HomeControllerBinding(),
     // ),
-    GetPage(
-      name: AppRoutes.reasonForCancel,
-      page: () => const ReasonForCancelScreen(),
-      binding: ReasonForCancelControllerBinding(),
-    ),
+    // GetPage(
+    //   name: AppRoutes.reasonForCancel,
+    //   page: () => const ReasonForCancelScreen(),
+    //   binding: ReasonForCancelControllerBinding(),
+    // ),
     // GetPage(
     //   name: AppRoutes.profile,
     //   page: () => const ProfileScreen(),

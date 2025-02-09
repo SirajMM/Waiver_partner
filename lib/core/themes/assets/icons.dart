@@ -33,6 +33,7 @@ class AppIcons {
   static String phone = "assets/icons/phone.png";
   static String car = "assets/icons/car.png";
   static String noProfile = "assets/icons/no_profile.svg";
+  static String getLocationIcon = "assets/icons/getLocationIcon.svg";
 
   ///png=======================================================================>
   static String passwordHidden = "assets/icons/icon_password_hidden.png";

@@ -11,11 +11,13 @@ import 'package:waiver_driver/backend/binding/Notification/notification_binding.
 import 'package:waiver_driver/backend/binding/Otp/otp_binding.dart';
 import 'package:waiver_driver/backend/binding/Profile/profilescreen_binding.dart';
 import 'package:waiver_driver/backend/binding/Rating/ratingscreen_binding.dart';
+import 'package:waiver_driver/backend/binding/ReasonForCancel/reason_for_cancel_binding.dart';
 import 'package:waiver_driver/backend/binding/Registraion/registration_binding.dart';
 import 'package:waiver_driver/backend/binding/WaitingForAuthorization/waitingforauthorization_binding.dart';
 import 'package:waiver_driver/backend/binding/signIn/signin_binding.dart';
 import 'package:waiver_driver/backend/binding/splash/splash_binding.dart';
 import 'package:waiver_driver/controller/driver_type_selection/driver_type_selection_controller.dart';
+import 'package:waiver_driver/controller/reason_for_cancel/reason_for_cancel_controller.dart';
 import 'package:waiver_driver/controller/registration_certificate/registration_certificate_controller.dart';
 import 'package:waiver_driver/controller/splash/splash_controller.dart';
 import 'package:waiver_driver/view/chauffeur_proof/chauffeur_proof_view.dart';
@@ -35,12 +37,14 @@ import '../../../backend/binding/MyRide/myridescreen_binding.dart';
 import '../../../backend/binding/Preferences/preferences_binding.dart';
 import '../../../backend/binding/Settings/settings_binding.dart';
 import '../../../backend/binding/ViewBankAccount/viewbankaccount_binding.dart';
+import '../../../view/Location/location_screen.dart';
 import '../../../view/aadhar_card/aadhar_card_view.dart';
 import '../../../view/bank_account/bank_account_view.dart';
 import '../../../view/earning/earning_view.dart';
 import '../../../view/preferences/preferences_view.dart';
 import '../../../view/profile/profile_view.dart';
 import '../../../view/rating/rating_view.dart';
+import '../../../view/reason_for_cancel/reason_for_cancel_view.dart';
 import '../../../view/setting/setting_view.dart';
 import '../../../view/view_bank_account/view_bank_bank_view.dart';
 import '../../../view/waiting_for_authorization/waiting_for_authorization_view.dart';
@@ -91,6 +95,7 @@ class AppRoutes1 {
   static String registrationCertificate = "/registrationCertificate";
   static String vehicleInsurance = "/vehicleInsurance";
   static String vehiclePermit = "/vehiclePermit";
+  static String getLocation = "/getLocation";
 
   static String getInitialRoute() => splash;
   static String getLoginRoute() => login;
@@ -112,6 +117,8 @@ class AppRoutes1 {
   static String getNotificationInRoute() => notification;
   static String getSettingsScreeenInRoute() => setting;
   static String getPreferencesInRoute() => preferences;
+  static String getreasonForCancelInRoute() => reasonForCancel;
+  static String getgetLocationInRoute() => getLocation;
 
   static List<GetPage> appPages1 = <GetPage>[
     GetPage(
@@ -127,6 +134,11 @@ class AppRoutes1 {
       binding: DriverTypeSelectionBinding(),
     ),
     // // OMS: 2024-06-08 login section choosing page
+    GetPage(
+      name: AppRoutes1.getLocation,
+      page: () => const LocationScreen(),
+      binding: SplashBinding(),
+    ),
     GetPage(
       name: AppRoutes1.signIn,
       page: () => const SignInScreen(),
@@ -212,11 +224,11 @@ class AppRoutes1 {
       page: () => const HomeScreen(),
       binding: HomeBinding(),
     ),
-    // GetPage(
-    //   name: AppRoutes.reasonForCancel,
-    //   page: () => const ReasonForCancelScreen(),
-    //   binding: ReasonForCancelControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.reasonForCancel,
+      page: () => const ReasonForCancelScreen(),
+      binding: ReasonForCancelBinding(),
+    ),
     GetPage(
       name: AppRoutes1.profile,
       page: () => const ProfileScreen(),

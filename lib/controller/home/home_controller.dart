@@ -62,6 +62,7 @@ class HomeController extends GetxController {
           headingAccuracy: 0.0,
         );
       });
+
       pickUpLocation1 = TripsLocations(
           latitude: Rx(currentPosition.value?.latitude),
           longitude: Rx(currentPosition.value?.longitude),

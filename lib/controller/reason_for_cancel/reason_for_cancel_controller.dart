@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/model/home/home_model.dart';
 import 'package:waiver_driver/backend/model/reason_for_cancel/reason_for_cancel_model.dart';
+import 'package:waiver_driver/backend/parser/ReasonForCancel/reason_for_cancel_parser.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
 
@@ -15,15 +16,18 @@ import '../../helper/router/app_routes/app_routes.dart';
 import '../home/home_controller.dart';
 
 
-class ReasonForCancelControllerBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut(() => ReasonForCancelController());
-  }
-}
+// class ReasonForCancelControllerBinding extends Bindings {
+//   @override
+//   void dependencies() {
+//     Get.lazyPut(() => ReasonForCancelController());
+//   }
+// }
 
 class ReasonForCancelController extends GetxController {
   static ReasonForCancelController get to => Get.find();
+   ReasonForCancelParser parser;
+  ReasonForCancelController({required this.parser});
+  
 
   @override
   Future<void> onInit() async {
