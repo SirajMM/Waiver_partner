@@ -28,10 +28,7 @@ class SplashController extends GetxController implements GetxService {
     await MainBinding().dependencies();
     super.onInit();
 
-    // await Future.delayed(const Duration(seconds: 3), () async {
-    // String? token = "";
 
-    // String? token = box.read(BoxKeys.token);
 
     await Future.delayed(const Duration(seconds: 3), () async {
       final token = box.read(BoxKeys.token);
@@ -74,19 +71,7 @@ class SplashController extends GetxController implements GetxService {
     }
   }
 
-  // Future<bool> isConnectedToInternet() async {
-  //   subscription = Connectivity()
-  //       .onConnectivityChanged
-  //       .listen((List<ConnectivityResult> result) async {
-  //     bool isConnected =
-  //         await InternetConnectionChecker.createInstance().hasConnection;
 
-  //     isInternetConnected.value = isConnected;
-  //   });
-  //   return isInternetConnected.value;
-  // }
-
-  // static SplashController get to => Get.find();
 
   Future<void> route(token) async {
     if ((token ?? "").isEmpty) {

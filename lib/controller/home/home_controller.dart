@@ -227,6 +227,8 @@ class HomeController extends GetxController {
 
   double? startLocationLat;
   double? startLocationLong;
+  double? startLocationLatMarker;
+  double? startLocationLongMarker;
   double? endLocationLat;
   double? endLocationLong;
   String? rideId = "";
@@ -252,6 +254,13 @@ class HomeController extends GetxController {
   getOrderDetails({required GetRideDetailsResponseModel response}) {
     startLocationLat = double.parse(response.data?.startLocationLat ?? "0.0");
     startLocationLong = double.parse(response.data?.startLocationLong ?? "0.0");
+    startLocationLatMarker =
+        double.parse(response.data?.startLocationLat ?? "0.0");
+    startLocationLongMarker =
+        double.parse(response.data?.startLocationLong ?? "0.0");
+    print("################### passenger latitude ##########################");
+    log(startLocationLat!);
+    log(startLocationLong!);
     endLocationLat = double.parse(response.data?.endLocationLat ?? "0.0");
     endLocationLong = double.parse(response.data?.endLocationLong ?? "0.0");
     rideId = response.data?.id;
@@ -425,6 +434,10 @@ class HomeController extends GetxController {
       ChangeRideStatusModel response = await ApiServices.changeRideStatus(
           body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
       if (response.status == 200) {
+        if (driverState.value == DriverState.idle) {
+          startLocationLongMarker = 0.0;
+          startLocationLatMarker = 0.0;
+        }
         rideIsActive = true;
         Get.back();
         driverState.value = DriverState.goingToPickUp;
@@ -638,6 +651,8 @@ class HomeController extends GetxController {
       Get.back();
       if (response.status == 200) {
         if (response.status == 200) {
+          startLocationLatMarker = 0.0;
+          startLocationLatMarker = 0.0;
           if (type == RideStatus.reachedPickUp) {
             ChangeRideStatusModel response = await ApiServices.changeRideStatus(
                 body: {

@@ -5,16 +5,12 @@ import 'package:waiver_driver/backend/model/reason_for_cancel/reason_for_cancel_
 import 'package:waiver_driver/backend/parser/ReasonForCancel/reason_for_cancel_parser.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
-
-
-
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/constants/enums/enums.dart';
 import '../../core/constants/get_storage_constants.dart';
 import '../../helper/router/app_routes/app_routes.dart';
 
 import '../home/home_controller.dart';
-
 
 // class ReasonForCancelControllerBinding extends Bindings {
 //   @override
@@ -25,9 +21,8 @@ import '../home/home_controller.dart';
 
 class ReasonForCancelController extends GetxController {
   static ReasonForCancelController get to => Get.find();
-   ReasonForCancelParser parser;
+  ReasonForCancelParser parser;
   ReasonForCancelController({required this.parser});
-  
 
   @override
   Future<void> onInit() async {
@@ -77,6 +72,8 @@ class ReasonForCancelController extends GetxController {
         },
       );
       if (response.status == 200) {
+        HomeController.to.startLocationLatMarker = 0.0;
+        HomeController.to.startLocationLongMarker = 0.0;
         HomeController.to.driverState.value = DriverState.idle;
         Get.until((route) => route.settings.name == AppRoutes.home);
       }

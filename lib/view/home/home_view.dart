@@ -424,13 +424,25 @@ class HomeScreen extends StatelessWidget {
                         myLocationButtonEnabled: true,
                         markers: {
                           Marker(
-                              markerId: const MarkerId("1"),
+                            markerId: const MarkerId("1"),
+                            position: LatLng(
+                              controller.currentPosition.value?.latitude ?? 0.0,
+                              controller.currentPosition.value?.longitude ??
+                                  0.0,
+                            ),
+                          ),
+                          if (controller.startLocationLatMarker != null &&
+                              controller.startLocationLongMarker != null &&
+                              controller.startLocationLatMarker != 0.0 &&
+                              controller.startLocationLongMarker != 0.0)
+                            Marker(
+                              icon: BitmapDescriptor.defaultMarker,
+                              markerId: const MarkerId("2"),
                               position: LatLng(
-                                controller.currentPosition.value?.latitude ??
-                                    0.0,
-                                controller.currentPosition.value?.longitude ??
-                                    0,
-                              )),
+                                controller.startLocationLatMarker!.toDouble(),
+                                controller.startLocationLongMarker!.toDouble(),
+                              ),
+                            ),
                         },
                         onCameraIdle: () async => controller
                                 .pickUpLocation1?.name.value =
