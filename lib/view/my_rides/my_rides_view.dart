@@ -11,7 +11,6 @@ import 'package:waiver_driver/core/widgets/empty_page/empty_page.dart';
 import 'package:waiver_driver/core/widgets/error_page/error_page.dart';
 import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 
-
 import '../loading_animation/loading_animation.dart';
 
 class MyRidesScreen extends StatelessWidget {
@@ -114,7 +113,7 @@ class MyRidesListingItem extends StatelessWidget {
                       height: 15.sp,
                     ),
                   ),
-                  text: ride.amount ?? "",
+                  text: ride.amount.toString() ?? "",
                 ),
               ],
             ),

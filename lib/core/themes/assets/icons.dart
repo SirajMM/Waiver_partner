@@ -2,6 +2,7 @@ class AppIcons {
   ///svg=======================================================================>
 
   static String appLogo = "assets/icons/app_logo.svg";
+  static String appIcon = "assets/icons/app_icon.png";
   static String waiverText = "assets/icons/waiver_text.svg";
   static String fromDriverify = "assets/icons/from_driverify.png";
   static String google = "assets/icons/google.svg";

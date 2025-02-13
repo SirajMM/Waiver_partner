@@ -12,6 +12,8 @@ import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 
 import 'package:waiver_driver/main.dart';
 
+import '../../../core/themes/assets/icons.dart';
+
 class NotificationService {
   static Future<void> onInit() async {
     await AwesomeNotifications().initialize(
@@ -127,6 +129,7 @@ class NotificationService {
       content: NotificationContent(
           notificationLayout: NotificationLayout.BigPicture,
           // icon: "assets/icons/app_icon.png",
+          // icon: AppIcons.appIcon,
           id: Random().nextInt(100000000),
           backgroundColor: AppColors.white,
           channelKey: "basic_notification_channel",
