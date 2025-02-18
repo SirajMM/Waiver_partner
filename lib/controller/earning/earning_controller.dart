@@ -38,12 +38,12 @@ class EarningController extends GetxController
 
       curve = CurvedAnimation(parent: controller, curve: Curves.easeOut);
       animation = Tween(begin: 0.0, end: 0.0).animate(curve);
-      await Future.wait([
-        getEarningStatusWeekly(),
-        getEarnings(),
-        getEarningsWeekly(),
-        getEarningStatusToday()
-      ]);
+      // await Future.wait([
+      getEarningStatusWeekly();
+      getEarnings();
+      getEarningsWeekly();
+      getEarningStatusToday();
+      // ]);
       isError.value = false;
     } catch (error) {
       log(error.toString());

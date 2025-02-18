@@ -529,7 +529,7 @@ class EarningSummaryWeekly extends StatelessWidget {
               ),
               GetX<EarningController>(builder: (controller) {
                 return Text(
-                  "₹ ${controller.weeklyPayment.value}",
+                  "₹ ${controller.weeklyPayment.value ?? 0.0}",
                   style:
                       TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
                 );
@@ -628,23 +628,23 @@ class EarningSummaryToday extends StatelessWidget {
             children: [
               DetailsItemView(
                 text: "Trip Fare",
-                value: "₹ ${controller.todayTripFare}",
+                value: "₹ ${controller.todayTripFare ?? 0.0}",
               ),
               DetailsItemView(
                 text: "Waiver Charge",
-                value: "- ₹ ${controller.todayWaiverCharge}",
+                value: "- ₹ ${controller.todayWaiverCharge ?? 0.0}",
               ),
               DetailsItemView(
                 text: "Tax",
-                value: "- ₹ ${controller.todayWaiverCharge}",
+                value: "- ₹ ${controller.todayTax ?? 0.0}",
               ),
               DetailsItemView(
                 text: "Incentives",
-                value: "- ₹ ${controller.todayIncentives}",
+                value: "- ₹ ${controller.todayIncentives ?? 0.0}",
               ),
               DetailsItemView(
                 text: "Refer Earnings",
-                value: "₹ ${controller.todayReferEarnings}",
+                value: "₹ ${controller.todayReferEarnings ?? 0.0}",
               ),
               SizedBox(
                 height: 10.sp,
@@ -665,7 +665,7 @@ class EarningSummaryToday extends StatelessWidget {
                 style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
               ),
               Text(
-                "₹ ${controller.todayPayment}",
+                "₹ ${controller.todayPayment ?? 0.0}",
                 style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
               ),
             ],

@@ -88,12 +88,20 @@ class Earnings {
   });
 
   factory Earnings.fromJson(Map<String, dynamic> json) => Earnings(
-        rideFare: double.tryParse(json["ride_fare"]) ?? 0.0,
-        waiverCharge: double.tryParse(json["waiver_charge"]) ?? 0.0,
-        tax: double.tryParse(json["tax"]) ?? 0.0,
-        incentives: double.tryParse(json["incentives"]) ?? 0.0,
-        referrals: double.tryParse(json["referrals"]) ?? 0.0,
-        total: double.tryParse(json["total"]) ?? 0.0,
+        rideFare: (json["ride_fare"] is num)
+            ? (json["ride_fare"] as num).toDouble()
+            : 0.0,
+        waiverCharge: (json["waiver_charge"] is num)
+            ? (json["waiver_charge"] as num).toDouble()
+            : 0.0,
+        tax: (json["tax"] is num) ? (json["tax"] as num).toDouble() : 0.0,
+        incentives: (json["incentives"] is num)
+            ? (json["incentives"] as num).toDouble()
+            : 0.0,
+        referrals: (json["referrals"] is num)
+            ? (json["referrals"] as num).toDouble()
+            : 0.0,
+        total: (json["total"] is num) ? (json["total"] as num).toDouble() : 0.0,
         earningsByDay: json["earnings_by_day"] == null
             ? []
             : List<EarningsByDay>.from(
@@ -124,7 +132,7 @@ class EarningsByDay {
 
   factory EarningsByDay.fromJson(Map<String, dynamic> json) => EarningsByDay(
         day: json["day"] == null ? null : DateTime.parse(json["day"]),
-        total: double.tryParse(json["total"]) ?? 0.0,
+        total: (json["total"] is num) ? (json["total"] as num).toDouble() : 0.0,
       );
 
   Map<String, dynamic> toJson() => {
@@ -155,9 +163,15 @@ class Rides {
   });
 
   factory Rides.fromJson(Map<String, dynamic> json) => Rides(
-        totalRides: double.tryParse(json["total_rides"]) ?? 0.0,
-        totalDistance: double.tryParse(json["total_distance"]) ?? 0.0,
-        totalDuration: double.tryParse(json["total_duration"]) ?? 0.0,
+        totalRides: (json["total_rides"] is num)
+            ? (json["total_rides"] as num).toDouble()
+            : 0.0,
+        totalDistance: (json["total_distance"] is num)
+            ? (json["total_distance"] as num).toDouble()
+            : 0.0,
+        totalDuration: (json["total_duration"] is num)
+            ? (json["total_duration"] as num).toDouble()
+            : 0.0,
       );
 
   Map<String, dynamic> toJson() => {
@@ -180,7 +194,7 @@ String getEarningListResponseModelToJson(GetEarningListResponseModel data) =>
     json.encode(data.toJson());
 
 class GetEarningListResponseModel {
-  String? status;
+  int? status;
   String? message;
   Data? data;
 

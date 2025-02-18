@@ -78,7 +78,7 @@ class Ride {
   int? duration;
   String? distance;
   String? rideType;
-  double? amount;
+  String? amount;
   String? endLocation;
   String? startLocation;
   bool? isPaid;

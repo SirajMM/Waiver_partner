@@ -7,6 +7,7 @@ class AppUrls {
   // static String base = "waiver-api.ajmalk.com";
   // static String base = "165.22.221.172";
   static String base = "api.waiverapp.in";
+  // static String base = "165.22.221.172:8000";
 
   static String baseUrlForImage = "https://waiver-api.ajmalk.com";
   static String googleLocationUrl =
