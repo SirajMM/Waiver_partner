@@ -23,7 +23,9 @@
         android:name="${applicationName}"
         android:exported="false"
         android:foregroundServiceType="location"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/launcher_icon"
+         android:usesCleartextTraffic="true"    
+        >
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/launcher_icon" />

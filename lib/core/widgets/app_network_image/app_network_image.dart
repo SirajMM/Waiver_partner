@@ -5,6 +5,7 @@ import 'package:waiver_driver/core/themes/assets/icons.dart';
 
 import '../../../backend/api/api_services/urls.dart';
 import '../../colors/app_colors.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class AppNetworkImage extends StatelessWidget {
   final String imageUrl;
@@ -29,9 +30,16 @@ class AppNetworkImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(radius ?? 0),
+      // child: CachedNetworkImage(
+      //   imageUrl: imageUrl,
+      //   placeholder: (context, url) => CircularProgressIndicator(),
+      //   errorWidget: (context, url, error) => Icon(Icons.error),
+      // ),
       child: Image.network(
         dontUseBaseUrl ?? false
             ? imageUrl
+            // ? "https://api.waiverapp.in/media/uploads/image_cropper_1740444298745.jpg"
+            // ? "https://images.unsplash.com/photo-1708616748538-bdd66d6a9e25?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
             : "${AppUrls.baseUrlForImage}$imageUrl",
         // "https://images.unsplash.com/photo-1708616748538-bdd66d6a9e25?q=80&w=2787&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         errorBuilder:

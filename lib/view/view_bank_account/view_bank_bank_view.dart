@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,6 +38,7 @@ class ViewBankAccountScreen extends StatelessWidget {
                           placeHolder: 'Select',
                           itemList: ViewBankAccountController.to.banks,
                           onChange: (Banks? bank) {
+                            log(bank.toString());
                             ViewBankAccountController.to.selectedBank = bank;
                           },
                           value: ViewBankAccountController.to.selectedBank,

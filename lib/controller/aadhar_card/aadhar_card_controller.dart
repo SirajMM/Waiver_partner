@@ -67,11 +67,12 @@ class AadharCardController extends GetxController {
   RxList<FileElement> imageList = <FileElement>[].obs;
   TextEditingController userResponseToRejection = TextEditingController();
   Rx<ApprovalStatus?> status = Rx<ApprovalStatus?>(null);
-
+  Rx<String?> imagePathShow = Rx<String?>(null);
   RxBool showErrorMessage = false.obs;
   RxString errorMessage = "".obs;
   uploadPhoto({required ImageSource source}) async {
     XFile? imageFile = await ImagePicker().pickImage(source: source);
+
     if (imageFile != null) {
       CroppedFile? cropperImage = await ImageCropper().cropImage(
         sourcePath: imageFile.path,
@@ -98,6 +99,7 @@ class AadharCardController extends GetxController {
       UploadFileResponseModel response =
           await ApiServices.uploadFile(files: file, fields: fields);
       String imagePath = response.data?.file ?? "";
+      imagePathShow.value = imagePath;
       imageList.insert(0, FileElement(file: imagePath));
     }
     Get.back();

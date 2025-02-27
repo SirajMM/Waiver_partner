@@ -87,7 +87,7 @@ class AadharCardScreen extends StatelessWidget {
                                               width: 270.sp,
                                               placeHolder: "Add Proof",
                                               isRectangle: true,
-                                              image: "",
+                                              image:  "",
                                               onTap: (ImageSource source) =>
                                                   controller.uploadPhoto(
                                                       source: source))
