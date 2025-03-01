@@ -19,6 +19,7 @@ import 'package:geolocator_android/geolocator_android.dart'
     as geolocator_android;
 
 import 'package:upgrader/upgrader.dart';
+import 'package:waiver_driver/backend/call_funtionality.dart';
 import 'package:waiver_driver/core/themes/app_theme.dart';
 import 'package:waiver_driver/core/themes/assets/audio.dart';
 import 'package:waiver_driver/firebase_options.dart';
@@ -26,11 +27,12 @@ import 'package:waiver_driver/helper/init/init.dart';
 import 'package:waiver_driver/helper/router/app_pages/app_pages.dart';
 import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
-
+import 'package:uuid/uuid.dart';
 import 'backend/model/home/home_model.dart';
 import 'backend/notificaton_services/notification_service/notification_service.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await MainBinding().dependencies();
   OrderDetailsModel data = OrderDetailsModel.fromJson(message.data);
   final player = AudioPlayer();
   if (data.rideStatus == "RED") {
@@ -41,6 +43,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 
   NotificationService.showNotification(notification: message);
+  CallFunctionality().listenCallEvents();
+  CallFunctionality().showCallkitIncoming(const Uuid().v4(), message);
 }
 
 void main() async {

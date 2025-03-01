@@ -137,5 +137,5 @@ class NotificationService {
           body: notification.notification?.body ?? "",
           autoDismissible: true),
     );
-  }
+  } 
 }
