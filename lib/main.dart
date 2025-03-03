@@ -64,8 +64,8 @@ void main() async {
   FirebaseMessaging.onMessageOpenedApp.listen((message) =>
       NotificationService.onMessageOpenedApp(notification: message));
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await MainBinding().dependencies();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   HttpOverrides.global = MyHttpOverrides();
   runApp(MyApp());
 }

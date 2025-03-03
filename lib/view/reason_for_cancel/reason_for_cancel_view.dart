@@ -51,10 +51,13 @@ class ReasonForCancelScreen extends StatelessWidget {
                     SizedBox(
                       height: 30.sp,
                     ),
-                    BlueButton(
-                      width: 250.sp,
-                      text: "Cancel Ride",
-                      onTap: () => ReasonForCancelController.to.cancelRide(),
+                    Padding(
+                      padding: const EdgeInsets.all(18.0),
+                      child: BlueButton(
+                        width: 150.sp,
+                        text: "Cancel Ride",
+                        onTap: () => ReasonForCancelController.to.cancelRide(),
+                      ),
                     )
                   ],
                 );

@@ -953,8 +953,8 @@ class ApiServices {
       Uri.https(AppUrls.base, AppUrls.rideCancelReasons),
       headers: {"Authorization": getToken()},
     );
-    log("${Uri.https(AppUrls.base, AppUrls.rideOrderDetails)}===============>${response.statusCode}");
-    log("${Uri.https(AppUrls.base, AppUrls.rideOrderDetails)}===============>${response.body}");
+    log("${Uri.https(AppUrls.base, AppUrls.rideCancelReasons)}===============>${response.statusCode}");
+    log("${Uri.https(AppUrls.base, AppUrls.rideCancelReasons)}===============>${response.body}");
     if (response.statusCode == 200) {
       return ReasonForCancelModel.fromJson(jsonDecode(response.body));
     } else {

@@ -148,7 +148,7 @@ class TypeOfServicesListing extends StatelessWidget {
           tag: UserType.chauffeur,
           child: Material(
             child: BlueOnlyButton(
-              text: "Call Driver",
+              text: "Chauffeur",
               onTap: () async {
                 box.write(BoxKeys.userTypeCode, UserTypeCode.chauffeur);
                 // Get.toNamed(AppRoutes.signIn, arguments: UserType.chauffeur);
@@ -159,27 +159,27 @@ class TypeOfServicesListing extends StatelessWidget {
           ),
         ),
         SizedBox(height: 14.sp),
-        // Hero(
-        //   tag: UserType.fleet,
-        //   child: BlueOnlyButton(
-        //     text: "Taxi Owner",
-        //     onTap: () {
-        //       box.write(BoxKeys.userTypeCode, UserTypeCode.fleet);
-        //       Get.toNamed(AppRoutes.signIn, arguments: UserType.fleet);
-        //     },
-        //   ),
-        // ),
-        // SizedBox(height: 14.sp),
-        // Hero(
-        //   tag: UserType.driver,
-        //   child: BlueOnlyButton(
-        //     text: "Taxi Driver",
-        //     onTap: () {
-        //       box.write(BoxKeys.userTypeCode, UserTypeCode.driver);
-        //       Get.toNamed(AppRoutes.signIn, arguments: UserType.driver);
-        //     },
-        //   ),
-        // )
+        Hero(
+          tag: UserType.fleet,
+          child: BlueOnlyButton(
+            text: "Fleet",
+            onTap: () {
+              box.write(BoxKeys.userTypeCode, UserTypeCode.fleet);
+              Get.toNamed(AppRoutes.signIn, arguments: UserType.fleet);
+            },
+          ),
+        ),
+        SizedBox(height: 14.sp),
+        Hero(
+          tag: UserType.driver,
+          child: BlueOnlyButton(
+            text: "Driver",
+            onTap: () {
+              box.write(BoxKeys.userTypeCode, UserTypeCode.driver);
+              Get.toNamed(AppRoutes.signIn, arguments: UserType.driver);
+            },
+          ),
+        )
       ],
     );
   }

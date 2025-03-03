@@ -8,7 +8,6 @@ import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
 import '../../core/colors/app_colors.dart';
 
-
 class PreferencesScreen extends StatelessWidget {
   const PreferencesScreen({Key? key}) : super(key: key);
 
@@ -103,7 +102,7 @@ class PreferencesScreen extends StatelessWidget {
                         ),
                         SizedBox(height: 14.sp),
                         PreferenceListingItem(
-                          text: "Allow push notification",
+                          text: "Picture in Picture (PIP)",
                           value: PreferencesController
                               .to.allowPictureInPictureAccess,
                           onTap: () => PreferencesController.to
