@@ -9,13 +9,19 @@ import 'package:waiver_driver/controller/home/home_controller.dart';
 import 'package:waiver_driver/core/colors/app_colors.dart';
 import 'package:waiver_driver/core/constants/enums/enums.dart';
 import 'package:waiver_driver/core/constants/get_storage_constants.dart';
+import 'package:waiver_driver/helper/init/init.dart';
 
 import 'package:waiver_driver/main.dart';
 
 import '../../../core/themes/assets/icons.dart';
 
 class NotificationService {
+  NotificationService() {
+    final homeController = Get.find<HomeController>();
+  }
   static Future<void> onInit() async {
+    Get.find<HomeController>();
+    await MainBinding().dependencies();
     await AwesomeNotifications().initialize(
         null,
         [
@@ -130,6 +136,7 @@ class NotificationService {
           notificationLayout: NotificationLayout.BigPicture,
           // icon: "assets/icons/app_icon.png",
           // icon: AppIcons.appIcon,
+          icon: "resource://drawable/launcher_icon",
           id: Random().nextInt(100000000),
           backgroundColor: AppColors.white,
           channelKey: "basic_notification_channel",
@@ -137,5 +144,5 @@ class NotificationService {
           body: notification.notification?.body ?? "",
           autoDismissible: true),
     );
-  } 
+  }
 }

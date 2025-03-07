@@ -189,6 +189,7 @@ class ApiServices {
   }
 
   static Future<GetTransmissionTypeResponseModel> getTransmissionTypes() async {
+    log(getToken());
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.transmissionTypes),
       headers: {

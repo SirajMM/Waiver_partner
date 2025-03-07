@@ -418,7 +418,8 @@ class HomeScreen extends StatelessWidget {
                     height: Get.height,
                     child: GetX<HomeController>(builder: (controller) {
                       return GoogleMap(
-                        padding: EdgeInsets.only(bottom: 70, top: 720),
+                        padding: EdgeInsets.only(
+                            bottom: 90.sp, top: 600.sp, right: 10.sp),
                         mapType: MapType.normal,
                         myLocationEnabled: true,
                         myLocationButtonEnabled: true,
@@ -451,7 +452,7 @@ class HomeScreen extends StatelessWidget {
                                 controller.currentPosition.value?.longitude ??
                                     0.0),
                         initialCameraPosition: CameraPosition(
-                          target: LatLng(
+                          target: LatLng( 
                             controller.currentPosition.value?.latitude ?? 0,
                             controller.currentPosition.value?.longitude ?? 0,
                           ),

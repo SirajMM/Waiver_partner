@@ -33,6 +33,7 @@ import 'backend/notificaton_services/notification_service/notification_service.d
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await MainBinding().dependencies();
+    NotificationService.onInit();
   OrderDetailsModel data = OrderDetailsModel.fromJson(message.data);
   final player = AudioPlayer();
   if (data.rideStatus == "RED") {
@@ -43,8 +44,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
 
   NotificationService.showNotification(notification: message);
-  CallFunctionality().listenCallEvents();
-  CallFunctionality().showCallkitIncoming(const Uuid().v4(), message);
+  // CallFunctionality().listenCallEvents();
+  // CallFunctionality().showCallkitIncoming(const Uuid().v4(), message);
 }
 
 void main() async {

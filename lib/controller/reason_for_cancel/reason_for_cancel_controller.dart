@@ -6,6 +6,7 @@ import 'package:waiver_driver/backend/parser/ReasonForCancel/reason_for_cancel_p
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
 import '../../backend/api/api_services/api_services.dart';
+import '../../backend/api/api_services/urls.dart';
 import '../../core/constants/enums/enums.dart';
 import '../../core/constants/get_storage_constants.dart';
 import '../../helper/router/app_routes/app_routes.dart';
@@ -21,12 +22,14 @@ import '../home/home_controller.dart';
 
 class ReasonForCancelController extends GetxController {
   static ReasonForCancelController get to => Get.find();
+  // fGet.put(ApiServices())" or "Get.lazyPut(()=>ApiServices())
   ReasonForCancelParser parser;
   ReasonForCancelController({required this.parser});
 
   @override
   Future<void> onInit() async {
     super.onInit();
+    Get.put(ApiServices(appBaseUrl: AppUrls.base));
 
     try {
       isLoading.value = true;

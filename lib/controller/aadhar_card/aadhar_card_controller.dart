@@ -77,8 +77,15 @@ class AadharCardController extends GetxController {
       CroppedFile? cropperImage = await ImageCropper().cropImage(
         sourcePath: imageFile.path,
         aspectRatio: aspectRatio,
+        // Add padding here
+
+        compressQuality: 100,
+        maxWidth: 800,
+        maxHeight: 800,
+        // Specific UI settings for Android
         uiSettings: [
           AndroidUiSettings(
+            cropStyle: CropStyle.rectangle,
             toolbarTitle: '',
             hideBottomControls: true,
             lockAspectRatio: true,
@@ -86,9 +93,19 @@ class AadharCardController extends GetxController {
             toolbarColor: AppColors.black,
             toolbarWidgetColor: AppColors.white,
             initAspectRatio: CropAspectRatioPreset.original,
+            // Add padding specific settings
+            cropFrameColor: AppColors.white,
+            cropFrameStrokeWidth: 5,
+            aspectRatioPresets: [
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.square,
+              CropAspectRatioPreset.ratio4x3,
+              CropAspectRatioPresetCustom(),
+            ],
           ),
           IOSUiSettings(
             title: 'Cropper',
+            // iOS-specific padding can be added similarly if needed
           ),
         ],
       );
@@ -154,4 +171,12 @@ class AadharCardController extends GetxController {
       }
     }
   }
+}
+
+class CropAspectRatioPresetCustom implements CropAspectRatioPresetData {
+  @override
+  (int, int)? get data => (2, 3);
+
+  @override
+  String get name => '2x3 (customized)';
 }

@@ -92,6 +92,7 @@ class SettingController extends GetxController {
     try {
       var response = await ApiServices.deleteAccount(body: {});
       if (response.status == 200) {
+        await FirebaseMessaging.instance.deleteToken();
         Get.offAndToNamed(AppRoutes.driverTypeSelection);
         await box.erase();
       } else {

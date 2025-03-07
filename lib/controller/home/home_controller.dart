@@ -38,6 +38,7 @@ class HomeController extends GetxController {
   HomeController({required this.parser});
 
   static HomeController get to => Get.find();
+  @override
   void onInit() async {
     super.onInit();
 
@@ -79,6 +80,13 @@ class HomeController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    changeDriverOnlineStatus();
   }
 
   final player = AudioPlayer();

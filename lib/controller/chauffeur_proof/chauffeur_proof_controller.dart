@@ -237,7 +237,7 @@ class ChauffeurProofController extends GetxController {
             padding: EdgeInsets.zero,
             messageText: AppSnackBar(
               text:
-                  "All documents  must be uploaded and approved before you can proceed, Please wait",
+                  " The document must be verified by Authority Please wait for approval, Thank you",
             ),
           ),
         );
