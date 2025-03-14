@@ -31,21 +31,32 @@ import 'package:uuid/uuid.dart';
 import 'backend/model/home/home_model.dart';
 import 'backend/notificaton_services/notification_service/notification_service.dart';
 
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await MainBinding().dependencies();
-    NotificationService.onInit();
-  OrderDetailsModel data = OrderDetailsModel.fromJson(message.data);
-  final player = AudioPlayer();
-  if (data.rideStatus == "RED") {
-    player.play(AssetSource(AppAudio.notification));
-  }
   WidgetsFlutterBinding.ensureInitialized();
-
   await Firebase.initializeApp();
 
-  NotificationService.showNotification(notification: message);
-  // CallFunctionality().listenCallEvents();
-  // CallFunctionality().showCallkitIncoming(const Uuid().v4(), message);
+  print("Background handler triggered!");
+  print("Message data: ${message.data}");
+
+  await MainBinding().dependencies();
+  await NotificationService.onInit();
+  CallFunctionality.onInit();
+
+  OrderDetailsModel data = OrderDetailsModel.fromJson(message.data);
+
+  // Use a single player instance to avoid multiple instances
+  final AudioPlayer player = AudioPlayer();
+
+  if (data.rideStatus == "RED") {
+    await player.play(AssetSource(AppAudio.notification));
+  }
+
+  await NotificationService.showNotification(data: data);
+
+  final CallFunctionality callFunctionality = CallFunctionality();
+  callFunctionality.listenCallEvents();
+  callFunctionality.showCallkitIncoming(const Uuid().v4(), message);
 }
 
 void main() async {
@@ -54,21 +65,28 @@ void main() async {
   await GetStorage.init();
   await Hive.initFlutter();
 
-  NotificationService.onInit();
+  // Initialize Firebase before setting up message handlers
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // await Firebase.initializeApp();
+
+  // Register background handler before other Firebase setup
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  // Initialize notification service
+  await NotificationService.onInit();
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
+  // Set up foreground message handlers
   FirebaseMessaging.onMessage.listen(
       (message) => NotificationService.onMessage(notification: message));
 
   FirebaseMessaging.onMessageOpenedApp.listen((message) =>
       NotificationService.onMessageOpenedApp(notification: message));
 
+  // Initialize dependencies
   await MainBinding().dependencies();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   HttpOverrides.global = MyHttpOverrides();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

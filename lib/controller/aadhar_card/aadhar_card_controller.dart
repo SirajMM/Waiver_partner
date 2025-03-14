@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -70,18 +72,23 @@ class AadharCardController extends GetxController {
   Rx<String?> imagePathShow = Rx<String?>(null);
   RxBool showErrorMessage = false.obs;
   RxString errorMessage = "".obs;
+
   uploadPhoto({required ImageSource source}) async {
     XFile? imageFile = await ImagePicker().pickImage(source: source);
 
     if (imageFile != null) {
+      final File file1 = File(imageFile.path);
+      final int fileSize = await file1.length();
+      print("******************* File size before cropping: ${fileSize} bytes");
       CroppedFile? cropperImage = await ImageCropper().cropImage(
         sourcePath: imageFile.path,
         aspectRatio: aspectRatio,
+
         // Add padding here
 
-        compressQuality: 100,
-        maxWidth: 800,
-        maxHeight: 800,
+        compressQuality: 50,
+        maxWidth: 300,
+        maxHeight: 300,
         // Specific UI settings for Android
         uiSettings: [
           AndroidUiSettings(
@@ -113,11 +120,48 @@ class AadharCardController extends GetxController {
         "file",
         cropperImage?.path ?? "",
       );
-      UploadFileResponseModel response =
-          await ApiServices.uploadFile(files: file, fields: fields);
-      String imagePath = response.data?.file ?? "";
-      imagePathShow.value = imagePath;
-      imageList.insert(0, FileElement(file: imagePath));
+      // UploadFileResponseModel response =
+      //     await ApiServices.uploadFile(files: file, fields: fields);
+      // String imagePath = response.data?.file ?? "";
+      // imagePathShow.value = imagePath;
+      // imageList.insert(0, FileElement(file: imagePath));
+      final File file2 = File(cropperImage!.path);
+      final int fileSize1 = await file1.length();
+      print("******************* File size After cropping: ${fileSize} bytes");
+      try {
+        // Attempt to upload the file
+        UploadFileResponseModel response =
+            await ApiServices.uploadFile(files: file, fields: fields);
+
+        // Check if response contains valid data
+        if (response.data != null) {
+          String imagePath = response.data?.file ?? "";
+          imagePathShow.value = imagePath;
+          imageList.insert(0, FileElement(file: imagePath));
+        } else {
+          // Handle case where response doesn't contain expected data
+          print("Upload successful but no file data returned");
+          throw Exception("No file data in response");
+        }
+      } catch (uploadError) {
+        // Log the error for debugging
+        print("Error during file upload process: $uploadError");
+
+        // Handle the error appropriately
+        // You could show a user-friendly message
+        Future.delayed(Duration(milliseconds: 100), () {
+          Get.snackbar(
+            "Upload Failed",
+            "Unable to upload image facing Some issues . Please try again later.",
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: AppColors.red176,
+            colorText: AppColors.white,
+          );
+        });
+
+        // Optionally rethrow or handle differently based on your app's needs
+        // rethrow;
+      }
     }
     Get.back();
   }

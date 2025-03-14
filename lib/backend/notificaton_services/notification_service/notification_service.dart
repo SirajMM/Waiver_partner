@@ -20,7 +20,7 @@ class NotificationService {
     final homeController = Get.find<HomeController>();
   }
   static Future<void> onInit() async {
-    Get.find<HomeController>();
+    // Get.find<HomeController>();
     await MainBinding().dependencies();
     await AwesomeNotifications().initialize(
         null,
@@ -45,7 +45,7 @@ class NotificationService {
         debug: true);
 
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    if (isAllowed) {
+    if (!isAllowed) {
       await AwesomeNotifications().requestPermissionToSendNotifications();
     }
     await AwesomeNotifications().setListeners(
@@ -70,11 +70,13 @@ class NotificationService {
       {required RemoteMessage notification}) {}
 
   static onMessage({required RemoteMessage notification}) async {
-    await showNotification(notification: notification);
     OrderDetailsModel data = OrderDetailsModel.fromJson(notification.data);
+    await showNotification(data: data);
     HomeController.to.driverState.value = DriverState.loading;
     print("notification.data");
     print(notification.data ?? "No message");
+    print(notification.notification?.body);
+    print(notification.notification?.title);
     box.write(BoxKeys.paymentType, data.paymentType);
     print("***********************${data.rideStatus}");
     if (data.rideStatus == "RED") {
@@ -102,9 +104,12 @@ class NotificationService {
   }
 
   static onMessageOpenedApp({required RemoteMessage notification}) async {
-    showNotification(notification: notification);
     OrderDetailsModel data = OrderDetailsModel.fromJson(notification.data);
+    showNotification(data: data);
+    print(
+        "############################notification.data#################################");
     print(notification.data);
+    print(notification.notification);
     if (data.rideStatus == "RED") {
       HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
     } else if (data.rideStatus == RideStatus.cancelled) {
@@ -130,18 +135,18 @@ class NotificationService {
   }
 
   static Future<void> showNotification(
-      {required RemoteMessage notification}) async {
+      {required OrderDetailsModel data}) async {
     AwesomeNotifications().createNotification(
       content: NotificationContent(
           notificationLayout: NotificationLayout.BigPicture,
           // icon: "assets/icons/app_icon.png",
           // icon: AppIcons.appIcon,
-          icon: "resource://drawable/launcher_icon",
+          icon: "resource://drawable/ic_stat_applogo_removebg_preview",
           id: Random().nextInt(100000000),
           backgroundColor: AppColors.white,
           channelKey: "basic_notification_channel",
-          title: notification.notification?.title ?? "",
-          body: notification.notification?.body ?? "",
+          title: data.title ?? "",
+          body: data.body ?? "",
           autoDismissible: true),
     );
   }

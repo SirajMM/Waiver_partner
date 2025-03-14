@@ -39,7 +39,7 @@
 
         <meta-data
         android:name="com.google.firebase.messaging.default_notification_icon"
-        android:resource="@mipmap/launcher_icon" />
+        android:resource="@mipmap/ic_stat_applogo_removebg_preview" />
         <!-- <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/notification_color" /> -->
@@ -47,7 +47,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:get/get.dart';
 import 'package:http/http.dart' as https;
 
 import 'package:waiver_driver/backend/api/api_services/urls.dart';
@@ -23,6 +24,7 @@ import 'package:waiver_driver/backend/model/view_bank_account/view_bank_model.da
 import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 import 'package:waiver_driver/main.dart';
 
+import '../../../core/colors/app_colors.dart';
 import '../../model/aadhar_card/aadhar_card_model.dart';
 import '../../model/add_driver_fleet/add_driver_model.dart';
 import '../../model/chauffeur_proof/chauffeur_proof_model.dart';
@@ -353,8 +355,19 @@ class ApiServices {
 
       return uploadFileResponseModelFromJson(responseString);
     } else {
+      showErrorMessageBox(" file is not uploaded yet. Facing some errors");
       throw Exception(await response.stream.bytesToString());
     }
+  }
+
+  static void showErrorMessageBox(String message) {
+    Get.snackbar(
+      "Error",
+      message,
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: AppColors.red176,
+      colorText: AppColors.white,
+    );
   }
 
   static Future<UploadProfilePhotoResponseModel> profileImage(

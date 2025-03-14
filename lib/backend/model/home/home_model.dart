@@ -181,6 +181,8 @@ String orderDetailsModelToJson(OrderDetailsModel data) =>
 
 class OrderDetailsModel {
   String? startLocLat;
+  String? title;
+  String? body;
   String? rideId;
   String? endLocLat;
   String? endLoc;
@@ -194,6 +196,8 @@ class OrderDetailsModel {
 
   OrderDetailsModel(
       {this.startLocLat,
+      this.title,
+      this.body,
       this.rideId,
       this.endLocLat,
       this.endLoc,
@@ -238,6 +242,8 @@ class OrderDetailsModel {
       startLocLong: json["start_loc_long"] ?? "0.0",
       endLocLong: json["end_loc_long"] ?? "0.0",
       paymentType: json["payment_type"] ?? "",
+      title: json["title"] ?? "",
+      body: json["body"] ?? "",
     );
   }
 
@@ -253,6 +259,8 @@ class OrderDetailsModel {
         "start_loc_long": startLocLong,
         "end_loc_long": endLocLong,
         "payment_type": paymentType,
+        "title": title,
+        "body": body,
       };
 }
 
