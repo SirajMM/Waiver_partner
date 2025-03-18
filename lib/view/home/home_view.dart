@@ -23,7 +23,7 @@ import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 import '../left_menu_driver/left_menu_driver_view.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -410,7 +410,6 @@ class HomeScreen extends StatelessWidget {
                             height: 200.sp,
                           ),
                         );
-                        break;
                     }
                   }),
                   body: SizedBox(
@@ -452,7 +451,7 @@ class HomeScreen extends StatelessWidget {
                                 controller.currentPosition.value?.longitude ??
                                     0.0),
                         initialCameraPosition: CameraPosition(
-                          target: LatLng( 
+                          target: LatLng(
                             controller.currentPosition.value?.latitude ?? 0,
                             controller.currentPosition.value?.longitude ?? 0,
                           ),
@@ -1382,8 +1381,8 @@ class DashBoardItem extends StatelessWidget {
 
 class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HomePageAppBar({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

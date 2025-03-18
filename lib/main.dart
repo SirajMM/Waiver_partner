@@ -1,4 +1,7 @@
+import 'dart:developer';
 import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,16 +23,48 @@ import 'package:geolocator_android/geolocator_android.dart'
 
 import 'package:upgrader/upgrader.dart';
 import 'package:waiver_driver/backend/call_funtionality.dart';
+import 'package:waiver_driver/controller/home/home_controller.dart';
 import 'package:waiver_driver/core/themes/app_theme.dart';
 import 'package:waiver_driver/core/themes/assets/audio.dart';
 import 'package:waiver_driver/firebase_options.dart';
 import 'package:waiver_driver/helper/init/init.dart';
-import 'package:waiver_driver/helper/router/app_pages/app_pages.dart';
-import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
+
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:uuid/uuid.dart';
 import 'backend/model/home/home_model.dart';
 import 'backend/notificaton_services/notification_service/notification_service.dart';
+
+@pragma('vm:entry-point')
+ReceivePort? _receivePort;
+@pragma('vm:entry-point')
+void startReceivePort() {
+  IsolateNameServer.removePortNameMapping('main_send_port');
+  _receivePort ??= ReceivePort();
+  IsolateNameServer.registerPortWithName(
+      _receivePort!.sendPort, 'main_send_port');
+
+  _receivePort!.listen((message) async {
+    if (message is Map<String, dynamic>) {
+      log('Received message: $message');
+
+      try {
+        if (message['title'] == 'accepted') {
+          CallFunctionality().onCallAccepted(
+            message['callId'],
+            message['rideId'],
+            message['rideStatus'],
+            message['paymentType'],
+          );
+        } else if (message['title'] == 'cancelled') {
+          HomeController.to.rideId = message['rideId'];
+          HomeController.to.orderTimeOut();
+        }
+      } catch (e) {
+        log('Error processing message: $e');
+      }
+    }
+  });
+}
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -39,8 +74,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Background handler triggered!");
   print("Message data: ${message.data}");
 
-  await MainBinding().dependencies();
-  await NotificationService.onInit();
+  // await MainBinding().dependencies();
+  // await NotificationService.onInit();
   CallFunctionality.onInit();
 
   OrderDetailsModel data = OrderDetailsModel.fromJson(message.data);
@@ -82,7 +117,7 @@ void main() async {
 
   FirebaseMessaging.onMessageOpenedApp.listen((message) =>
       NotificationService.onMessageOpenedApp(notification: message));
-
+  startReceivePort();
   // Initialize dependencies
   await MainBinding().dependencies();
   HttpOverrides.global = MyHttpOverrides();

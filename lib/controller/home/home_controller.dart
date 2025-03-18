@@ -720,7 +720,7 @@ class HomeController extends GetxController {
     paymentInitiated();
   }
 
-  orderTimeOut() async {
+  Future<void> orderTimeOut() async {
     player.stop();
     ChangeRideStatusModel response = await ApiServices.changeRideStatus(body: {
       "ride_id": rideId,

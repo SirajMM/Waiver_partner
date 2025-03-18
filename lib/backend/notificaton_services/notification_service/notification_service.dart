@@ -16,9 +16,6 @@ import 'package:waiver_driver/main.dart';
 import '../../../core/themes/assets/icons.dart';
 
 class NotificationService {
-  NotificationService() {
-    final homeController = Get.find<HomeController>();
-  }
   static Future<void> onInit() async {
     // Get.find<HomeController>();
     await MainBinding().dependencies();
