@@ -43,9 +43,11 @@ class HomeController extends GetxController {
     super.onInit();
 
     _initializeHive();
+
     try {
       isLoading.value = true;
       await getDriverOnlineStatus();
+      // if (isOnline.value) {
       sendLiveLocation();
       loc.Location location = loc.Location();
 
@@ -63,6 +65,7 @@ class HomeController extends GetxController {
           headingAccuracy: 0.0,
         );
       });
+      // }
 
       pickUpLocation1 = TripsLocations(
           latitude: Rx(currentPosition.value?.latitude),

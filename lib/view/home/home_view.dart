@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:upgrader/upgrader.dart';
@@ -463,6 +465,33 @@ class HomeScreen extends StatelessWidget {
                           await controller.onMapCreate();
                         },
                       );
+                      // : GoogleMap(
+                      //     padding: EdgeInsets.only(
+                      //         bottom: 90.sp, top: 600.sp, right: 10.sp),
+                      //     mapType: MapType.normal,
+                      //     initialCameraPosition: CameraPosition(
+                      //       target: LatLng(
+                      //         9.9816,
+                      //         76.2999,
+                      //       ),
+                      //       zoom: 15,
+                      //     ),
+                      //     // Disable map gestures
+                      //     zoomControlsEnabled: false, // Hide zoom buttons
+                      //     zoomGesturesEnabled:
+                      //         false, // Disable zoom gestures
+                      //     scrollGesturesEnabled:
+                      //         false, // Disable panning/scrolling
+                      //     rotateGesturesEnabled: false, // Disable rotation
+                      //     tiltGesturesEnabled: false, // Disable tilt
+                      //     compassEnabled: false, // Hide compass
+                      //     // If you need to prevent ALL touch interactions
+                      //     gestureRecognizers: <Factory<
+                      //         OneSequenceGestureRecognizer>>{
+                      //       Factory<EagerGestureRecognizer>(
+                      //           () => EagerGestureRecognizer()),
+                      //     },
+                      //   );
                     }),
                   )),
             );
