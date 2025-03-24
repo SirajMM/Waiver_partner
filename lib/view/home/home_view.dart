@@ -439,7 +439,7 @@ class HomeScreen extends StatelessWidget {
                               controller.startLocationLongMarker != 0.0)
                             Marker(
                               icon: BitmapDescriptor.defaultMarker,
-                              markerId: const MarkerId("2"),
+                              markerId: const MarkerId("User"),
                               position: LatLng(
                                 controller.startLocationLatMarker!.toDouble(),
                                 controller.startLocationLongMarker!.toDouble(),

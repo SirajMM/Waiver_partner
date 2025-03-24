@@ -159,27 +159,27 @@ class TypeOfServicesListing extends StatelessWidget {
           ),
         ),
         SizedBox(height: 14.sp),
-        // Hero(
-        //   tag: UserType.fleet,
-        //   child: BlueOnlyButton(
-        //     text: "Fleet",
-        //     onTap: () {
-        //       box.write(BoxKeys.userTypeCode, UserTypeCode.fleet);
-        //       Get.toNamed(AppRoutes.signIn, arguments: UserType.fleet);
-        //     },
-        //   ),
-        // ),
-        // SizedBox(height: 14.sp),
-        // Hero(
-        //   tag: UserType.driver,
-        //   child: BlueOnlyButton(
-        //     text: "Driver",
-        //     onTap: () {
-        //       box.write(BoxKeys.userTypeCode, UserTypeCode.driver);
-        //       Get.toNamed(AppRoutes.signIn, arguments: UserType.driver);
-        //     },
-        //   ),
-        // )
+        Hero(
+          tag: UserType.fleet,
+          child: BlueOnlyButton(
+            text: "Fleet",
+            onTap: () {
+              box.write(BoxKeys.userTypeCode, UserTypeCode.fleet);
+              Get.toNamed(AppRoutes.signIn, arguments: UserType.fleet);
+            },
+          ),
+        ),
+        SizedBox(height: 14.sp),
+        Hero(
+          tag: UserType.driver,
+          child: BlueOnlyButton(
+            text: "Driver",
+            onTap: () {
+              box.write(BoxKeys.userTypeCode, UserTypeCode.driver);
+              Get.toNamed(AppRoutes.signIn, arguments: UserType.driver);
+            },
+          ),
+        )
       ],
     );
   }

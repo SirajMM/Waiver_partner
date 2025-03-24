@@ -122,6 +122,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -186,11 +187,28 @@ class SplashController extends GetxController implements GetxService {
         Get.offAllNamed(AppRoutes1.getgetLocationInRoute());
       }
     } else {
+      // await AppConstants.locationData?.getLocation().then((location) {
+      //   currentPosition.value = Position(
+      //     latitude: location.latitude ?? 0.0, // Default to 0.0 if null
+      //     longitude: location.longitude ?? 0.0, // Default to 0.0 if null
+      //     timestamp: DateTime.now(), // Set current timestamp
+      //     accuracy: location.accuracy ?? 0.0,
+      //     altitude: location.altitude ?? 0.0,
+      //     heading: location.heading ?? 0.0,
+      //     speed: location.speed ?? 0.0,
+      //     speedAccuracy: location.speedAccuracy ?? 0.0,
+      //     altitudeAccuracy: 0.0,
+      //     headingAccuracy: 0.0,
+      //   );
+      // });
+
+      // AppConstants.currentPosition = currentPosition.value;
       log('All permissions granted. Proceeding...');
       route(token);
     }
   }
 
+  Rx<Position?> currentPosition = Rx<Position?>(null);
   Future<void> requestLocPermission() async {
     if (!await Location().serviceEnabled()) {
       if (!await Location().requestService()) {

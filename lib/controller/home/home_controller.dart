@@ -88,8 +88,9 @@ class HomeController extends GetxController {
   @override
   void dispose() {
     // TODO: implement dispose
-    super.dispose();
     changeDriverOnlineStatus();
+    
+    super.dispose();
   }
 
   final player = AudioPlayer();
@@ -132,6 +133,7 @@ class HomeController extends GetxController {
       // If the API call is successful
       if (response.status == 200) {
         isOnline.value = !isOnline.value;
+        print("#####################${isOnline.value}#####################");
 
         // Handle background execution
         if (isOnline.value) {
@@ -270,6 +272,8 @@ class HomeController extends GetxController {
     startLocationLongMarker =
         double.parse(response.data?.startLocationLong ?? "0.0");
     print("################### passenger latitude ##########################");
+    print("################### Isonline ##########################");
+    print(isOnline.value);
     log(startLocationLat!);
     log(startLocationLong!);
     endLocationLat = double.parse(response.data?.endLocationLat ?? "0.0");

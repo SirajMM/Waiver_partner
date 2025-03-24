@@ -1,3 +1,6 @@
+import 'package:geolocator/geolocator.dart';
+import 'package:location/location.dart';
+
 class BoxKeys {
   static String userType = "userType";
   static String userTypeCode = "userTypeCode";
@@ -82,4 +85,9 @@ class RideStatus {
 class RiderStatus {
   static String save = "save";
   static String ride = "ride";
+}
+
+class AppConstants {
+  static Location? locationData;
+  static Position? currentPosition;
 }

@@ -246,7 +246,7 @@ class CallFunctionality {
     });
   }
 
-  Future<void> onCallAccepted(
+  Future<void>  onCallAccepted(
     String? callId,
     String? rideId,
     String? rideStatus,
