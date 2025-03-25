@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter_background/flutter_background.dart';
+import 'package:workmanager/workmanager.dart';
 import '../../backend/api/api_services/api_services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -37,6 +38,7 @@ import 'package:uuid/uuid.dart';
 import 'backend/model/home/home_model.dart';
 import 'backend/model/setting/setting_model.dart';
 import 'backend/notificaton_services/notification_service/notification_service.dart';
+import 'core/callbackdispatcher/callback.dart';
 
 @pragma('vm:entry-point')
 ReceivePort? _receivePort;
@@ -103,17 +105,19 @@ void main() async {
   await requestPermissions();
   await GetStorage.init();
   await Hive.initFlutter();
-  final appLifecycleObserver = AppLifecycleObserver();
-  WidgetsBinding.instance.addObserver(appLifecycleObserver);
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  await MainBinding().dependencies();
+  // final appLifecycleObserver = AppLifecycleObserver();
+  // WidgetsBinding.instance.addObserver(appLifecycleObserver);
 
-  // Check for previous unexpected termination
-  final prefs = GetStorage();
-  final appClosed = prefs.read<bool>('app_properly_closed') ?? true;
+  // // Check for previous unexpected termination
+  // final prefs = GetStorage();
+  // final appClosed = prefs.read<bool>('app_properly_closed') ?? true;
   // if (!appClosed) {
   //   // App was terminated unexpectedly
   //   appLifecycleObserver.changeDriverOnlineStatus();
   // }
-  await prefs.write('app_properly_closed', false);
+  // await prefs.write('app_properly_closed', false);
   // Initialize Firebase before setting up message handlers
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
@@ -133,7 +137,6 @@ void main() async {
       NotificationService.onMessageOpenedApp(notification: message));
   startReceivePort();
   // Initialize dependencies
-  await MainBinding().dependencies();
   HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
@@ -201,100 +204,100 @@ class MyHttpOverrides extends HttpOverrides {
   }
 }
 
-class AppLifecycleObserver extends WidgetsBindingObserver {
-  bool isOnline = false;
-  DateTime _lastActiveTime = DateTime.now();
+// class AppLifecycleObserver extends WidgetsBindingObserver {
+//   bool isOnline = false;
+//   DateTime _lastActiveTime = DateTime.now();
 
-  AppLifecycleObserver() {
-    // Check if the app was terminated unexpectedly in the previous session
-    _checkLastSession();
-  }
+//   AppLifecycleObserver() {
+//     // Check if the app was terminated unexpectedly in the previous session
+//     _checkLastSession();
+//   }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // App is in the foreground
-      _lastActiveTime = DateTime.now();
-      _updateLastActiveTime();
-    } else if (state == AppLifecycleState.paused) {
-      // App is in the background but might resume
-      _updateLastActiveTime();
-      // changeDriverOnlineStatus();
-    } else if (state == AppLifecycleState.detached) {
-      // App is being detached or becoming inactive - try to mark status as offline
-      _updateLastActiveTime();
-      changeDriverOnlineStatus();
-      _markProperlyClosedIfPossible();
-    }
-  }
+//   @override
+//   void didChangeAppLifecycleState(AppLifecycleState state) {
+//     if (state == AppLifecycleState.resumed) {
+//       // App is in the foreground
+//       _lastActiveTime = DateTime.now();
+//       _updateLastActiveTime();
+//     } else if (state == AppLifecycleState.paused) {
+//       // App is in the background but might resume
+//       _updateLastActiveTime();
+//       // changeDriverOnlineStatus();
+//     } else if (state == AppLifecycleState.detached) {
+//       // App is being detached or becoming inactive - try to mark status as offline
+//       _updateLastActiveTime();
+//       changeDriverOnlineStatus();
+//       _markProperlyClosedIfPossible();
+//     }
+//   }
 
-  Future<void> _updateLastActiveTime() async {
-    try {
-      final prefs = GetStorage();
-      await prefs.write('last_active_time', _lastActiveTime.toIso8601String());
-    } catch (e) {
-      print('Failed to update last active time: $e');
-    }
-  }
+//   Future<void> _updateLastActiveTime() async {
+//     try {
+//       final prefs = GetStorage();
+//       await prefs.write('last_active_time', _lastActiveTime.toIso8601String());
+//     } catch (e) {
+//       print('Failed to update last active time: $e');
+//     }
+//   }
 
-  Future<void> _markProperlyClosedIfPossible() async {
-    try {
-      final prefs = GetStorage();
-      await prefs.write('app_properly_closed', true);
-    } catch (e) {
-      print('Failed to mark app as properly closed: $e');
-    }
-  }
+//   Future<void> _markProperlyClosedIfPossible() async {
+//     try {
+//       final prefs = GetStorage();
+//       await prefs.write('app_properly_closed', true);
+//     } catch (e) {
+//       print('Failed to mark app as properly closed: $e');
+//     }
+//   }
 
-  Future<void> _checkLastSession() async {
-    await MainBinding().dependencies();
-    final prefs = GetStorage();
-    final lastActiveTime = prefs.read<String>('last_active_time');
-    final appClosed = prefs.read<bool>('app_properly_closed') ?? true;
+//   Future<void> _checkLastSession() async {
+//     await MainBinding().dependencies();
+//     final prefs = GetStorage();
+//     final lastActiveTime = prefs.read<String>('last_active_time');
+//     final appClosed = prefs.read<bool>('app_properly_closed') ?? true;
 
-    if (lastActiveTime != null && !appClosed) {
-      await MainBinding().dependencies();
-      // App was terminated unexpectedly in the last session
-      // Call the API to ensure driver is marked offline
+//     if (lastActiveTime != null && !appClosed) {
+//       await MainBinding().dependencies();
+//       // App was terminated unexpectedly in the last session
+//       // Call the API to ensure driver is marked offline
 
-      // await changeDriverOnlineStatus();
-    }
+//       // await changeDriverOnlineStatus();
+//     }
 
-    // Reset for this session
-    await prefs.write('app_properly_closed', false);
-  }
+//     // Reset for this session
+//     await prefs.write('app_properly_closed', false);
+//   }
 
-  changeDriverOnlineStatus() async {
-    await MainBinding().dependencies();
-    // log(HomeController.to.isOnline.value.toString());
-    HomeController.to.changeDriverOnlineStatus();
+//   changeDriverOnlineStatus() async {
+//     await MainBinding().dependencies();
+//     // log(HomeController.to.isOnline.value.toString());
+//     HomeController.to.changeDriverOnlineStatus();
 
-    log("####################################changeDriverOnlineStatus called#################################");
-    // try {
-    //   // Call the API to change the online status
-    //   LogoutResponseModel response = await ApiServices.changeOnlineStatus(
-    //     body: {
-    //       "is_online": 1,
-    //     },
-    //   );
+//     log("####################################changeDriverOnlineStatus called#################################");
+//     // try {
+//     //   // Call the API to change the online status
+//     //   LogoutResponseModel response = await ApiServices.changeOnlineStatus(
+//     //     body: {
+//     //       "is_online": 1,
+//     //     },
+//     //   );
 
-    //   // If the API call is successful
-    //   if (response.status == 200) {
-    //     isOnline = !isOnline;
+//     //   // If the API call is successful
+//     //   if (response.status == 200) {
+//     //     isOnline = !isOnline;
 
-    //     // Additional: Also save the status locally
-    //     final prefs = GetStorage();
-    //     await prefs.write('driver_online_status', false);
+//     //     // Additional: Also save the status locally
+//     //     final prefs = GetStorage();
+//     //     await prefs.write('driver_online_status', false);
 
-    //     // Disable background execution if it's enabled
-    //     if (FlutterBackground.isBackgroundExecutionEnabled) {
-    //       await FlutterBackground.disableBackgroundExecution();
-    //     }
-    //   } else {
-    //     print("Failed to update online status: ${response.message}");
-    //   }
-    // } catch (e) {
-    //   print("Error in changeDriverOnlineStatus: $e");
-    // }
-  }
-}
+//     //     // Disable background execution if it's enabled
+//     //     if (FlutterBackground.isBackgroundExecutionEnabled) {
+//     //       await FlutterBackground.disableBackgroundExecution();
+//     //     }
+//     //   } else {
+//     //     print("Failed to update online status: ${response.message}");
+//     //   }
+//     // } catch (e) {
+//     //   print("Error in changeDriverOnlineStatus: $e");
+//     // }
+//   }
+// }

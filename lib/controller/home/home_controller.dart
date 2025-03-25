@@ -20,8 +20,11 @@ import 'package:waiver_driver/main.dart';
 import 'package:waiver_driver/view/home/home_view.dart';
 import 'package:location/location.dart' as loc;
 
+import 'package:workmanager/workmanager.dart';
+
 import '../../backend/api/api_services/api_services.dart';
 import '../../backend/api/api_services/web_socket_services.dart';
+import '../../core/callbackdispatcher/callback.dart';
 import '../../core/colors/app_colors.dart';
 import '../../core/constants/enums/enums.dart';
 import '../../core/constants/get_storage_constants.dart';
@@ -33,15 +36,16 @@ import '../../core/constants/get_storage_constants.dart';
 //   }
 // }
 
-class HomeController extends GetxController {
+class HomeController extends GetxController with WidgetsBindingObserver {
   final HomeParser parser;
   HomeController({required this.parser});
 
   static HomeController get to => Get.find();
+  var appState = "Active".obs;
   @override
   void onInit() async {
     super.onInit();
-
+    WidgetsBinding.instance.addObserver(this);
     _initializeHive();
 
     try {
@@ -86,10 +90,50 @@ class HomeController extends GetxController {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive) {
+      appState.value = "Inactive";
+      print("🟡 App Inactive - Keeping API/WebSocket Running");
+    } else if (state == AppLifecycleState.resumed) {
+      appState.value = "Active";
+      print("🟢 App Resumed - Reconnecting WebSocket/Firebase...");
+      resumeConnection();
+    } else if (state == AppLifecycleState.paused) {
+      appState.value = "Background";
+      print("🔴 App in Background - Closing WebSocket...");
+      closeConnection();
+    } else if (state == AppLifecycleState.detached) {
+      appState.value = "Terminated";
+      print(
+          "⚠️ App Terminated - Scheduling WorkManager Task...${appState.value}");
+      callbackDispatcher();
+      // changeDriverOnlineStatus();
+      Workmanager().registerOneOffTask(
+        "backgroundTask",
+        "executeApiCall",
+      );
+    }
+  }
+
+  void closeConnection() {
+    print("🔴 Closing WebSocket/Firebase connection...");
+  }
+
+  void resumeConnection() {
+    print("🟢 Reconnecting WebSocket/Firebase...");
+  }
+
+  @override
+  void onClose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.onClose();
+  }
+
+  @override
   void dispose() {
     // TODO: implement dispose
     changeDriverOnlineStatus();
-    
+
     super.dispose();
   }
 
@@ -129,7 +173,7 @@ class HomeController extends GetxController {
           "is_online": isOnline.value ? 0 : 1,
         },
       );
-
+      print("#####################${isOnline.value}#####################");
       // If the API call is successful
       if (response.status == 200) {
         isOnline.value = !isOnline.value;
