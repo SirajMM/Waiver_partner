@@ -18,8 +18,9 @@ class AppUrls {
   static String rideOrderDetails = "/api/v1/ride/ride-details/";
   static String phoneAuth = "/api/v1/core/phone-auth/";
   static String driverProfile = "/api/v1/fleet/driver-profile/";
-  static String createProfile = "/api/v1/core/profile/";
-  static String onlineStatus = "api/v1/core/change-online-status/";
+  // static String createProfile = "/api/v1/core/profile/";
+  static String createProfile = "/api/v2/profile/";
+  static String onlineStatus = "api/v2/core/change-online-status/";
   static String states = "/api/v1/core/states/";
   static String districts = "/api/v1/core/state-districts/";
   static String workLocations = "/api/v1/core/work-locations/";
@@ -32,7 +33,8 @@ class AppUrls {
   static String profileImage = "/api/v1/core/profile-image/";
   static String bankAccount = "/api/v1/core/bank-account/";
   static String banks = "/api/v1/core/banks/";
-  static String profile = "/api/v1/core/profile/";
+  // static String profile = "/api/v1/core/profile/";
+  static String profile = "/api/v2/profile/";
   static String profilePhoto = "/api/v1/core/document/";
   static String savePreference = "/api/v1/core/save-preference/";
   static String logout = "/api/v1/core/logout/";
