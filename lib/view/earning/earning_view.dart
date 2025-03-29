@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:waiver_driver/backend/model/earning/earning_model.dart';
 import 'package:waiver_driver/controller/earning/earning_controller.dart';
+import 'package:waiver_driver/controller/home/home_controller.dart';
 import 'package:waiver_driver/core/colors/app_colors.dart';
 import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 import 'package:waiver_driver/core/themes/assets/icons.dart';
@@ -171,7 +172,7 @@ class WeeklyTab extends StatelessWidget {
         SizedBox(
           height: 25.sp,
         ),
-        // controller.weeklyEarningList.isEmpty
+        // HomeController.to.weeklyEarningList.isEmpty
         //     ? EmptyPage(
         //         text: "No Earning found",
         //       )
