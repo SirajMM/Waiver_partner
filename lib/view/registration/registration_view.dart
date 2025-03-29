@@ -350,24 +350,101 @@ class RegistrationScreen extends StatelessWidget {
                                         SizedBox(
                                           height: 12.sp,
                                         ),
-                                        AppDropDownFormField(
-                                          header:
-                                              'Familiar transmission types?',
-                                          placeHolder: 'Select',
-                                          itemList: RegistrationController
-                                              .to.transmissionTypes,
-                                          onChange:
-                                              (Transmission? transmissionType) {
-                                            RegistrationController.to
-                                                    .selectedTransmissionType =
-                                                transmissionType;
-                                          },
-                                          value: RegistrationController
-                                              .to.selectedTransmissionType,
-                                          label: (Transmission?
-                                                  transmissionType) =>
-                                              transmissionType?.name,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              "Familiar transmission types?",
+                                              textAlign: TextAlign.start,
+                                              style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  color: AppColors.black,
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ],
                                         ),
+                                        Theme(
+                                          data: ThemeData(
+                                              dividerColor: Colors.transparent),
+                                          child: ExpansionTile(
+                                            backgroundColor: AppColors.white,
+                                            collapsedBackgroundColor:
+                                                AppColors.white,
+                                            collapsedShape:
+                                                RoundedRectangleBorder(
+                                              side: BorderSide(
+                                                  color: AppColors.grey155),
+                                              borderRadius:
+                                                  BorderRadius.circular(8.sp),
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              side: BorderSide(
+                                                  color: AppColors.grey155),
+                                              borderRadius:
+                                                  BorderRadius.circular(8.sp),
+                                            ),
+                                            childrenPadding: EdgeInsets.zero,
+                                            title: const Text(
+                                                "Familiar transmission types"),
+                                            children: RegistrationController
+                                                .to.transmissionTypes
+                                                .map((transmission) =>
+                                                    SelectTransmissionTypeListingItem(
+                                                      transmissionType:
+                                                          transmission,
+                                                    ))
+                                                .toList(),
+                                          ),
+                                        ),
+                                        GetX<RegistrationController>(
+                                            builder: (controller) {
+                                          return controller
+                                                  .showTransmissionTypeError
+                                                  .value
+                                              ? Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    SizedBox(
+                                                      height: 2.sp,
+                                                    ),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Text(
+                                                          "Please select at least one familiar transmission type",
+                                                          style: TextStyle(
+                                                              fontSize: 12.sp,
+                                                              color:
+                                                                  Colors.red),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                )
+                                              : const SizedBox();
+                                        }),
+                                        // AppDropDownFormField(
+                                        //   header:
+                                        //       'Familiar transmission types?',
+                                        //   placeHolder: 'Select',
+                                        //   itemList: RegistrationController
+                                        //       .to.transmissionTypes,
+                                        //   onChange:
+                                        //       (Transmission? transmissionType) {
+                                        //     RegistrationController.to
+                                        //             .selectedTransmissionType =
+                                        //         transmissionType;
+                                        //   },
+                                        //   value: RegistrationController
+                                        //       .to.selectedTransmissionType,
+                                        //   label: (Transmission?
+                                        //           transmissionType) =>
+                                        //       transmissionType?.name,
+                                        // ),
                                         SizedBox(
                                           height: 12.sp,
                                         ),
@@ -440,6 +517,29 @@ class SelectVehicleTypeListingItem extends StatelessWidget {
               });
         }),
         Text(vehicle.name ?? "")
+      ],
+    );
+  }
+}
+
+class SelectTransmissionTypeListingItem extends StatelessWidget {
+  Transmission transmissionType;
+  SelectTransmissionTypeListingItem(
+      {super.key, required this.transmissionType});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        GetX<RegistrationController>(builder: (controller) {
+          return Checkbox(
+              value: transmissionType.isSelected?.value,
+              onChanged: (value) {
+                transmissionType.isSelected?.value = value ?? false;
+                controller.showTransmissionTypeError.value = false;
+              });
+        }),
+        Text(transmissionType.name ?? "")
       ],
     );
   }
