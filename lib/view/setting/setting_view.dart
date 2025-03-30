@@ -279,7 +279,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
           ),
           RedButton(
             text: "Delete Account",
-            onTap: () => SettingController.to.logoutUser(),
+            onTap: () => SettingController.to.deleteAccount(),
           ),
           SizedBox(
             height: 20.sp,

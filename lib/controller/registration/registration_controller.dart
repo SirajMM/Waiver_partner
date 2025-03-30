@@ -203,11 +203,11 @@ class RegistrationController extends GetxController {
             "district": selectedDistrict?.id.toString(),
             "address": controllerAddress.text.trim(),
             "work_location": selectedWorkingLocation?.id,
-            "vehicle_type": (vehicleTypes ?? [])
+            "vehicle_type_ids": (vehicleTypes ?? [])
                 .where((element) => element.isSelected?.value ?? false)
                 .map((e) => e.id)
                 .toList(),
-            "transmission_type": (transmissionTypes ?? [])
+            "transmission_type_ids": (transmissionTypes ?? [])
                 .where((element) => element.isSelected?.value ?? false)
                 .map((e) => e.id)
                 .toList(),

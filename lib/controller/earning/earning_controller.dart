@@ -155,37 +155,37 @@ class EarningController extends GetxController
       "start_date": DateTime.now().changeDateFormat(),
       "end_date": DateTime.now().changeDateFormat(),
     });
-    todayEarning = response.data?.earnings?.total ?? 0;
+    todayEarning.value = response.data?.earnings?.total ?? 0;
     todayTrips.value.value = (response.data?.rides?.totalRides ?? 0);
     todayDistance.value.value = (response.data?.rides?.totalDistance ?? 0);
     todayOnlineHours.value.value = (response.data?.rides?.totalDuration ?? 0);
-    todayTripFare = response.data?.earnings?.rideFare ?? 0;
-    todayWaiverCharge = response.data?.earnings?.waiverCharge ?? 0;
-    todayTax = response.data?.earnings?.tax ?? 0;
-    todayIncentives = response.data?.earnings?.incentives ?? 0;
-    todayReferEarnings = response.data?.earnings?.referrals ?? 0;
-    todayPayment = response.data?.earnings?.total ?? 0;
-    todayBalanceAmount = response.data?.earnings?.total ?? 0;
+    todayTripFare.value = response.data?.earnings?.rideFare ?? 0;
+    todayWaiverCharge.value = response.data?.earnings?.waiverCharge ?? 0;
+    todayTax.value = response.data?.earnings?.tax ?? 0;
+    todayIncentives.value = response.data?.earnings?.incentives ?? 0;
+    todayReferEarnings.value = response.data?.earnings?.referrals ?? 0;
+    todayPayment.value = response.data?.earnings?.total ?? 0;
+    todayBalanceAmount.value = response.data?.earnings?.total ?? 0;
   }
 
   String tt = "";
   Rx<DateTime> weeklyDateEnd = DateTime.now().obs;
-  double? todayEarning;
+  Rx<double?> todayEarning = Rx<double?>(null);
   Rx<double?> weeklyEarning = Rx<double?>(null);
-  double? todayTripFare;
+  Rx<double?> todayTripFare = Rx<double?>(null);
   double? weeklyTripFare;
-  double? todayWaiverCharge;
+  Rx<double?> todayWaiverCharge = Rx<double?>(null);
   double? weeklyWaiverCharge;
-  double? todayTax;
+  Rx<double?> todayTax = Rx<double?>(null);
   double? weeklyTax;
-  double? todayIncentives;
+  Rx<double?> todayIncentives = Rx<double?>(null);
   double? weeklyIncentives;
   double? weeklyReferEarnings;
-  double? todayReferEarnings;
+  Rx<double?> todayReferEarnings = Rx<double?>(null);
   Rx<double?> weeklyPayment = Rx<double?>(null);
-  double? todayPayment;
+  Rx<double?> todayPayment = Rx<double?>(null);
   double? weeklyBalanceAmount;
-  double? todayBalanceAmount;
+  Rx<double?> todayBalanceAmount = Rx<double?>(null);
   RxList<EarningListItem> todayEarningList = <EarningListItem>[].obs;
   RxList<EarningListItem> weeklyEarningList = <EarningListItem>[].obs;
   RxList<EarningsByDay?> graphValues = <EarningsByDay?>[].obs;
@@ -193,7 +193,7 @@ class EarningController extends GetxController
 
   Rx<EarningsByDay?> selectGraphValue = Rx<EarningsByDay?>(null);
 
-  DateTime payOutDate = DateTime.now();
+  Rx<DateTime> payOutDate = Rx<DateTime>(DateTime.now());
 
   EarningItemModel weeklyTrips = EarningItemModel(
       icon: CircleWithIcon(
@@ -205,7 +205,7 @@ class EarningController extends GetxController
           color: AppColors.white,
         ),
       ),
-      value: 55.0.obs,
+      value: 0.0.obs,
       text: 'Trips');
   EarningItemModel weeklyOnlineHours = EarningItemModel(
     icon: CircleWithIcon(
@@ -217,7 +217,7 @@ class EarningController extends GetxController
         color: AppColors.white,
       ),
     ),
-    value: 8.40.obs,
+    value: 0.0.obs,
     text: 'Online Hours',
   );
   EarningItemModel weeklyDistance = EarningItemModel(
@@ -230,7 +230,7 @@ class EarningController extends GetxController
           color: AppColors.white,
         ),
       ),
-      value: 24.5.obs,
+      value: 0.0.obs,
       text: 'Distance');
 
   EarningItemModel todayTrips = EarningItemModel(
@@ -243,7 +243,7 @@ class EarningController extends GetxController
           color: AppColors.white,
         ),
       ),
-      value: 55.0.obs,
+      value: 0.0.obs,
       text: 'Trips');
   EarningItemModel todayOnlineHours = EarningItemModel(
       icon: CircleWithIcon(
@@ -255,7 +255,7 @@ class EarningController extends GetxController
           color: AppColors.white,
         ),
       ),
-      value: 8.40.obs,
+      value: 0.0.obs,
       text: 'Online Hours');
   EarningItemModel todayDistance = EarningItemModel(
       icon: CircleWithIcon(
@@ -267,6 +267,6 @@ class EarningController extends GetxController
           color: AppColors.white,
         ),
       ),
-      value: 24.5.obs,
+      value: 0.0.obs,
       text: 'Distance');
 }

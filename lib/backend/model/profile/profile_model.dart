@@ -47,7 +47,7 @@ class ProfileData {
   String? id;
   State? state;
   District? district;
-  State? transmissionType;
+  List<Transmission>? transmissionType;
   List<State>? vehicleType;
   DrivingExperience? drivingExperience;
   WorkLocation? workLocation;
@@ -105,8 +105,9 @@ class ProfileData {
             ? null
             : District.fromJson(json["district"]),
         transmissionType: json["transmission_type"] == null
-            ? null
-            : State.fromJson(json["transmission_type"]),
+            ? []
+            : List<Transmission>.from(json["transmission_type"]!
+                .map((x) => Transmission.fromJson(x))),
         vehicleType: json["vehicle_type"] == null
             ? []
             : List<State>.from(
@@ -141,7 +142,9 @@ class ProfileData {
         "id": id,
         "state": state?.toJson(),
         "district": district?.toJson(),
-        "transmission_type": transmissionType?.toJson(),
+        "transmission_type": transmissionType == null
+            ? []
+            : List<dynamic>.from(transmissionType!.map((x) => x.toJson())),
         "vehicle_type": vehicleType == null
             ? []
             : List<dynamic>.from(vehicleType!.map((x) => x.toJson())),

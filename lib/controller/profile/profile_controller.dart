@@ -58,7 +58,7 @@ class ProfileController extends GetxController {
     state = response.data?.state?.name ?? "";
     district = response.data?.district?.name ?? "";
     workingLocation = response.data?.workLocation?.name ?? "";
-    transmissionType = response.data?.transmissionType?.name ?? "";
+    transmissionType = response.data?.transmissionType ?? [];
     experience = response.data?.drivingExperience?.experience.toString();
     // selectedState = statesList.firstWhereOrNull(
     //     (element) => (element.id) == (response.data?.state?.id));
@@ -179,7 +179,7 @@ class ProfileController extends GetxController {
   String? state;
   String? district;
   String? workingLocation;
-  String? transmissionType;
+  List<Transmission>? transmissionType;
   String? experience;
   DistrictModel? selectedDistrict;
   WorkExperience? selectedYearsOfDrivingExperience;

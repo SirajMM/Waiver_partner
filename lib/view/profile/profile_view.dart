@@ -436,35 +436,67 @@ class ProfileScreen extends StatelessWidget {
                                       //   label: (Transmission? transmissionType) =>
                                       //       transmissionType?.name,
                                       // ),
-                                      Text("Familiar Transmission type",
-                                          style: TextStyle(
-                                              fontSize: 15.sp,
-                                              fontWeight: FontWeight.w600)),
-                                      SizedBox(
-                                        height: 7.sp,
-                                      ),
-                                      Container(
-                                        height: 45.sp,
-                                        decoration: BoxDecoration(
+                                      // Text("Familiar Transmission type",
+                                      //     style: TextStyle(
+                                      //         fontSize: 15.sp,
+                                      //         fontWeight: FontWeight.w600)),
+                                      // SizedBox(
+                                      //   height: 7.sp,
+                                      // ),
+                                      // Container(
+                                      //   height: 45.sp,
+                                      //   decoration: BoxDecoration(
+                                      //       borderRadius:
+                                      //           BorderRadius.circular(8),
+                                      //       color: AppColors.grey155),
+                                      //   child: Center(
+                                      //     child: Row(
+                                      //       children: [
+                                      //         SizedBox(
+                                      //           width: 14.sp,
+                                      //         ),
+                                      //         Text(
+                                      //           ProfileController
+                                      //                   .to.transmissionType ??
+                                      //               "",
+                                      //           style: TextStyle(
+                                      //               fontSize: 16.sp,
+                                      //               color: AppColors.grey93),
+                                      //         )
+                                      //       ],
+                                      //     ),
+                                      //   ),
+                                      // ),
+                                      Theme(
+                                        data: ThemeData(
+                                            dividerColor: Colors.transparent),
+                                        child: ExpansionTile(
+                                          backgroundColor: AppColors.white,
+                                          collapsedBackgroundColor:
+                                              AppColors.white,
+                                          collapsedShape:
+                                              RoundedRectangleBorder(
+                                            side: BorderSide(
+                                                color: AppColors.grey155),
                                             borderRadius:
-                                                BorderRadius.circular(8),
-                                            color: AppColors.grey155),
-                                        child: Center(
-                                          child: Row(
-                                            children: [
-                                              SizedBox(
-                                                width: 14.sp,
-                                              ),
-                                              Text(
-                                                ProfileController
-                                                        .to.transmissionType ??
-                                                    "",
-                                                style: TextStyle(
-                                                    fontSize: 16.sp,
-                                                    color: AppColors.grey93),
-                                              )
-                                            ],
+                                                BorderRadius.circular(8.sp),
                                           ),
+                                          shape: RoundedRectangleBorder(
+                                            side: BorderSide(
+                                                color: AppColors.grey155),
+                                            borderRadius:
+                                                BorderRadius.circular(8.sp),
+                                          ),
+                                          childrenPadding: EdgeInsets.zero,
+                                          title:
+                                              const Text("Transmission Types"),
+                                          children: ProfileController
+                                              .to.transmissionType!
+                                              .map((transmission) =>
+                                                  SelectTransmissionTypeListingItemProfile(
+                                                    transmission: transmission,
+                                                  ))
+                                              .toList(),
                                         ),
                                       ),
                                       SizedBox(
@@ -817,6 +849,27 @@ class SelectVehicleTypeListingItemProfile extends StatelessWidget {
               // controller.showVehicleTypeError.value = false;
             }),
         Text(vehicle.name ?? "")
+      ],
+    );
+  }
+}
+
+class SelectTransmissionTypeListingItemProfile extends StatelessWidget {
+  Transmission transmission;
+  SelectTransmissionTypeListingItemProfile(
+      {super.key, required this.transmission});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Checkbox(
+            value: true,
+            onChanged: (value) {
+              // vehicle.isSelected?.value = value ?? false;
+              // controller.showVehicleTypeError.value = false;
+            }),
+        Text(transmission.name ?? "")
       ],
     );
   }
