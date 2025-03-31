@@ -322,3 +322,16 @@ class EarningItemModel {
     required this.text,
   });
 }
+
+class WalletBalance {
+  String? walletBalance;
+
+  WalletBalance({this.walletBalance});
+  factory WalletBalance.fromJson(Map<String, dynamic> json) => WalletBalance(
+        walletBalance: json["walletBalance"],
+      );
+
+  Map<String, dynamic> toJson() => {
+    "walletBalance": walletBalance,
+  };
+}

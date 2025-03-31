@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:get/get.dart';
 
+import '../driver_profile/driver_profile_model.dart';
+
 class GenderModel {
   String label;
   String code;
@@ -444,8 +446,8 @@ class Data {
   int? district;
   int? drivingExperience;
   int? workLocation;
-  int? transmissionType;
-  List<int>? vehicleType;
+  List<Transmission>? transmissionType;
+  List<State>? vehicleType;
 
   Data({
     this.id,
@@ -501,10 +503,14 @@ class Data {
         district: json["district"],
         drivingExperience: json["driving_experience"],
         workLocation: json["work_location"],
-        transmissionType: json["transmission_type"],
+        transmissionType: json["transmission_type"] == null
+            ? []
+            : List<Transmission>.from(json["transmission_type"]!
+                .map((x) => Transmission.fromJson(x))),
         vehicleType: json["vehicle_type"] == null
             ? []
-            : List<int>.from(json["vehicle_type"]!.map((x) => x)),
+            : List<State>.from(
+                json["vehicle_type"]!.map((x) => State.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -533,10 +539,12 @@ class Data {
         "district": district,
         "driving_experience": drivingExperience,
         "work_location": workLocation,
-        "transmission_type": transmissionType,
+        "transmission_type": transmissionType == null
+            ? []
+            : List<dynamic>.from(transmissionType!.map((x) => x.toJson())),
         "vehicle_type": vehicleType == null
             ? []
-            : List<dynamic>.from(vehicleType!.map((x) => x)),
+            : List<dynamic>.from(vehicleType!.map((x) => x.toJson())),
       };
 }
 

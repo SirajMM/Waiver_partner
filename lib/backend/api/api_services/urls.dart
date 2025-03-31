@@ -64,4 +64,5 @@ class AppUrls {
   static String paymentType = "/api/v1/ride/payment-type/";
   static String getRidePayment = "/api/v1/ride/ride-payment/";
   static String addStop = "/api/v1/ride/add-ride-stop/";
+  static String walletbalance = "/api/v1/ride/partner-wallet/";
 }
