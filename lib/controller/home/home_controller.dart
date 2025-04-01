@@ -24,6 +24,7 @@ import 'package:workmanager/workmanager.dart';
 
 import '../../backend/api/api_services/api_services.dart';
 import '../../backend/api/api_services/web_socket_services.dart';
+import '../../backend/model/earning/earning_model.dart';
 import '../../core/callbackdispatcher/callback.dart';
 import '../../core/colors/app_colors.dart';
 import '../../core/constants/enums/enums.dart';
@@ -51,6 +52,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     try {
       isLoading.value = true;
       await getDriverOnlineStatus();
+      fetchWalletBalance();
       // if (isOnline.value) {
       sendLiveLocation();
       loc.Location location = loc.Location();
@@ -141,7 +143,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   Rx<Position?> currentPosition = Rx<Position?>(null);
   GoogleMapController? googleMapController;
-  RxInt walletBalance = 0.obs;
+  Rx<double?> walletBalance = Rx<double?>(null);
   bool rideIsActive = false;
   String? finalDropLocation;
   bool isTracking = false;
@@ -387,6 +389,53 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     } else {
       throw 'Could not launch $userMobile';
     }
+  }
+
+  Future<void> fetchWalletBalance() async {
+    isRefreshingWallet.value = true;
+    try {
+      WalletResponse response = await ApiServices.getPartnerWallet();
+
+      if (response.status == 200) {
+        walletBalance.value = response.data.amount ?? 0.0;
+        isRefreshingWallet.value = false;
+      } else {
+        isRefreshingWallet.value = false;
+      }
+    } catch (e) {
+      isRefreshingWallet.value = false;
+    }
+  }
+
+  RxBool isRefreshingWallet = false.obs;
+
+  Future<void> refreshWalletBalance() async {
+    try {
+      // Call your wallet API
+      await fetchWalletBalance();
+      Get.showSnackbar(
+        const GetSnackBar(
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.transparent,
+          padding: EdgeInsets.zero,
+          messageText: AppSnackBar(
+            text: "Updated wallet balance",
+          ),
+        ),
+      );
+    } catch (e) {
+      // Handle error
+      Get.showSnackbar(
+        const GetSnackBar(
+          duration: Duration(seconds: 3),
+          backgroundColor: Colors.transparent,
+          padding: EdgeInsets.zero,
+          messageText: AppSnackBar(
+            text: "Something wnet wrong",
+          ),
+        ),
+      );
+    } finally {}
   }
 
   addStop(context) async {

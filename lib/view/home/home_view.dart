@@ -1408,6 +1408,75 @@ class DashBoardItem extends StatelessWidget {
   }
 }
 
+// class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
+//   const HomePageAppBar({
+//     super.key,
+//   });
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return AppBar(
+//       systemOverlayStyle: const SystemUiOverlayStyle(
+//         statusBarColor: Colors.transparent,
+//         statusBarIconBrightness: Brightness.dark,
+//         statusBarBrightness: Brightness.dark,
+//       ),
+//       elevation: 0,
+//       automaticallyImplyLeading: false,
+//       backgroundColor: Colors.transparent,
+//       titleSpacing: 0,
+//       leadingWidth: 60.sp,
+//       leading: GestureDetector(
+//         onTap: () => Scaffold.of(context).openDrawer(),
+//         child: Container(
+//             padding: EdgeInsets.all(5.sp),
+//             margin: EdgeInsets.only(left: 15.sp, top: 10.sp),
+//             decoration: BoxDecoration(
+//                 color: Get.theme.primaryColor,
+//                 borderRadius: BorderRadius.circular(12.sp),
+//                 boxShadow: [
+//                   BoxShadow(
+//                       color: Get.theme.indicatorColor.withOpacity(.05),
+//                       offset: const Offset(0, 0),
+//                       blurRadius: 15)
+//                 ]),
+//             child: SvgPicture.asset(
+//               AppIcons.menu,
+//               color: Get.theme.indicatorColor,
+//               height: 30.sp,
+//             )),
+//       ),
+//       centerTitle: true,
+//       title: Container(
+//         width: 150.sp,
+//         decoration: BoxDecoration(
+//             color: AppColors.blue, borderRadius: BorderRadius.circular(50.sp)),
+//         padding: EdgeInsets.symmetric(vertical: 8.sp, horizontal: 30.sp),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Image.asset(
+//               AppIcons.wallet,
+//               color: Get.theme.primaryColor,
+//               height: 18.sp,
+//             ),
+//             SizedBox(
+//               width: 10.sp,
+//             ),
+//             Text(
+//               " ₹ ${HomeController.to.walletBalance.value}",
+//               style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
+//             )
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   @override
+//   Size get preferredSize => Size.fromHeight(60.sp);
+// }
+
 class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
   const HomePageAppBar({
     super.key,
@@ -1448,12 +1517,12 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       centerTitle: true,
       title: Container(
-        width: 150.sp,
+        width: 185.sp, // Increased width to accommodate the refresh icon
         decoration: BoxDecoration(
             color: AppColors.blue, borderRadius: BorderRadius.circular(50.sp)),
         padding: EdgeInsets.symmetric(vertical: 8.sp, horizontal: 30.sp),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Image.asset(
               AppIcons.wallet,
@@ -1461,12 +1530,33 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
               height: 18.sp,
             ),
             SizedBox(
-              width: 10.sp,
+              width: 1.sp,
             ),
             Text(
-              " ₹ ${HomeController.to.walletBalance.value}",
+              " ₹ ${HomeController.to.walletBalance.value ?? 0.0}",
               style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
-            )
+            ),
+            SizedBox(
+              width: 1.sp,
+            ),
+            Obx(() => GestureDetector(
+                  onTap: () {
+                    if (!HomeController.to.isRefreshingWallet.value) {
+                      HomeController.to.refreshWalletBalance();
+                    }
+                  },
+                  child: AnimatedRotation(
+                    turns:
+                        HomeController.to.isRefreshingWallet.value ? 1.0 : 0.0,
+                    duration: const Duration(milliseconds: 1000),
+                    curve: Curves.linear,
+                    child: Icon(
+                      Icons.refresh,
+                      color: Get.theme.primaryColor,
+                      size: 18.sp,
+                    ),
+                  ),
+                )),
           ],
         ),
       ),

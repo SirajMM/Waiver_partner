@@ -323,15 +323,58 @@ class EarningItemModel {
   });
 }
 
-class WalletBalance {
-  String? walletBalance;
+class WalletResponse {
+  final int status;
+  final String message;
+  final WalletData data;
 
-  WalletBalance({this.walletBalance});
-  factory WalletBalance.fromJson(Map<String, dynamic> json) => WalletBalance(
-        walletBalance: json["walletBalance"],
-      );
+  WalletResponse({
+    required this.status,
+    required this.message,
+    required this.data,
+  });
 
-  Map<String, dynamic> toJson() => {
-    "walletBalance": walletBalance,
-  };
+  factory WalletResponse.fromJson(Map<String, dynamic> json) {
+    return WalletResponse(
+      status: json['status'] as int,
+      message: json['message'] as String,
+      data: WalletData.fromJson(json['data']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'status': status,
+      'message': message,
+      'data': data.toJson(),
+    };
+  }
+}
+
+class WalletData {
+  final double? amount;
+  final dynamic deleted;
+  final dynamic partner;
+
+  WalletData({
+    this.amount,
+    this.deleted,
+    this.partner,
+  });
+
+  factory WalletData.fromJson(Map<String, dynamic> json) {
+    return WalletData(
+      amount: json['amount'] != null ? (json['amount'] as num).toDouble() : null,
+      deleted: json['deleted'],
+      partner: json['partner'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'amount': amount,
+      'deleted': deleted,
+      'partner': partner,
+    };
+  }
 }

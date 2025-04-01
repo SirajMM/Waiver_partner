@@ -1123,4 +1123,31 @@ class ApiServices {
       throw Exception(response.body);
     }
   }
+
+  static Future<WalletResponse> getPartnerWallet() async {
+    try {
+      https.Response response = await https.get(
+        Uri.https(AppUrls.base, AppUrls.walletbalance),
+        headers: {
+          "Authorization": getToken(),
+          'Content-Type': 'application/json'
+        },
+      );
+
+      log("Partner wallet API ===============>${Uri.https(AppUrls.base, AppUrls.walletbalance)}");
+      log("Partner wallet status code ===============>${response.statusCode}");
+      log("Partner wallet response ===============>${response.body}");
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> jsonData = jsonDecode(response.body);
+        return WalletResponse.fromJson(jsonData);
+      } else {
+        log("Partner wallet error: ${response.body}");
+        throw Exception(response.body);
+      }
+    } catch (e) {
+      log("Partner wallet exception: $e");
+      rethrow;
+    }
+  }
 }

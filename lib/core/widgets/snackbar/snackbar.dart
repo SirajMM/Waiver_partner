@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../colors/app_colors.dart';
 
-
 class AppSnackBar extends StatelessWidget {
   final String? text;
 
