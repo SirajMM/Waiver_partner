@@ -15,9 +15,8 @@ import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
 import '../../core/widgets/app_network_image/app_network_image.dart';
 
-
 class DriverProfileScreen extends StatelessWidget {
-  const DriverProfileScreen({Key? key}) : super(key: key);
+  const DriverProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

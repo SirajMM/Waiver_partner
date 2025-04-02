@@ -5,12 +5,7 @@ import 'package:waiver_driver/backend/model/fleet_home_page/fleet_home_page_mode
 import 'package:waiver_driver/backend/model/registration/registration_model.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
-
-
 import '../../backend/api/api_services/api_services.dart';
-
-
-
 
 class DriverProfileControllerBinding extends Bindings {
   @override
@@ -23,7 +18,9 @@ class DriverProfileController extends GetxController {
   static DriverProfileController get to => Get.find();
 
   Driver? driver;
+  @override
   void onInit() async {
+    super.onInit();
     try {
       isLoading.value = true;
       FleetVehicle vehicle = Get.arguments;

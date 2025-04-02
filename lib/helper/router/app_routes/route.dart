@@ -37,9 +37,17 @@ import '../../../backend/binding/MyRide/myridescreen_binding.dart';
 import '../../../backend/binding/Preferences/preferences_binding.dart';
 import '../../../backend/binding/Settings/settings_binding.dart';
 import '../../../backend/binding/ViewBankAccount/viewbankaccount_binding.dart';
+import '../../../controller/add_driver_fleet/add_driver_controller.dart';
+import '../../../controller/add_vehicle/add_vehicle_controller.dart';
+import '../../../controller/add_vehicle_proof/add_vehicle_proof_controller.dart';
+import '../../../controller/driver_profile/driver_profile_controller.dart';
 import '../../../view/Location/location_screen.dart';
 import '../../../view/aadhar_card/aadhar_card_view.dart';
+import '../../../view/add_driver_fleet/add_driver_view.dart';
+import '../../../view/add_vehicle/add_vehicle_view.dart';
+import '../../../view/add_vehicle_proof/add_vehicle_proof_view.dart';
 import '../../../view/bank_account/bank_account_view.dart';
+import '../../../view/driver_profile/driver_profile_view.dart';
 import '../../../view/earning/earning_view.dart';
 import '../../../view/preferences/preferences_view.dart';
 import '../../../view/profile/profile_view.dart';
@@ -48,6 +56,7 @@ import '../../../view/reason_for_cancel/reason_for_cancel_view.dart';
 import '../../../view/setting/setting_view.dart';
 import '../../../view/view_bank_account/view_bank_bank_view.dart';
 import '../../../view/waiting_for_authorization/waiting_for_authorization_view.dart';
+import 'app_routes.dart';
 
 class AppRoutes1 {
   static String splash = "/splash";
@@ -154,11 +163,7 @@ class AppRoutes1 {
       page: () => const OtpScreen(),
       binding: OtpBinging(),
     ),
-    // GetPage(
-    //   name: AppRoutes.welcome,
-    //   page: () => const DriverTypeSelectionScreen(),
-    //   binding: DriverProfileControllerBinding(),
-    // ),
+
     // // OMS: 2024-06-08 registration page as common
     GetPage(
       name: AppRoutes1.registration,
@@ -304,32 +309,32 @@ class AppRoutes1 {
       page: () => const FleetHomePageScreen(),
       binding: FleetHomePageBinding(),
     ),
-    // GetPage(
-    //   name: AppRoutes.addVehicle,
-    //   page: () => const AddVehicleScreen(),
-    //   binding: AddVehicleControllerBinding(),
-    // ),
-    // GetPage(
-    //   name: AppRoutes.addDriver,
-    //   page: () => const AddDriverScreen(),
-    //   binding: AddDriverControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes.addVehicle,
+      page: () => const AddVehicleScreen(),
+      binding: AddVehicleControllerBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.addDriver,
+      page: () => const AddDriverScreen(),
+      binding: AddDriverControllerBinding(),
+    ),
     // GetPage(
     //   name: AppRoutes.vehicleProof,
     //   page: () => const VehicleProofScreen(),
     //   binding: VehicleProofControllerBinding(),
     // ),
     // // OMS: 2024-06-09 18:53:02 working here
-    // GetPage(
-    //   name: AppRoutes.addProofVehicle,
-    //   page: () => const AddVehicleProofScreen(),
-    //   binding: AddVehicleProofControllerBinding(),
-    // ),
-    // GetPage(
-    //   name: AppRoutes.driverProfile,
-    //   page: () => const DriverProfileScreen(),
-    //   binding: DriverProfileControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes.addProofVehicle,
+      page: () => const AddVehicleProofScreen(),
+      binding: AddVehicleProofControllerBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.driverProfile,
+      page: () => const DriverProfileScreen(),
+      binding: DriverProfileControllerBinding(),
+    ),
     // GetPage(
     //   name: AppRoutes.vehicleInsurance,
     //   page: () => const VehicleInsuranceScreen(),

@@ -6,8 +6,6 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:waiver_driver/core/themes/assets/icons.dart';
 
-
-
 import '../../backend/api/api_services/api_services.dart';
 import '../../backend/model/left_menu_driver/left_menu_driver_model.dart';
 
@@ -80,8 +78,9 @@ class LeftMenuFleet extends StatelessWidget {
           ),
           LeftMenuItem(
             item: LeftMenuControllerFleet.to.help,
-            onTap: () async{
-              final Uri whatsapp= Uri.parse('https://api.whatsapp.com/send?phone=918943099085&text=Hi');
+            onTap: () async {
+              final Uri whatsapp = Uri.parse(
+                  'https://api.whatsapp.com/send?phone=918943099085&text=Hi');
               launchUrl(whatsapp);
             },
           ),
@@ -162,7 +161,7 @@ class LeftMenuProfileItem extends StatelessWidget {
 }
 
 class LeftMenuItem extends StatelessWidget {
-  LeftMenuItemModel item;
+  final LeftMenuItemModel item;
   void Function()? onTap;
   LeftMenuItem({super.key, required this.item, required this.onTap});
 
