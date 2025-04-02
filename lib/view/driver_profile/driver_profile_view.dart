@@ -26,7 +26,7 @@ class DriverProfileScreen extends StatelessWidget {
           return controller.isLoading.value
               ? const LoadingBarsAnimation()
               : controller.isError.value
-                  ? const ErrorPage()
+                  ? const ErrorPage(isFleet: true)
                   : ListView(
                       padding: EdgeInsets.symmetric(horizontal: 15.sp),
                       children: [
