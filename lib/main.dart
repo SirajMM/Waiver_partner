@@ -105,7 +105,7 @@ void main() async {
   await requestPermissions();
   await GetStorage.init();
   await Hive.initFlutter();
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+  Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
   await MainBinding().dependencies();
 
   // Initialize Firebase before setting up message handlers
@@ -193,5 +193,3 @@ class MyHttpOverrides extends HttpOverrides {
           (X509Certificate cert, String host, int port) => true;
   }
 }
-
-

@@ -108,7 +108,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       appState.value = "Terminated";
       print(
           "⚠️ App Terminated - Scheduling WorkManager Task...${appState.value}");
-      callbackDispatcher();
+
       // changeDriverOnlineStatus();
       Workmanager().registerOneOffTask(
         "backgroundTask",
