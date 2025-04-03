@@ -15,9 +15,8 @@ import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
 import '../../core/widgets/app_network_image/app_network_image.dart';
 
-
 class DriverProfileScreen extends StatelessWidget {
-  const DriverProfileScreen({Key? key}) : super(key: key);
+  const DriverProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +26,7 @@ class DriverProfileScreen extends StatelessWidget {
           return controller.isLoading.value
               ? const LoadingBarsAnimation()
               : controller.isError.value
-                  ? const ErrorPage()
+                  ? const ErrorPage(isFleet: true)
                   : ListView(
                       padding: EdgeInsets.symmetric(horizontal: 15.sp),
                       children: [

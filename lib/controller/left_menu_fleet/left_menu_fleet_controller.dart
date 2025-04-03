@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 
-
 import 'package:waiver_driver/core/themes/assets/icons.dart';
 
 import '../../backend/api/api_services/api_services.dart';
@@ -15,7 +14,7 @@ class LeftMenuControllerFleet extends GetxController {
     text: 'My Profile',
   );
   LeftMenuItemModel notification = LeftMenuItemModel(
-    icon: AppIcons.bankDetails,
+    icon: AppIcons.notification,
     text: 'Notification',
   );
   LeftMenuItemModel setting = LeftMenuItemModel(

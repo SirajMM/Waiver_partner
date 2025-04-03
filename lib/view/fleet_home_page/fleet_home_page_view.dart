@@ -13,13 +13,10 @@ import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_gradient.dart';
 import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 
-
-
 import '../left_menu_fleet/left_menu_fleet_view.dart';
 
-
 class FleetHomePageScreen extends StatelessWidget {
-  const FleetHomePageScreen({Key? key}) : super(key: key);
+  const FleetHomePageScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +72,8 @@ class FleetHomePageScreen extends StatelessWidget {
 }
 
 class FleetRegistrationListingItem extends StatelessWidget {
-  FleetVehicle fleet;
-  RxBool isButtonLoading = false.obs;
+  final FleetVehicle fleet;
+  final RxBool isButtonLoading = false.obs;
   FleetRegistrationListingItem({super.key, required this.fleet});
   @override
   Widget build(BuildContext context) {
@@ -155,7 +152,7 @@ class FleetRegistrationListingItem extends StatelessWidget {
               : SizedBox(),
           GetX<FleetHomePageController>(builder: (controller) {
             return fleet.status?.value == VehicleApprovalStatus.blocked
-                ? SizedBox()
+                ? SizedBox.shrink()
                 : (fleet.driver?.driverId ?? "") == ""
                     ? FleetRegistrationItem(
                         text: "Add Driver",

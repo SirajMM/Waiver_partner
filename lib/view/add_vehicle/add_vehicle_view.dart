@@ -11,9 +11,8 @@ import 'package:waiver_driver/helper/validator/text_input_formatter/text_input_f
 import 'package:waiver_driver/helper/validator/validators/validators.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
-
 class AddVehicleScreen extends StatelessWidget {
-  const AddVehicleScreen({Key? key}) : super(key: key);
+  const AddVehicleScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
