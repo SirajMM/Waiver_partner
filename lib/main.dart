@@ -4,10 +4,7 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:flutter_background/flutter_background.dart';
 import 'package:workmanager/workmanager.dart';
-import '../../backend/api/api_services/api_services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -20,12 +17,6 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'package:flutter_background/flutter_background.dart'
-    as flutter_background;
-import 'package:geolocator_android/geolocator_android.dart'
-    as geolocator_android;
-
-import 'package:upgrader/upgrader.dart';
 import 'package:waiver_driver/backend/call_funtionality.dart';
 import 'package:waiver_driver/controller/home/home_controller.dart';
 import 'package:waiver_driver/core/themes/app_theme.dart';
@@ -36,7 +27,6 @@ import 'package:waiver_driver/helper/init/init.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:uuid/uuid.dart';
 import 'backend/model/home/home_model.dart';
-import 'backend/model/setting/setting_model.dart';
 import 'backend/notificaton_services/notification_service/notification_service.dart';
 import 'core/callbackdispatcher/callback.dart';
 
@@ -46,8 +36,7 @@ ReceivePort? _receivePort;
 void startReceivePort() {
   IsolateNameServer.removePortNameMapping('main_send_port');
   _receivePort ??= ReceivePort();
-  IsolateNameServer.registerPortWithName(
-      _receivePort!.sendPort, 'main_send_port');
+  IsolateNameServer.registerPortWithName(_receivePort!.sendPort, 'main_send_port');
 
   _receivePort!.listen((message) async {
     if (message is Map<String, dynamic>) {
@@ -109,7 +98,9 @@ void main() async {
   await MainBinding().dependencies();
 
   // Initialize Firebase before setting up message handlers
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
+  }
 
   // Register background handler before other Firebase setup
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -120,11 +111,10 @@ void main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // Set up foreground message handlers
-  FirebaseMessaging.onMessage.listen(
-      (message) => NotificationService.onMessage(notification: message));
+  FirebaseMessaging.onMessage.listen((message) => NotificationService.onMessage(notification: message));
 
-  FirebaseMessaging.onMessageOpenedApp.listen((message) =>
-      NotificationService.onMessageOpenedApp(notification: message));
+  FirebaseMessaging.onMessageOpenedApp
+      .listen((message) => NotificationService.onMessageOpenedApp(notification: message));
   startReceivePort();
   // Initialize dependencies
   HttpOverrides.global = MyHttpOverrides();
@@ -154,21 +144,21 @@ class MyApp extends StatelessWidget {
   }
 }
 
-requestPermissions() async {
-  const androidConfig = flutter_background.FlutterBackgroundAndroidConfig(
-    notificationTitle: "Waiver Partner",
-    notificationText:
-        "Background notification for keeping the waiver partner app running in the background",
-    notificationImportance:
-        flutter_background.AndroidNotificationImportance.max,
-    notificationIcon: flutter_background.AndroidResource(
-      name: 'launcher_icon', // Use the same name as in @mipmap/launcher_icon
-      defType:
-          'mipmap', // Specify 'mipmap' because the icon is in the mipmap folder
-    ), // Default is ic_launcher from folder mipmap
-  );
-  await flutter_background.FlutterBackground.initialize(
-      androidConfig: androidConfig);
+Future<void> requestPermissions() async {
+  // const androidConfig = flutter_background.FlutterBackgroundAndroidConfig(
+  //   notificationTitle: "Waiver Partner",
+  //   notificationText:
+  //       "Background notification for keeping the waiver partner app running in the background",
+  //   notificationImportance:
+  //       flutter_background.AndroidNotificationImportance.max,
+  //   notificationIcon: flutter_background.AndroidResource(
+  //     name: 'launcher_icon', // Use the same name as in @mipmap/launcher_icon
+  //     defType:
+  //         'mipmap', // Specify 'mipmap' because the icon is in the mipmap folder
+  //   ), // Default is ic_launcher from folder mipmap
+  // );
+  // await flutter_background.FlutterBackground.initialize(
+  //     androidConfig: androidConfig);
   // Check and request notification permission first
   bool isNotificationDenied = await Permission.notification.isDenied;
   if (isNotificationDenied) {
@@ -189,7 +179,6 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }

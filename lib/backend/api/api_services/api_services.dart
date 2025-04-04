@@ -85,10 +85,7 @@ class ApiServices {
   }) async {
     https.Response response = await https.post(
       Uri.https(AppUrls.base, AppUrls.createProfile),
-      headers: {
-        'Content-Type': 'application/json',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/json', "Authorization": getToken()},
       body: json.encode(body),
     );
     log(BoxKeys.token);
@@ -105,10 +102,7 @@ class ApiServices {
   static Future<GetAllStatesResponseModel> getAllStates() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.states),
-      headers: {
-        'Content-Type': 'application/json',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/json', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.states)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.states)}===============>${response.body}");
@@ -124,10 +118,7 @@ class ApiServices {
   }) async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.districts, queryParameter),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.districts)}===============>$queryParameter");
     log("${Uri.https(AppUrls.base, AppUrls.districts)}===============>${response.statusCode}");
@@ -142,10 +133,7 @@ class ApiServices {
   static Future<GetAllWorkLocationsResponseModel> getWorkLocation() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.workLocations),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.workLocations)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.workLocations)}===============>${response.body}");
@@ -159,10 +147,7 @@ class ApiServices {
   static Future<GetAllWorkExperienceResponseModel> getWorkExperience() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.workExperience),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.workExperience)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.workExperience)}===============>${response.body}");
@@ -176,10 +161,7 @@ class ApiServices {
   static Future<GetVehicleTypeResponseModel> getVehicleTypes() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.vehicleTypes),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.vehicleTypes)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.vehicleTypes)}===============>${response.body}");
@@ -194,10 +176,7 @@ class ApiServices {
     log(getToken());
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.transmissionTypes),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.transmissionTypes)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.transmissionTypes)}===============>${response.body}");
@@ -213,10 +192,7 @@ class ApiServices {
   }) async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.document, queryParameter ?? {}),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.document)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.document)}===============>${response.body}");
@@ -233,10 +209,7 @@ class ApiServices {
     https.Response response = await https.put(
       Uri.https(AppUrls.base, AppUrls.document),
       body: json.encode(body),
-      headers: {
-        'Content-Type': 'application/json',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/json', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.document)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.document)}===============>${response.body}");
@@ -254,10 +227,7 @@ class ApiServices {
     https.Response response = await https.put(
       Uri.https(AppUrls.base, AppUrls.vehicleProof),
       body: json.encode(body),
-      headers: {
-        'Content-Type': 'application/json',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/json', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.vehicleProof)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.vehicleProof)}===============>${response.body}");
@@ -272,10 +242,7 @@ class ApiServices {
   static Future<AddDriverResponseModel> vehicleDriver({
     required body,
   }) async {
-    var headers = {
-      'Content-Type': 'application/json',
-      "Authorization": getToken()
-    };
+    var headers = {'Content-Type': 'application/json', "Authorization": getToken()};
     https.Response response = await https.post(
       Uri.https(AppUrls.base, AppUrls.vehicleDriver),
       body: json.encode(body),
@@ -295,10 +262,7 @@ class ApiServices {
   static Future<AddDriverResponseModel> changeDriver({
     required body,
   }) async {
-    var headers = {
-      'Content-Type': 'application/json',
-      "Authorization": getToken()
-    };
+    var headers = {'Content-Type': 'application/json', "Authorization": getToken()};
     https.Response response = await https.put(
       Uri.https(AppUrls.base, AppUrls.vehicleDriver),
       body: json.encode(body),
@@ -319,10 +283,7 @@ class ApiServices {
       {required Map<String, String> body}) async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.vehicleProof, body),
-      headers: {
-        'Content-Type': 'application/json',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/json', "Authorization": getToken()},
     );
 
     log("${Uri.https(AppUrls.base, AppUrls.vehicleProof, body)}===============>${response.statusCode}");
@@ -394,10 +355,7 @@ class ApiServices {
   static Future<GetProfilePhotoResponseModel> getProfileImage() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.profileImage),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.profileImage)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.profileImage)}===============>${response.body}");
@@ -414,10 +372,7 @@ class ApiServices {
   static Future<GetBankAccountResponseModel> getBankAccount() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.bankAccount),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.bankAccount)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.bankAccount)}===============>${response.body}");
@@ -428,14 +383,9 @@ class ApiServices {
     }
   }
 
-  static Future<UpdateBanksResponseModel> updateBankAccount(
-      {required Map<String, String> body}) async {
-    https.Response response = await https.put(
-        Uri.https(AppUrls.base, AppUrls.bankAccount),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          "Authorization": getToken()
-        },
+  static Future<UpdateBanksResponseModel> updateBankAccount({required Map<String, String> body}) async {
+    https.Response response = await https.put(Uri.https(AppUrls.base, AppUrls.bankAccount),
+        headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
         body: body);
     log("${Uri.https(AppUrls.base, AppUrls.bankAccount)}===============>$body");
     log("${Uri.https(AppUrls.base, AppUrls.bankAccount)}===============>${response.statusCode}");
@@ -450,10 +400,7 @@ class ApiServices {
   static Future<GetBanksResponseModel> getBanks() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.banks),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.banks)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.banks)}===============>${response.body}");
@@ -467,10 +414,7 @@ class ApiServices {
   static Future<GetProfileResponseModel> getProfile() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.profile),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.profile)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.profile)}===============>${response.body}");
@@ -481,15 +425,11 @@ class ApiServices {
     }
   }
 
-  static Future<UpdateProfileResponseModel> upDateProfile(
-      {required Map<String, String> body}) async {
+  static Future<UpdateProfileResponseModel> upDateProfile({required Map<String, String> body}) async {
     https.Response response = await https.put(
       Uri.https(AppUrls.base, AppUrls.profile),
       body: body,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.profile)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.profile)}===============>${response.body}");
@@ -500,8 +440,7 @@ class ApiServices {
     }
   }
 
-  static Future<AddBankAccountResponseModel> addBankAccount(
-      {required Map<String, String> body}) async {
+  static Future<AddBankAccountResponseModel> addBankAccount({required Map<String, String> body}) async {
     var response = await https.post(
       Uri.https(AppUrls.base, AppUrls.bankAccount),
       headers: {"Authorization": getToken()},
@@ -538,10 +477,7 @@ class ApiServices {
   static Future<GetReviewStatusResponseModel> getReviewsStatus() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.reviewsStatus),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.reviewsStatus)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.reviewsStatus)}===============>${response.body}");
@@ -555,10 +491,7 @@ class ApiServices {
   static Future<GetReviewResponseModel> getReviews() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.reviews),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.reviews)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.reviews)}===============>${response.body}");
@@ -569,14 +502,9 @@ class ApiServices {
     }
   }
 
-  static Future<GetReviewResponseModel> verifyRideOtp(
-      {required Map<String, dynamic> body}) async {
-    https.Response response = await https.post(
-        Uri.https(AppUrls.base, AppUrls.verifyRideOtp),
-        headers: {
-          'Content-Type': 'application/json',
-          "Authorization": getToken()
-        },
+  static Future<GetReviewResponseModel> verifyRideOtp({required Map<String, dynamic> body}) async {
+    https.Response response = await https.post(Uri.https(AppUrls.base, AppUrls.verifyRideOtp),
+        headers: {'Content-Type': 'application/json', "Authorization": getToken()},
         body: json.encode(body));
     log("${Uri.https(AppUrls.base, AppUrls.verifyRideOtp)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.verifyRideOtp)}===============>${response.body}");
@@ -591,10 +519,7 @@ class ApiServices {
   static Future<GetRidesResponseModel> getRides() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.rides),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.rides)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.rides)}===============>${response.body}");
@@ -609,10 +534,7 @@ class ApiServices {
       {required Map<String, dynamic> queryParameter}) async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.rideOrderDetails, queryParameter),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.rideDetails)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.rideDetails)}===============>${response.body}");
@@ -626,10 +548,7 @@ class ApiServices {
   static Future<GetNotificationsResponseModel> getNotifications() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.notifications),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.notifications)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.notifications)}===============>${response.body}");
@@ -643,10 +562,7 @@ class ApiServices {
   static Future<GetHelpCategoriesResponseModel> getHelpCategories() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.helpCategories),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.helpCategories)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.helpCategories)}===============>${response.body}");
@@ -657,14 +573,10 @@ class ApiServices {
     }
   }
 
-  static Future<FaqResponseModel> getFaqs(
-      {required Map<String, String> queryParameter}) async {
+  static Future<FaqResponseModel> getFaqs({required Map<String, String> queryParameter}) async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.faqs, queryParameter),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.faqs)}===============>$queryParameter");
     log("${Uri.https(AppUrls.base, AppUrls.faqs)}===============>${response.statusCode}");
@@ -680,10 +592,7 @@ class ApiServices {
       {required Map<String, String> queryParameter}) async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.earnings, queryParameter),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.earnings)}===============>$queryParameter");
     log("${Uri.https(AppUrls.base, AppUrls.earnings)}===============>${response.statusCode}");
@@ -703,10 +612,7 @@ class ApiServices {
         AppUrls.savePreference,
       ),
       body: body,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.savePreference)}===============>$body");
     log("${Uri.https(AppUrls.base, AppUrls.savePreference)}===============>${response.statusCode}");
@@ -724,10 +630,7 @@ class ApiServices {
         AppUrls.base,
         AppUrls.savePreference,
       ),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.savePreference)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.savePreference)}===============>${response.body}");
@@ -738,17 +641,13 @@ class ApiServices {
     }
   }
 
-  static Future<LogoutResponseModel> logout(
-      {required Map<String, String> body}) async {
+  static Future<LogoutResponseModel> logout({required Map<String, String> body}) async {
     https.Response response = await https.post(
       Uri.https(
         AppUrls.base,
         AppUrls.logout,
       ),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.logout)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.logout)}===============>${response.body}");
@@ -759,17 +658,13 @@ class ApiServices {
     }
   }
 
-  static Future<LogoutResponseModel> deleteAccount(
-      {required Map<String, String> body}) async {
+  static Future<LogoutResponseModel> deleteAccount({required Map<String, String> body}) async {
     https.Response response = await https.post(
       Uri.https(
         AppUrls.base,
         AppUrls.deleteAccount,
       ),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.deleteAccount)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.deleteAccount)}===============>${response.body}");
@@ -787,10 +682,7 @@ class ApiServices {
         AppUrls.base,
         AppUrls.documentRejectionResponse,
       ),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.documentRejectionResponse)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.documentRejectionResponse)}===============>${response.body}");
@@ -807,10 +699,7 @@ class ApiServices {
         AppUrls.base,
         AppUrls.vehicles,
       ),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.vehicles)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.vehicles)}===============>${response.body}");
@@ -824,10 +713,7 @@ class ApiServices {
   static Future<String> getVehicle({required Map<String, String> body}) async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.vehicle, body),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.vehicle, body)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.vehicle, body)}===============>${response.body}");
@@ -845,10 +731,7 @@ class ApiServices {
         AppUrls.base,
         AppUrls.vehicles,
       ),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.vehicles)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.vehicles)}===============>${response.body}");
@@ -859,18 +742,14 @@ class ApiServices {
     }
   }
 
-  static Future<AddVehicleResponseModel> addVehicle(
-      {required Map<String, String> body}) async {
+  static Future<AddVehicleResponseModel> addVehicle({required Map<String, String> body}) async {
     https.Response response = await https.post(
       Uri.https(
         AppUrls.base,
         AppUrls.addVehicles,
       ),
       body: body,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.addVehicles)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.addVehicles)}===============>${response.body}");
@@ -881,18 +760,14 @@ class ApiServices {
     }
   }
 
-  static Future<LogoutResponseModel> blockVehicle(
-      {required Map<String, dynamic> body}) async {
+  static Future<LogoutResponseModel> blockVehicle({required Map<String, dynamic> body}) async {
     https.Response response = await https.put(
       Uri.https(
         AppUrls.base,
         AppUrls.blockVehicle,
       ),
       body: body,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.blockVehicle)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.blockVehicle)}===============>${response.body}");
@@ -903,18 +778,14 @@ class ApiServices {
     }
   }
 
-  static Future<LogoutResponseModel> changeOnlineStatus(
-      {required Map<String, dynamic> body}) async {
+  static Future<LogoutResponseModel> changeOnlineStatus({required Map<String, dynamic> body}) async {
     https.Response response = await https.put(
       Uri.https(
         AppUrls.base,
         AppUrls.onlineStatus,
       ),
       body: json.encode(body),
-      headers: {
-        'Content-Type': 'application/json',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/json', "Authorization": getToken()},
     );
     log(json.encode(body));
     log("${Uri.https(AppUrls.base, AppUrls.onlineStatus)}===============>${response.statusCode}");
@@ -932,10 +803,7 @@ class ApiServices {
         AppUrls.base,
         AppUrls.onlineStatus,
       ),
-      headers: {
-        'Content-Type': 'application/json',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/json', "Authorization": getToken()},
     );
 
     log("${Uri.https(AppUrls.base, AppUrls.onlineStatus)}===============>${response.statusCode}");
@@ -976,15 +844,11 @@ class ApiServices {
     }
   }
 
-  static Future<ChangeRideStatusModel> changeRideStatus(
-      {required Map<String, dynamic> body}) async {
+  static Future<ChangeRideStatusModel> changeRideStatus({required Map<String, dynamic> body}) async {
     https.Response response = await https.put(
       Uri.https(AppUrls.base, AppUrls.changeRideStatus),
       body: json.encode(body),
-      headers: {
-        "Authorization": getToken(),
-        'Content-Type': 'application/json'
-      },
+      headers: {"Authorization": getToken(), 'Content-Type': 'application/json'},
     );
     log("${Uri.https(AppUrls.base, AppUrls.changeRideStatus)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.changeRideStatus)}===============>${response.body}");
@@ -999,10 +863,7 @@ class ApiServices {
   static Future<GetRideDetailsResponseModel> latestActiveRide() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.latestActiveRide),
-      headers: {
-        "Authorization": getToken(),
-        'Content-Type': 'application/json'
-      },
+      headers: {"Authorization": getToken(), 'Content-Type': 'application/json'},
     );
     log("${Uri.https(AppUrls.base, AppUrls.latestActiveRide)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.latestActiveRide)}===============>${response.body}");
@@ -1018,10 +879,7 @@ class ApiServices {
   }) async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.driverProfile, queryParameter),
-      headers: {
-        "Authorization": getToken(),
-        'Content-Type': 'application/json'
-      },
+      headers: {"Authorization": getToken(), 'Content-Type': 'application/json'},
     );
     log("${Uri.https(AppUrls.base, AppUrls.driverProfile)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.driverProfile, queryParameter)}===============>${response.body}");
@@ -1037,10 +895,7 @@ class ApiServices {
   }) async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.profilePhoto, queryParameter),
-      headers: {
-        "Authorization": getToken(),
-        'Content-Type': 'application/json'
-      },
+      headers: {"Authorization": getToken(), 'Content-Type': 'application/json'},
     );
     log("${Uri.https(AppUrls.base, AppUrls.profilePhoto)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.profilePhoto, queryParameter)}===============>${response.body}");
@@ -1056,10 +911,7 @@ class ApiServices {
   }) async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.paymentType),
-      headers: {
-        "Authorization": getToken(),
-        'Content-Type': 'application/json'
-      },
+      headers: {"Authorization": getToken(), 'Content-Type': 'application/json'},
     );
     log("${Uri.https(AppUrls.base, AppUrls.paymentType)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.paymentType)}===============>${response.body}");
@@ -1075,10 +927,7 @@ class ApiServices {
       {required Map<String, dynamic> queryParameter}) async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.getRidePayment, queryParameter),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        "Authorization": getToken()
-      },
+      headers: {'Content-Type': 'application/x-www-form-urlencoded', "Authorization": getToken()},
     );
     log("${Uri.https(AppUrls.base, AppUrls.getRidePayment, queryParameter)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.getRidePayment, queryParameter)}===============>${response.body}");
@@ -1089,15 +938,11 @@ class ApiServices {
     }
   }
 
-  static Future<AddStopResponseModel> addStop(
-      {required Map<String, dynamic> body}) async {
+  static Future<AddStopResponseModel> addStop({required Map<String, dynamic> body}) async {
     https.Response response = await https.post(
       Uri.https(AppUrls.base, AppUrls.addStop),
       body: json.encode(body),
-      headers: {
-        "Authorization": getToken(),
-        'Content-Type': 'application/json'
-      },
+      headers: {"Authorization": getToken(), 'Content-Type': 'application/json'},
     );
     log("${Uri.https(AppUrls.base, AppUrls.addStop)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.addStop)}===============>${response.body}");
@@ -1109,11 +954,9 @@ class ApiServices {
     }
   }
 
-  static Future<GoogleLocationResponse> getCurrentLocation(
-      double latitude, double longitude) async {
+  static Future<GoogleLocationResponse> getCurrentLocation(double latitude, double longitude) async {
     https.Response response = await https.get(
-      Uri.parse(
-          "${AppUrls.googleLocationUrl}$latitude,$longitude${AppUrls.googleApiKeyUrl}"),
+      Uri.parse("${AppUrls.googleLocationUrl}$latitude,$longitude${AppUrls.googleApiKeyUrl}"),
     );
     log("${Uri.parse("${AppUrls.googleLocationUrl}$latitude,$longitude${AppUrls.googleApiKeyUrl}")}===============>${response.body}");
     // log("${Uri.parse("${AppUrls.googleLocationUrl}$latitude,$longitude${AppUrls.googleApiKeyUrl}")}===============>${response.body}");
@@ -1128,10 +971,7 @@ class ApiServices {
     try {
       https.Response response = await https.get(
         Uri.https(AppUrls.base, AppUrls.walletbalance),
-        headers: {
-          "Authorization": getToken(),
-          'Content-Type': 'application/json'
-        },
+        headers: {"Authorization": getToken(), 'Content-Type': 'application/json'},
       );
 
       log("Partner wallet API ===============>${Uri.https(AppUrls.base, AppUrls.walletbalance)}");
@@ -1145,8 +985,8 @@ class ApiServices {
         log("Partner wallet error: ${response.body}");
         throw Exception(response.body);
       }
-    } catch (e) {
-      log("Partner wallet exception: $e");
+    } catch (e, s) {
+      log("Partner wallet exception: $e", stackTrace: s);
       rethrow;
     }
   }

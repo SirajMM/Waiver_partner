@@ -74,7 +74,7 @@ class LeftMenuControllerDriver extends GetxController {
     );
   }
 
-  logout() async {
+  Future<void> logout() async {
     try {
       Get.showOverlay(
           asyncFunction: () async {
