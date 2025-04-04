@@ -166,110 +166,109 @@ class RegistrationController extends GetxController {
 
   RxBool isRegisterButtonLoading = false.obs;
   register() async {
-    // try {
-    isRegisterButtonLoading.value = true;
-    if (!vehicleTypes.fold(
-        false,
-        (previousValue, element) =>
-            previousValue || (element.isSelected?.value ?? false))) {
-      showVehicleTypeError.value = true;
-    }
-
-    if (registrationFormKey.currentState?.validate() ?? false) {
-      if (!isAgreedToTermsAndConditions.value) {
-        showTermsAndConditionsError.value = true;
+    try {
+      isRegisterButtonLoading.value = true;
+      if (!vehicleTypes.fold(
+          false,
+          (previousValue, element) =>
+              previousValue || (element.isSelected?.value ?? false))) {
+        showVehicleTypeError.value = true;
       }
 
-      if (!isAgreedToPrivacyPolicy.value) {
-        showPrivacyPolicyError.value = true;
-      }
-
-      if (isFleet()) {
-        showVehicleTypeError.value = false;
-        showTransmissionTypeError.value = false;
-      }
-
-      if (isAgreedToPrivacyPolicy.value &&
-          isAgreedToTermsAndConditions.value &&
-          !showVehicleTypeError.value &&
-          !showTransmissionTypeError.value) {
-        Map<String, dynamic> body = {
-          "fullname": controllerFullName.text.trim(),
-          "email": controllerEmail.text.trim(),
-          "gender": selectedGender!.code,
-          "alternative_phone": controllerAlternativeNumber.text.trim(),
-          "whatsapp_phone": controllerWhatsAppNumber.text.trim(),
-          "state": selectStatelist?.id,
-          "district": selectedDistrict?.id.toString(),
-          "address": controllerAddress.text.trim(),
-          "work_location": selectedWorkingLocation?.id,
-          "vehicle_type_ids": (vehicleTypes ?? [])
-              .where((element) => element.isSelected?.value ?? false)
-              .map((e) => e.id)
-              .toList(),
-          "transmission_type_ids": (transmissionTypes ?? [])
-              .where((element) => element.isSelected?.value ?? false)
-              .map((e) => e.id)
-              .toList(),
-        };
-
-        if (userTypeCode != UserTypeCode.fleet) {
-          body.addAll({
-            "dob": controllerDateOfBirth.text.changeDateFormat(),
-            "driving_experience": selectedYearsOfDrivingExperience!.id,
-            "license_validity":
-                controllerLicenseValidityDate.text.changeDateFormat(),
-          });
+      if (registrationFormKey.currentState?.validate() ?? false) {
+        if (!isAgreedToTermsAndConditions.value) {
+          showTermsAndConditionsError.value = true;
         }
 
-        CreateDriverProfileResponseModel response =
-            await ApiServices.createProfile(body: body);
-        if (response.status == 200) {
-          box.write(
-            BoxKeys.userName,
-            response.data?.fullname ?? "",
-          );
-          box.write(
-            BoxKeys.userImage,
-            response.data?.profileImage ?? "",
-          );
-          if (userTypeCode == UserTypeCode.fleet) {
-            Get.offAllNamed(AppRoutes1.getFleetHomePageInRoute());
-          } else {
-            Get.offAllNamed(AppRoutes1.getChauffeurProofInRoute());
+        if (!isAgreedToPrivacyPolicy.value) {
+          showPrivacyPolicyError.value = true;
+        }
+
+        if (isFleet()) {
+          showVehicleTypeError.value = false;
+          showTransmissionTypeError.value = false;
+        }
+
+        if (isAgreedToPrivacyPolicy.value &&
+            isAgreedToTermsAndConditions.value &&
+            !showVehicleTypeError.value &&
+            !showTransmissionTypeError.value) {
+          Map<String, dynamic> body = {
+            "fullname": controllerFullName.text.trim(),
+            "email": controllerEmail.text.trim(),
+            "gender": selectedGender!.code,
+            "alternative_phone": controllerAlternativeNumber.text.trim(),
+            "whatsapp_phone": controllerWhatsAppNumber.text.trim(),
+            "state": selectStatelist?.id,
+            "district": selectedDistrict?.id.toString(),
+            "address": controllerAddress.text.trim(),
+            "work_location": selectedWorkingLocation?.id,
+            "vehicle_type_ids": (vehicleTypes ?? [])
+                .where((element) => element.isSelected?.value ?? false)
+                .map((e) => e.id)
+                .toList(),
+            "transmission_type_ids": (transmissionTypes ?? [])
+                .where((element) => element.isSelected?.value ?? false)
+                .map((e) => e.id)
+                .toList(),
+          };
+
+          if (userTypeCode != UserTypeCode.fleet) {
+            body.addAll({
+              "dob": controllerDateOfBirth.text.changeDateFormat(),
+              "driving_experience": selectedYearsOfDrivingExperience!.id,
+              "license_validity":
+                  controllerLicenseValidityDate.text.changeDateFormat(),
+            });
           }
-        } else {
-          Get.showSnackbar(
-            const GetSnackBar(
-              duration: Duration(seconds: 5),
-              backgroundColor: Colors.transparent,
-              padding: EdgeInsets.zero,
-              messageText: AppSnackBar(
-                text: "OOPS Something went Wrong",
-              ),
-            ),
-          );
-        }
-      }
 
-      // Get.toNamed(AppRoutes.chauffeurProof, arguments: controllerFullName.text);
-      // }
+          CreateDriverProfileResponseModel response =
+              await ApiServices.createProfile(body: body);
+          if (response.status == 200) {
+            box.write(
+              BoxKeys.userName,
+              response.data?.fullname ?? "",
+            );
+            box.write(
+              BoxKeys.userImage,
+              response.data?.profileImage ?? "",
+            );
+            if (userTypeCode == UserTypeCode.fleet) {
+              Get.offAllNamed(AppRoutes1.getFleetHomePageInRoute());
+            } else {
+              Get.offAllNamed(AppRoutes1.getChauffeurProofInRoute());
+            }
+          } else {
+            Get.showSnackbar(
+              const GetSnackBar(
+                duration: Duration(seconds: 5),
+                backgroundColor: Colors.transparent,
+                padding: EdgeInsets.zero,
+                messageText: AppSnackBar(
+                  text: "OOPS Something went Wrong",
+                ),
+              ),
+            );
+          }
+        }
+
+        // Get.toNamed(AppRoutes.chauffeurProof, arguments: controllerFullName.text);
+        // }
+      }
+    } catch (error) {
+      print(error);
+      Get.showSnackbar(
+        const GetSnackBar(
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.transparent,
+          padding: EdgeInsets.zero,
+          messageText: AppSnackBar(
+            text: "OOPS something went wrong",
+          ),
+        ),
+      );
+    } finally {
+      isRegisterButtonLoading.value = false;
     }
   }
-  // catch (error) {
-  //   print(error);
-  //   Get.showSnackbar(
-  //     const GetSnackBar(
-  //       duration: Duration(seconds: 2),
-  //       backgroundColor: Colors.transparent,
-  //       padding: EdgeInsets.zero,
-  //       messageText: AppSnackBar(
-  //         text: "OOPS something went wrong",
-  //       ),
-  //     ),
-  //   );
-  // } finally {
-  //   isRegisterButtonLoading.value = false;
-  // }
 }
-// }

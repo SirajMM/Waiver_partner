@@ -41,7 +41,8 @@ class LoginController extends GetxController {
   List<CountryModel> countryList = <CountryModel>[
     CountryModel(image: AppImages.indiaFlag, name: "India", mobileCode: '+91')
   ];
-
+  Rx<SendPhoneOtpResponseModel> errorResponse =
+      Rx<SendPhoneOtpResponseModel>(SendPhoneOtpResponseModel());
   sendPhoneOtp() async {
     if (formKeyForLoginPage.currentState?.validate() ?? false) {
       try {
@@ -52,8 +53,30 @@ class LoginController extends GetxController {
           "hash_key": await SmsAutoFill().getAppSignature,
           "user_type": box.read(BoxKeys.userTypeCode),
         };
+
         SendPhoneOtpResponseModel response =
             await ApiServices.sendPhoneOtp(body: body);
+
+        errorResponse.value = response;
+
+        // Handle specific error message for phone already exists
+        String displayMessage = response.message ?? "";
+        if (response.status == 400 &&
+            response.error?.nonFieldErrors != null &&
+            response.error!.nonFieldErrors!.isNotEmpty) {
+          displayMessage = response.error!.nonFieldErrors![0];
+
+          Get.showSnackbar(
+            GetSnackBar(
+              duration: Duration(seconds: 5),
+              backgroundColor: Colors.transparent,
+              padding: EdgeInsets.zero,
+              messageText: AppSnackBar(
+                  text: displayMessage ?? "OOPS Something went Wrong"),
+            ),
+          );
+        }
+
         if (response.status == 200) {
           Get.toNamed(
             AppRoutes1.getOtpInRoute(),
@@ -77,13 +100,12 @@ class LoginController extends GetxController {
           print(error);
         }
         Get.showSnackbar(
-          const GetSnackBar(
+          GetSnackBar(
             duration: Duration(seconds: 5),
             backgroundColor: Colors.transparent,
             padding: EdgeInsets.zero,
             messageText: AppSnackBar(
-              text: "OOPS Something went Wrong",
-            ),
+                text: error.toString() ?? "OOPS Something went Wrong"),
           ),
         );
       } finally {

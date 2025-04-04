@@ -58,7 +58,9 @@ class ApiServices {
       return sendPhoneOtpResponseModelFromJson(response.body);
     } else {
       log(Exception(response.body).toString());
-      throw Exception(response.body);
+      throw Exception(sendPhoneOtpResponseModelFromJson(response.body)
+          .error!
+          .nonFieldErrors![0]);
     }
   }
 

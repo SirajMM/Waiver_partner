@@ -17,6 +17,7 @@ import 'package:waiver_driver/backend/binding/WaitingForAuthorization/waitingfor
 import 'package:waiver_driver/backend/binding/signIn/signin_binding.dart';
 import 'package:waiver_driver/backend/binding/splash/splash_binding.dart';
 import 'package:waiver_driver/controller/driver_type_selection/driver_type_selection_controller.dart';
+import 'package:waiver_driver/controller/fleet_registration/fleet_registration_controller.dart';
 import 'package:waiver_driver/controller/reason_for_cancel/reason_for_cancel_controller.dart';
 import 'package:waiver_driver/controller/registration_certificate/registration_certificate_controller.dart';
 import 'package:waiver_driver/controller/splash/splash_controller.dart';
@@ -49,6 +50,7 @@ import '../../../view/add_vehicle_proof/add_vehicle_proof_view.dart';
 import '../../../view/bank_account/bank_account_view.dart';
 import '../../../view/driver_profile/driver_profile_view.dart';
 import '../../../view/earning/earning_view.dart';
+import '../../../view/fleet_registration/fleet_registration_view.dart';
 import '../../../view/preferences/preferences_view.dart';
 import '../../../view/profile/profile_view.dart';
 import '../../../view/rating/rating_view.dart';
@@ -170,11 +172,11 @@ class AppRoutes1 {
       page: () => const RegistrationScreen(),
       binding: RegistrationBinding(),
     ),
-    // GetPage(
-    //   name: AppRoutes.fleetRegistration,
-    //   page: () => const FleetRegistrationScreen(),
-    //   binding: FleetRegistrationControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.fleetRegistration,
+      page: () => const FleetRegistrationScreen(),
+      binding: FleetRegistrationControllerBinding(),
+    ),
     GetPage(
       name: AppRoutes1.chauffeurProof,
       page: () => const ChauffeurProofScreen(),
@@ -310,12 +312,12 @@ class AppRoutes1 {
       binding: FleetHomePageBinding(),
     ),
     GetPage(
-      name: AppRoutes.addVehicle,
+      name: AppRoutes1.addVehicle,
       page: () => const AddVehicleScreen(),
       binding: AddVehicleControllerBinding(),
     ),
     GetPage(
-      name: AppRoutes.addDriver,
+      name: AppRoutes1.addDriver,
       page: () => const AddDriverScreen(),
       binding: AddDriverControllerBinding(),
     ),
@@ -326,12 +328,12 @@ class AppRoutes1 {
     // ),
     // // OMS: 2024-06-09 18:53:02 working here
     GetPage(
-      name: AppRoutes.addProofVehicle,
+      name: AppRoutes1.addProofVehicle,
       page: () => const AddVehicleProofScreen(),
       binding: AddVehicleProofControllerBinding(),
     ),
     GetPage(
-      name: AppRoutes.driverProfile,
+      name: AppRoutes1.driverProfile,
       page: () => const DriverProfileScreen(),
       binding: DriverProfileControllerBinding(),
     ),
