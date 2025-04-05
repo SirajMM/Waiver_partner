@@ -13,6 +13,7 @@ import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_gradient.dart';
 import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 
+import '../../controller/left_menu_fleet/left_menu_fleet_controller.dart';
 import '../left_menu_fleet/left_menu_fleet_view.dart';
 
 class FleetHomePageScreen extends StatelessWidget {
@@ -20,50 +21,46 @@ class FleetHomePageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return UpgradeAlert(
-      showIgnore: false,
-      showLater: false,
-      child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          isExtended: true,
-          onPressed: () => Get.toNamed(AppRoutes.addVehicle),
-          label: BlueButton(
-            width: Get.width - 60.sp,
-            prefixIcon: CircleWithIcon(
-              color: Get.theme.primaryColor,
-              height: 25.sp,
-              child: Icon(
-                Icons.add,
-                color: AppColors.blue,
-              ),
+    return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        isExtended: true,
+        onPressed: () => Get.toNamed(AppRoutes.addVehicle),
+        label: BlueButton(
+          width: Get.width - 60.sp,
+          prefixIcon: CircleWithIcon(
+            color: Get.theme.primaryColor,
+            height: 25.sp,
+            child: Icon(
+              Icons.add,
+              color: AppColors.blue,
             ),
-            text: "Add New Vehicle",
           ),
+          text: "Add New Vehicle",
         ),
-        appBar: appBar(title: "Fleet", showMenuButton: true),
-        drawer: const LeftMenuFleet(),
-        body: Obx(
-          () => RefreshIndicator(
-            onRefresh: () async {
-              await FleetHomePageController.to.getVehicles();
-            },
-            child: ListView(
-              padding: EdgeInsets.symmetric(
-                horizontal: 15.sp,
-                vertical: 25.sp,
-              ),
-              children: FleetHomePageController.to.fleet.reversed
-                  .toList()
-                  .map(
-                    (fleet) => FleetRegistrationListingItem(
-                      fleet: fleet,
-                    ),
-                  )
-                  .toList(),
+      ),
+      appBar: appBar(title: "Fleet", showMenuButton: true),
+      drawer: const LeftMenuFleet(),
+      body: Obx(
+        () => RefreshIndicator(
+          onRefresh: () async {
+            await FleetHomePageController.to.getVehicles();
+          },
+          child: ListView(
+            padding: EdgeInsets.symmetric(
+              horizontal: 15.sp,
+              vertical: 25.sp,
             ),
+            children: FleetHomePageController.to.fleet.reversed
+                .toList()
+                .map(
+                  (fleet) => FleetRegistrationListingItem(
+                    fleet: fleet,
+                  ),
+                )
+                .toList(),
           ),
         ),
       ),
@@ -138,8 +135,7 @@ class FleetRegistrationListingItem extends StatelessWidget {
                       text: fleet.proof?.isEmpty ?? false
                           ? "Add  Vehicle details"
                           : " View Vehicle details",
-                      onTap: () => Get.toNamed(AppRoutes.addProofVehicle,
-                          arguments: fleet),
+                      onTap: () => Get.toNamed(AppRoutes.addProofVehicle, arguments: fleet),
                     ),
                     Container(
                       height: 1.sp,
@@ -156,12 +152,10 @@ class FleetRegistrationListingItem extends StatelessWidget {
                 : (fleet.driver?.driverId ?? "") == ""
                     ? FleetRegistrationItem(
                         text: "Add Driver",
-                        onTap: () =>
-                            Get.toNamed(AppRoutes.addDriver, arguments: fleet),
+                        onTap: () => Get.toNamed(AppRoutes.addDriver, arguments: fleet),
                       )
                     : GestureDetector(
-                        onTap: () => Get.toNamed(AppRoutes.driverProfile,
-                            arguments: fleet),
+                        onTap: () => Get.toNamed(AppRoutes.driverProfile, arguments: fleet),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -170,15 +164,11 @@ class FleetRegistrationListingItem extends StatelessWidget {
                               children: [
                                 Text(
                                   fleet.driver?.driverName ?? "",
-                                  style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: AppColors.black10),
+                                  style: TextStyle(fontSize: 14.sp, color: AppColors.black10),
                                 ),
                                 Text(
                                   fleet.driver?.driverId ?? "",
-                                  style: TextStyle(
-                                      fontSize: 12.sp,
-                                      color: AppColors.black10),
+                                  style: TextStyle(fontSize: 12.sp, color: AppColors.black10),
                                 ),
                                 SizedBox(
                                   height: 20.sp,
@@ -193,6 +183,7 @@ class FleetRegistrationListingItem extends StatelessWidget {
                         ),
                       );
           }),
+          SizedBox(height: 10.h),
           GetX<FleetHomePageController>(builder: (controller) {
             return fleet.status?.value == VehicleApprovalStatus.active
                 // true
@@ -207,8 +198,7 @@ class FleetRegistrationListingItem extends StatelessWidget {
                             isLoading: isButtonLoading.value,
                             onTap: () async {
                               isButtonLoading.value = true;
-                              await FleetHomePageController.to
-                                  .blockUser(vehicle: fleet);
+                              await FleetHomePageController.to.blockUser(vehicle: fleet);
                               isButtonLoading.value = false;
                             });
                       }),
@@ -223,36 +213,34 @@ class FleetRegistrationListingItem extends StatelessWidget {
 }
 
 class FleetRegistrationItem extends StatelessWidget {
-  void Function()? onTap;
-  String text;
-  FleetRegistrationItem({required this.onTap, required this.text});
+  final void Function()? onTap;
+  final String text;
+  const FleetRegistrationItem({super.key, required this.onTap, required this.text});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: onTap,
-            child: FleetRegistrationStatusButton(
-              text: text,
-              color: AppColors.blue,
-            ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        GestureDetector(
+          onTap: onTap,
+          child: FleetRegistrationStatusButton(
+            text: text,
+            color: AppColors.blue,
           ),
-          SvgPicture.asset(
-            AppIcons.arrowRight,
-            height: 15.sp,
-          )
-        ],
-      ),
+        ),
+        SvgPicture.asset(
+          AppIcons.arrowRight,
+          height: 15.sp,
+        )
+      ],
     );
   }
 }
 
 class FleetRegistrationListingItemActive extends StatelessWidget {
-  FleetVehicle fleet;
-  FleetRegistrationListingItemActive({super.key, required this.fleet});
+  final FleetVehicle fleet;
+  const FleetRegistrationListingItemActive({super.key, required this.fleet});
 
   @override
   Widget build(BuildContext context) {
@@ -280,9 +268,7 @@ class FleetRegistrationListingItemActive extends StatelessWidget {
                   ),
                   Text(
                     fleet.registrationNumber ?? "",
-                    style: TextStyle(
-                        fontSize: 11.sp,
-                        color: Get.theme.indicatorColor.withOpacity(.5)),
+                    style: TextStyle(fontSize: 11.sp, color: Get.theme.indicatorColor.withOpacity(.5)),
                   )
                 ],
               ),
@@ -312,14 +298,12 @@ class FleetRegistrationListingItemActive extends StatelessWidget {
                       children: [
                         Text(
                           fleet.name ?? "",
-                          style: TextStyle(
-                              fontSize: 14.sp, fontWeight: FontWeight.w600),
+                          style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
                         ),
                         Text(
                           "#${fleet.id}",
                           style: TextStyle(
-                              fontSize: 11.sp,
-                              color: Get.theme.indicatorColor.withOpacity(.5)),
+                              fontSize: 11.sp, color: Get.theme.indicatorColor.withOpacity(.5)),
                         )
                       ],
                     ),
@@ -336,8 +320,8 @@ class FleetRegistrationListingItemActive extends StatelessWidget {
 }
 
 class FleetRegistrationListingItemBlocked extends StatelessWidget {
-  FleetVehicle fleet;
-  FleetRegistrationListingItemBlocked({super.key, required this.fleet});
+  final FleetVehicle fleet;
+  const FleetRegistrationListingItemBlocked({super.key, required this.fleet});
 
   @override
   Widget build(BuildContext context) {
@@ -426,9 +410,9 @@ class FleetRegistrationListingItemBlocked extends StatelessWidget {
 }
 
 class FleetRegistrationStatusButton extends StatelessWidget {
-  String text;
-  Color color;
-  FleetRegistrationStatusButton({
+  final String text;
+  final Color color;
+  const FleetRegistrationStatusButton({
     super.key,
     required this.text,
     required this.color,
@@ -446,6 +430,55 @@ class FleetRegistrationStatusButton extends StatelessWidget {
         style: TextStyle(
           fontSize: 14.sp,
         ),
+      ),
+    );
+  }
+}
+
+class LogoutBottomSheet extends StatelessWidget {
+  const LogoutBottomSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(24.sp),
+      decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(8.sp),
+            topRight: Radius.circular(8.sp),
+          )),
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          Text(
+            "Log out ?",
+            style: TextStyle(color: AppColors.black, fontWeight: FontWeight.w600, fontSize: 20.sp),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 5.sp,
+          ),
+          Text(
+            "Are you sure you want to log out?",
+            style: TextStyle(color: AppColors.grey93, fontSize: 14.sp),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 20.sp,
+          ),
+          RedButton(
+            text: "Logout",
+            onTap: () => LeftMenuControllerFleet.to.logoutUser(),
+          ),
+          SizedBox(
+            height: 20.sp,
+          ),
+          WhiteButton(
+            text: "Go Back",
+            onTap: () => Get.back(),
+          ),
+        ],
       ),
     );
   }

@@ -7,12 +7,10 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
-GetEarningStatusResponseModel getEarningStatusResponseModelFromJson(
-        String str) =>
+GetEarningStatusResponseModel getEarningStatusResponseModelFromJson(String str) =>
     GetEarningStatusResponseModel.fromJson(json.decode(str));
 
-String getEarningStatusResponseModelToJson(
-        GetEarningStatusResponseModel data) =>
+String getEarningStatusResponseModelToJson(GetEarningStatusResponseModel data) =>
     json.encode(data.toJson());
 
 class GetEarningStatusResponseModel {
@@ -52,12 +50,9 @@ class EarningData {
   });
 
   factory EarningData.fromJson(Map<String, dynamic> json) => EarningData(
-        earnings: json["earnings"] == null
-            ? null
-            : Earnings.fromJson(json["earnings"]),
-        payoutSchedule: json["payout_schedule"] == null
-            ? null
-            : PayoutSchedule.fromJson(json["payout_schedule"]),
+        earnings: json["earnings"] == null ? null : Earnings.fromJson(json["earnings"]),
+        payoutSchedule:
+            json["payout_schedule"] == null ? null : PayoutSchedule.fromJson(json["payout_schedule"]),
         rides: json["rides"] == null ? null : Rides.fromJson(json["rides"]),
       );
 
@@ -88,24 +83,15 @@ class Earnings {
   });
 
   factory Earnings.fromJson(Map<String, dynamic> json) => Earnings(
-        rideFare: (json["ride_fare"] is num)
-            ? (json["ride_fare"] as num).toDouble()
-            : 0.0,
-        waiverCharge: (json["waiver_charge"] is num)
-            ? (json["waiver_charge"] as num).toDouble()
-            : 0.0,
+        rideFare: (json["ride_fare"] is num) ? (json["ride_fare"] as num).toDouble() : 0.0,
+        waiverCharge: (json["waiver_charge"] is num) ? (json["waiver_charge"] as num).toDouble() : 0.0,
         tax: (json["tax"] is num) ? (json["tax"] as num).toDouble() : 0.0,
-        incentives: (json["incentives"] is num)
-            ? (json["incentives"] as num).toDouble()
-            : 0.0,
-        referrals: (json["referrals"] is num)
-            ? (json["referrals"] as num).toDouble()
-            : 0.0,
+        incentives: (json["incentives"] is num) ? (json["incentives"] as num).toDouble() : 0.0,
+        referrals: (json["referrals"] is num) ? (json["referrals"] as num).toDouble() : 0.0,
         total: (json["total"] is num) ? (json["total"] as num).toDouble() : 0.0,
         earningsByDay: json["earnings_by_day"] == null
             ? []
-            : List<EarningsByDay>.from(
-                json["earnings_by_day"]!.map((x) => EarningsByDay.fromJson(x))),
+            : List<EarningsByDay>.from(json["earnings_by_day"]!.map((x) => EarningsByDay.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -115,9 +101,8 @@ class Earnings {
         "incentives": incentives,
         "referrals": referrals,
         "total": total,
-        "earnings_by_day": earningsByDay == null
-            ? []
-            : List<dynamic>.from(earningsByDay!.map((x) => x.toJson())),
+        "earnings_by_day":
+            earningsByDay == null ? [] : List<dynamic>.from(earningsByDay!.map((x) => x.toJson())),
       };
 }
 
@@ -145,8 +130,7 @@ class EarningsByDay {
 class PayoutSchedule {
   PayoutSchedule();
 
-  factory PayoutSchedule.fromJson(Map<String, dynamic> json) =>
-      PayoutSchedule();
+  factory PayoutSchedule.fromJson(Map<String, dynamic> json) => PayoutSchedule();
 
   Map<String, dynamic> toJson() => {};
 }
@@ -163,15 +147,11 @@ class Rides {
   });
 
   factory Rides.fromJson(Map<String, dynamic> json) => Rides(
-        totalRides: (json["total_rides"] is num)
-            ? (json["total_rides"] as num).toDouble()
-            : 0.0,
-        totalDistance: (json["total_distance"] is num)
-            ? (json["total_distance"] as num).toDouble()
-            : 0.0,
-        totalDuration: (json["total_duration"] is num)
-            ? (json["total_duration"] as num).toDouble()
-            : 0.0,
+        totalRides: (json["total_rides"] is num) ? (json["total_rides"] as num).toDouble() : 0.0,
+        totalDistance:
+            (json["total_distance"] is num) ? (json["total_distance"] as num).toDouble() : 0.0,
+        totalDuration:
+            (json["total_duration"] is num) ? (json["total_duration"] as num).toDouble() : 0.0,
       );
 
   Map<String, dynamic> toJson() => {
@@ -190,8 +170,7 @@ class Rides {
 GetEarningListResponseModel getEarningListResponseModelFromJson(String str) =>
     GetEarningListResponseModel.fromJson(json.decode(str));
 
-String getEarningListResponseModelToJson(GetEarningListResponseModel data) =>
-    json.encode(data.toJson());
+String getEarningListResponseModelToJson(GetEarningListResponseModel data) => json.encode(data.toJson());
 
 class GetEarningListResponseModel {
   int? status;
@@ -204,8 +183,7 @@ class GetEarningListResponseModel {
     this.data,
   });
 
-  factory GetEarningListResponseModel.fromJson(Map<String, dynamic> json) =>
-      GetEarningListResponseModel(
+  factory GetEarningListResponseModel.fromJson(Map<String, dynamic> json) => GetEarningListResponseModel(
         status: json["status"],
         message: json["message"],
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
@@ -240,17 +218,14 @@ class Data {
         previous: json["previous"] ?? null,
         results: json["results"] == null
             ? []
-            : List<EarningListItem>.from(
-                json["results"]!.map((x) => EarningListItem.fromJson(x))),
+            : List<EarningListItem>.from(json["results"]!.map((x) => EarningListItem.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
         "count": count,
         "next": next,
         "previous": previous,
-        "results": results == null
-            ? []
-            : List<dynamic>.from(results!.map((x) => x.toJson())),
+        "results": results == null ? [] : List<dynamic>.from(results!.map((x) => x.toJson())),
       };
 }
 
@@ -277,23 +252,15 @@ class EarningListItem {
     this.user,
   });
 
-  factory EarningListItem.fromJson(Map<String, dynamic> json) =>
-      EarningListItem(
+  factory EarningListItem.fromJson(Map<String, dynamic> json) => EarningListItem(
         id: json["id"],
         earningType: json["earning_type"],
         amount: json["amount"],
         isPaid: json["is_paid"],
-        paidTime: json["paid_time"] == null
-            ? null
-            : DateTime.parse(json["paid_time"]),
-        created:
-            json["created"] == null ? null : DateTime.parse(json["created"]),
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
+        paidTime: json["paid_time"] == null ? null : DateTime.parse(json["paid_time"]),
+        created: json["created"] == null ? null : DateTime.parse(json["created"]),
+        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
         user: json["user"],
       );
 
@@ -352,7 +319,7 @@ class WalletResponse {
 }
 
 class WalletData {
-  final double? amount;
+  final String? amount;
   final dynamic deleted;
   final dynamic partner;
 
@@ -364,7 +331,7 @@ class WalletData {
 
   factory WalletData.fromJson(Map<String, dynamic> json) {
     return WalletData(
-      amount: json['amount'] != null ? (json['amount'] as num).toDouble() : null,
+      amount: json['amount'] != null ? (json['amount'].toString()) : null,
       deleted: json['deleted'],
       partner: json['partner'],
     );

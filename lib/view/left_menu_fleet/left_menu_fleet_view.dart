@@ -14,6 +14,7 @@ import '../../core/constants/get_storage_constants.dart';
 import '../../core/widgets/app_buttons/app_buttons.dart';
 import '../../helper/router/app_routes/app_routes.dart';
 import '../../main.dart';
+import '../fleet_home_page/fleet_home_page_view.dart';
 
 class LeftMenuFleet extends StatelessWidget {
   const LeftMenuFleet({super.key});
@@ -79,8 +80,7 @@ class LeftMenuFleet extends StatelessWidget {
           LeftMenuItem(
             item: LeftMenuControllerFleet.to.help,
             onTap: () async {
-              final Uri whatsapp = Uri.parse(
-                  'https://api.whatsapp.com/send?phone=918943099085&text=Hi');
+              final Uri whatsapp = Uri.parse('https://api.whatsapp.com/send?phone=918943099085&text=Hi');
               launchUrl(whatsapp);
             },
           ),
@@ -102,7 +102,7 @@ class LeftMenuFleet extends StatelessWidget {
           ),
           LeftMenuItem(
             item: LeftMenuControllerFleet.to.logOut,
-            onTap: () => LeftMenuControllerFleet.to.logout(),
+            onTap: () => Get.bottomSheet(LogoutBottomSheet()),
           ),
         ],
       ),
@@ -162,8 +162,8 @@ class LeftMenuProfileItem extends StatelessWidget {
 
 class LeftMenuItem extends StatelessWidget {
   final LeftMenuItemModel item;
-  void Function()? onTap;
-  LeftMenuItem({super.key, required this.item, required this.onTap});
+  final void Function()? onTap;
+  const LeftMenuItem({super.key, required this.item, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
