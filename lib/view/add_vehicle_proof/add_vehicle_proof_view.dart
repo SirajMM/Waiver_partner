@@ -8,6 +8,7 @@ import 'package:waiver_driver/core/widgets/app_bar/app_bar.dart';
 import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 
+import '../../helper/router/app_routes/route.dart';
 import '../chauffeur_proof/chauffeur_proof_view.dart';
 
 
@@ -142,7 +143,7 @@ class AddVehicleDetailsContainer extends StatelessWidget {
           AddProofItem(
             proof: AddVehicleProofController.to.registrationCertificate,
             onTap: () => Get.toNamed(
-              AppRoutes.aadharCard,
+              AppRoutes1.aadharCard,
               arguments: AddVehicleProofController.to.registrationCertificate,
             ),
           ),
@@ -153,7 +154,7 @@ class AddVehicleDetailsContainer extends StatelessWidget {
           AddProofItem(
             proof: AddVehicleProofController.to.vehicleInsurance,
             onTap: () => Get.toNamed(
-              AppRoutes.aadharCard,
+              AppRoutes1.aadharCard,
               arguments: AddVehicleProofController.to.vehicleInsurance,
             ),
           ),
@@ -164,7 +165,7 @@ class AddVehicleDetailsContainer extends StatelessWidget {
           AddProofItem(
             proof: AddVehicleProofController.to.vehiclePermit,
             onTap: () => Get.toNamed(
-              AppRoutes.aadharCard,
+              AppRoutes1.aadharCard,
               arguments: AddVehicleProofController.to.vehiclePermit,
             ),
           ),
@@ -175,7 +176,7 @@ class AddVehicleDetailsContainer extends StatelessWidget {
           AddProofItem(
             proof: AddVehicleProofController.to.vehicleImage,
             onTap: () => Get.toNamed(
-              AppRoutes.aadharCard,
+              AppRoutes1.aadharCard,
               arguments: AddVehicleProofController.to.vehicleImage,
             ),
           ),

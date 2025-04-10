@@ -72,6 +72,44 @@ class AadharCardScreen extends StatelessWidget {
                         SizedBox(
                           height: 30.sp,
                         ),
+                        // SizedBox(
+                        //   height: 180.sp,
+                        //   child:
+                        //       GetX<AadharCardController>(builder: (controller) {
+                        //     return ListView(
+                        //       shrinkWrap: true,
+                        //       scrollDirection: Axis.horizontal,
+                        //       children: (controller.imageList.length !=
+                        //                   controller.maxImages
+                        //               ? [
+                        //                   UpLoadImageTemplate(
+                        //                       height: 180.sp,
+                        //                       width: 270.sp,
+                        //                       placeHolder: "Add Proof",
+                        //                       isRectangle: true,
+                        //                       image:  "",
+                        //                       onTap: (ImageSource source) =>
+                        //                           controller.uploadPhoto(
+                        //                               source: source))
+                        //                 ]
+                        //               : <Widget>[]) +
+                        //           controller.imageList
+                        //               .map((element) => UpLoadImageTemplate(
+                        //                   height: 180.sp,
+                        //                   width: 270.sp,
+                        //                   closeOnTap: () => controller.imageList
+                        //                       .remove(element),
+                        //                   placeHolder: "",
+                        //                   isRectangle: true,
+                        //                   image: element.file ?? "",
+                        //                   onTap: (ImageSource source) =>
+                        //                       controller.uploadPhoto(
+                        //                           source: source)))
+                        //               .toList(),
+                        //     );
+                        //   }),
+                        // ),
+                        // Modify this part of your AadharCardScreen to show loading indicator
                         SizedBox(
                           height: 180.sp,
                           child:
@@ -79,33 +117,81 @@ class AadharCardScreen extends StatelessWidget {
                             return ListView(
                               shrinkWrap: true,
                               scrollDirection: Axis.horizontal,
-                              children: (controller.imageList.length !=
-                                          controller.maxImages
-                                      ? [
-                                          UpLoadImageTemplate(
-                                              height: 180.sp,
-                                              width: 270.sp,
-                                              placeHolder: "Add Proof",
-                                              isRectangle: true,
-                                              image:  "",
-                                              onTap: (ImageSource source) =>
-                                                  controller.uploadPhoto(
-                                                      source: source))
-                                        ]
-                                      : <Widget>[]) +
-                                  controller.imageList
-                                      .map((element) => UpLoadImageTemplate(
+                              children: <Widget>[
+                                if (controller.imageList.length !=
+                                    controller.maxImages)
+                                  Stack(
+                                    children: [
+                                      UpLoadImageTemplate(
                                           height: 180.sp,
                                           width: 270.sp,
-                                          closeOnTap: () => controller.imageList
-                                              .remove(element),
-                                          placeHolder: "",
+                                          placeHolder: "Add Proof",
                                           isRectangle: true,
-                                          image: element.file ?? "",
+                                          image: "",
                                           onTap: (ImageSource source) =>
-                                              controller.uploadPhoto(
-                                                  source: source)))
-                                      .toList(),
+                                              controller.isUploading.value
+                                                  ? null
+                                                  : controller.uploadPhoto(
+                                                      source: source)),
+                                      if (controller.isUploading.value)
+                                        Positioned.fill(
+                                          child: Container(
+                                            height: 180.sp,
+                                            width: 270.sp,
+                                            color:
+                                                Colors.black.withOpacity(0.0),
+                                            child: Center(
+                                              child: CircularProgressIndicator(
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                        Color>(AppColors.blue),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ...controller.imageList
+                                    .map((element) => Stack(
+                                          children: [
+                                            UpLoadImageTemplate(
+                                                height: 180.sp,
+                                                width: 270.sp,
+                                                closeOnTap: () => controller
+                                                        .isUploading.value
+                                                    ? null
+                                                    : controller.imageList
+                                                        .remove(element),
+                                                placeHolder: "",
+                                                isRectangle: true,
+                                                image: element.file ?? "",
+                                                onTap: (ImageSource source) =>
+                                                    controller.isUploading.value
+                                                        ? null
+                                                        : controller
+                                                            .uploadPhoto(
+                                                                source:
+                                                                    source)),
+                                            if (controller.isUploading.value)
+                                              Positioned.fill(
+                                                child: Container(
+                                                  color: Colors.black
+                                                      .withOpacity(0.5),
+                                                  child: Center(
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      valueColor:
+                                                          AlwaysStoppedAnimation<
+                                                                  Color>(
+                                                              AppColors.blue),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ))
+                                    .toList(),
+                              ],
                             );
                           }),
                         ),

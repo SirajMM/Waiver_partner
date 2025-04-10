@@ -161,14 +161,14 @@ class CallFunctionality {
       avatar: AppIcons.appLogo,
       handle: data?.body ?? "Incoming Call",
       type: 0, // Audio call
-      duration: 10000,
+      duration: 8000,
       textAccept: 'Accept',
       textDecline: 'Decline',
       missedCallNotification: const NotificationParams(
         showNotification: true,
-        isShowCallback: true,
-        subtitle: 'Missed call',
-        callbackText: 'Call back',
+        isShowCallback: false,
+        subtitle: 'Missed a ride',
+        // callbackText: 'Call back',
       ),
       extra: <String, dynamic>{
         'userId': '1a2b3c4d',
@@ -246,7 +246,7 @@ class CallFunctionality {
     });
   }
 
-  Future<void>  onCallAccepted(
+  Future<void> onCallAccepted(
     String? callId,
     String? rideId,
     String? rideStatus,

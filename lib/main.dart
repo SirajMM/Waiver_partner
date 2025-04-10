@@ -36,7 +36,8 @@ ReceivePort? _receivePort;
 void startReceivePort() {
   IsolateNameServer.removePortNameMapping('main_send_port');
   _receivePort ??= ReceivePort();
-  IsolateNameServer.registerPortWithName(_receivePort!.sendPort, 'main_send_port');
+  IsolateNameServer.registerPortWithName(
+      _receivePort!.sendPort, 'main_send_port');
 
   _receivePort!.listen((message) async {
     if (message is Map<String, dynamic>) {
@@ -79,7 +80,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   final AudioPlayer player = AudioPlayer();
 
   if (data.rideStatus == "RED") {
-    await player.play(AssetSource(AppAudio.notification));
+    // await player.play(AssetSource(AppAudio.notification));
   }
 
   // await NotificationService.showNotification(data: data);
@@ -99,7 +100,8 @@ void main() async {
 
   // Initialize Firebase before setting up message handlers
   if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp(name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+        name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
   }
 
   // Register background handler before other Firebase setup
@@ -111,10 +113,11 @@ void main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // Set up foreground message handlers
-  FirebaseMessaging.onMessage.listen((message) => NotificationService.onMessage(notification: message));
+  FirebaseMessaging.onMessage.listen(
+      (message) => NotificationService.onMessage(notification: message));
 
-  FirebaseMessaging.onMessageOpenedApp
-      .listen((message) => NotificationService.onMessageOpenedApp(notification: message));
+  FirebaseMessaging.onMessageOpenedApp.listen((message) =>
+      NotificationService.onMessageOpenedApp(notification: message));
   startReceivePort();
   // Initialize dependencies
   HttpOverrides.global = MyHttpOverrides();
@@ -179,6 +182,7 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

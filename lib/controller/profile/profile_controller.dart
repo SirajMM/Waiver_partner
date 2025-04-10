@@ -25,7 +25,7 @@ class ProfileController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    Get.put(ApiServices(appBaseUrl: AppUrls.base));
+    // Get.put(ApiServices(appBaseUrl: AppUrls.base));
     try {
       isLoading.value = true;
       await getProfile();

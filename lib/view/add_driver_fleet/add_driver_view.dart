@@ -16,7 +16,10 @@ class AddDriverScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(title: AddDriverController.to.isChangeDriver ? "Change Driver" : "Add Driver"),
+      appBar: appBar(
+          title: AddDriverController.to.isChangeDriver
+              ? "Change Driver"
+              : "Add Driver"),
       body: SafeArea(
         child: GetX<AddDriverController>(
           builder: (controller) {
@@ -36,32 +39,44 @@ class AddDriverScreen extends StatelessWidget {
                                 ),
                                 children: [
                                   AppTextFormField(
-                                    controller: AddDriverController.to.controllerDriverName,
+                                    controller: AddDriverController
+                                        .to.controllerDriverName,
                                     header: "Driver Full Name",
                                     placeHolder: "e.g. #25254565",
-                                    textCapitalization: TextCapitalization.characters,
-                                    validator: (value) => Validators.isEmpty(value: value),
+                                    textCapitalization:
+                                        TextCapitalization.characters,
+                                    validator: (value) =>
+                                        Validators.isEmpty(value: value),
                                   ),
                                   SizedBox(
                                     height: 15.sp,
                                   ),
                                   AppTextFormField(
-                                    controller: AddDriverController.to.controllerDriverId,
+                                    controller: AddDriverController
+                                        .to.controllerDriverId,
                                     header: "Driver ID",
                                     placeHolder: "e.g. #25254565",
-                                    validator: (value) => Validators.isEmpty(value: value),
+                                    validator: (value) =>
+                                        Validators.isEmpty(value: value),
                                   ).cPadOnly(b: 20),
                                 ],
                               ),
                             ),
                             GetX<AddDriverController>(
                               builder: (controller) {
-                                return BlueButton(
-                                    text: controller.isChangeDriver ? "Change Driver" : "Submit",
-                                    isLoading: controller.isButtonLoading.value,
-                                    onTap: () => controller.isChangeDriver
-                                        ? controller.changeDriver()
-                                        : controller.addDriver()).cPadSymmetric(h: 30);
+                                return Padding(
+                                  padding: EdgeInsets.only(bottom: 15.0.sp),
+                                  child: BlueButton(
+                                          text: controller.isChangeDriver
+                                              ? "Change Driver"
+                                              : "Submit",
+                                          isLoading:
+                                              controller.isButtonLoading.value,
+                                          onTap: () => controller.isChangeDriver
+                                              ? controller.changeDriver()
+                                              : controller.addDriver())
+                                      .cPadSymmetric(h: 30),
+                                );
                               },
                             ),
                           ],

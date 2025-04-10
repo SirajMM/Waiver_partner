@@ -13,6 +13,7 @@ import '../../controller/left_menu_fleet/left_menu_fleet_controller.dart';
 import '../../core/constants/get_storage_constants.dart';
 import '../../core/widgets/app_buttons/app_buttons.dart';
 import '../../helper/router/app_routes/app_routes.dart';
+import '../../helper/router/app_routes/route.dart';
 import '../../main.dart';
 import '../fleet_home_page/fleet_home_page_view.dart';
 
@@ -80,7 +81,8 @@ class LeftMenuFleet extends StatelessWidget {
           LeftMenuItem(
             item: LeftMenuControllerFleet.to.help,
             onTap: () async {
-              final Uri whatsapp = Uri.parse('https://api.whatsapp.com/send?phone=918943099085&text=Hi');
+              final Uri whatsapp = Uri.parse(
+                  'https://api.whatsapp.com/send?phone=918943099085&text=Hi');
               launchUrl(whatsapp);
             },
           ),
@@ -116,7 +118,7 @@ class LeftMenuProfileItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Get.offAndToNamed(AppRoutes.profile),
+      onTap: () => Get.offAndToNamed(AppRoutes1.profile),
       child: Container(
         color: Get.theme.primaryColor,
         child: Column(
