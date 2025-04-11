@@ -15,8 +15,7 @@ import '../registration/registration_model.dart';
 GetProfileResponseModel getProfileResponseModelFromJson(String str) =>
     GetProfileResponseModel.fromJson(json.decode(str));
 
-String getProfileResponseModelToJson(GetProfileResponseModel data) =>
-    json.encode(data.toJson());
+String getProfileResponseModelToJson(GetProfileResponseModel data) => json.encode(data.toJson());
 
 class GetProfileResponseModel {
   int? status;
@@ -29,8 +28,7 @@ class GetProfileResponseModel {
     this.data,
   });
 
-  factory GetProfileResponseModel.fromJson(Map<String, dynamic> json) =>
-      GetProfileResponseModel(
+  factory GetProfileResponseModel.fromJson(Map<String, dynamic> json) => GetProfileResponseModel(
         status: json["status"],
         message: json["message"],
         data: json["data"] == null ? null : ProfileData.fromJson(json["data"]),
@@ -59,7 +57,7 @@ class ProfileData {
   String? dob;
   bool? isVerified;
   bool? isOnline;
-  int? rating;
+  String? rating;
   String? alternativePhone;
   String? whatsappPhone;
   String? address;
@@ -101,23 +99,18 @@ class ProfileData {
   factory ProfileData.fromJson(Map<String, dynamic> json) => ProfileData(
         id: json["id"],
         state: json["state"] == null ? null : State.fromJson(json["state"]),
-        district: json["district"] == null
-            ? null
-            : District.fromJson(json["district"]),
+        district: json["district"] == null ? null : District.fromJson(json["district"]),
         transmissionType: json["transmission_type"] == null
             ? []
-            : List<Transmission>.from(json["transmission_type"]!
-                .map((x) => Transmission.fromJson(x))),
+            : List<Transmission>.from(json["transmission_type"]!.map((x) => Transmission.fromJson(x))),
         vehicleType: json["vehicle_type"] == null
             ? []
-            : List<State>.from(
-                json["vehicle_type"]!.map((x) => State.fromJson(x))),
+            : List<State>.from(json["vehicle_type"]!.map((x) => State.fromJson(x))),
         drivingExperience: json["driving_experience"] == null
             ? null
             : DrivingExperience.fromJson(json["driving_experience"]),
-        workLocation: json["work_location"] == null
-            ? null
-            : WorkLocation.fromJson(json["work_location"]),
+        workLocation:
+            json["work_location"] == null ? null : WorkLocation.fromJson(json["work_location"]),
         uniqueId: json["unique_id"],
         fullname: json["fullname"],
         gender: json["gender"],
@@ -126,15 +119,15 @@ class ProfileData {
         dob: json["dob"],
         isVerified: json["is_verified"],
         isOnline: json["is_online"],
-        rating: json["rating"],
+        rating: json["rating"].toString(),
         alternativePhone: json["alternative_phone"],
         whatsappPhone: json["whatsapp_phone"],
         address: json["address"],
         licenseValidity: json["license_validity"],
         profileImage: json["profile_image"],
         isProfileImageVerified: json["is_profile_image_verified"],
-        createdAt: json["created_at"],
-        updatedAt: json["updated_at"],
+        createdAt: json["created_at"].toString(),
+        updatedAt: json["updated_at"].toString(),
         user: json["user"],
       );
 
@@ -142,12 +135,10 @@ class ProfileData {
         "id": id,
         "state": state?.toJson(),
         "district": district?.toJson(),
-        "transmission_type": transmissionType == null
-            ? []
-            : List<dynamic>.from(transmissionType!.map((x) => x.toJson())),
-        "vehicle_type": vehicleType == null
-            ? []
-            : List<dynamic>.from(vehicleType!.map((x) => x.toJson())),
+        "transmission_type":
+            transmissionType == null ? [] : List<dynamic>.from(transmissionType!.map((x) => x.toJson())),
+        "vehicle_type":
+            vehicleType == null ? [] : List<dynamic>.from(vehicleType!.map((x) => x.toJson())),
         "driving_experience": drivingExperience?.toJson(),
         "work_location": workLocation?.toJson(),
         "unique_id": uniqueId,
@@ -204,8 +195,7 @@ class DrivingExperience {
     this.experience,
   });
 
-  factory DrivingExperience.fromJson(Map<String, dynamic> json) =>
-      DrivingExperience(
+  factory DrivingExperience.fromJson(Map<String, dynamic> json) => DrivingExperience(
         id: json["id"],
         experience: json["experience"],
       );
@@ -276,8 +266,7 @@ class State {
 UpdateProfileResponseModel updateProfileResponseModelFromJson(String str) =>
     UpdateProfileResponseModel.fromJson(json.decode(str));
 
-String updateProfileResponseModelToJson(UpdateProfileResponseModel data) =>
-    json.encode(data.toJson());
+String updateProfileResponseModelToJson(UpdateProfileResponseModel data) => json.encode(data.toJson());
 
 class UpdateProfileResponseModel {
   int? status;
@@ -290,8 +279,7 @@ class UpdateProfileResponseModel {
     this.data,
   });
 
-  factory UpdateProfileResponseModel.fromJson(Map<String, dynamic> json) =>
-      UpdateProfileResponseModel(
+  factory UpdateProfileResponseModel.fromJson(Map<String, dynamic> json) => UpdateProfileResponseModel(
         status: json["status"],
         message: json["message"],
         data: json["data"] == null ? null : ProfileData.fromJson(json["data"]),
@@ -315,8 +303,7 @@ class UpdateProfileData {
     this.whatsappPhone,
   });
 
-  factory UpdateProfileData.fromJson(Map<String, dynamic> json) =>
-      UpdateProfileData(
+  factory UpdateProfileData.fromJson(Map<String, dynamic> json) => UpdateProfileData(
         email: json["email"],
         alternativePhone: json["alternative_phone"],
         whatsappPhone: json["whatsapp_phone"],
@@ -333,11 +320,9 @@ class UpdateProfileData {
 //
 //     final profileImageModel = profileImageModelFromJson(jsonString);
 
-ProfileImageModel profileImageModelFromJson(String str) =>
-    ProfileImageModel.fromJson(json.decode(str));
+ProfileImageModel profileImageModelFromJson(String str) => ProfileImageModel.fromJson(json.decode(str));
 
-String profileImageModelToJson(ProfileImageModel data) =>
-    json.encode(data.toJson());
+String profileImageModelToJson(ProfileImageModel data) => json.encode(data.toJson());
 
 class ProfileImageModel {
   int? status;
@@ -350,8 +335,7 @@ class ProfileImageModel {
     this.data,
   });
 
-  factory ProfileImageModel.fromJson(Map<String, dynamic> json) =>
-      ProfileImageModel(
+  factory ProfileImageModel.fromJson(Map<String, dynamic> json) => ProfileImageModel(
         status: json["status"],
         message: json["message"],
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
@@ -393,29 +377,20 @@ class Data {
         id: json["id"],
         files: json["files"] == null
             ? []
-            : List<FileElement>.from(
-                json["files"]!.map((x) => FileElement.fromJson(x))),
-        rejection: json["rejection"] == null
-            ? null
-            : Rejection.fromJson(json["rejection"]),
+            : List<FileElement>.from(json["files"]!.map((x) => FileElement.fromJson(x))),
+        rejection: json["rejection"] == null ? null : Rejection.fromJson(json["rejection"]),
         documentType: json["document_type"],
         status: json["status"],
         isVerified: json["is_verified"],
         isValid: json["is_valid"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
+        createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+        updatedAt: json["updated_at"] == null ? null : DateTime.parse(json["updated_at"]),
         user: json["user"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "files": files == null
-            ? []
-            : List<dynamic>.from(files!.map((x) => x.toJson())),
+        "files": files == null ? [] : List<dynamic>.from(files!.map((x) => x.toJson())),
         "rejection": rejection?.toJson(),
         "document_type": documentType,
         "status": status,

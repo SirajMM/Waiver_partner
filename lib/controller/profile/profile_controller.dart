@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/api/api_services/api_services.dart';
 import 'package:waiver_driver/backend/api/api_services/urls.dart';
-import 'package:waiver_driver/backend/model/profile/profile_model.dart'
-    as profileModel;
+import 'package:waiver_driver/backend/model/profile/profile_model.dart' as profileModel;
 import 'package:waiver_driver/backend/model/registration/registration_model.dart';
 import 'package:waiver_driver/backend/parser/Profile/profilescreen_parser.dart';
 import 'package:waiver_driver/core/constants/get_storage_constants.dart';
@@ -30,7 +29,7 @@ class ProfileController extends GetxController {
       isLoading.value = true;
       await getProfile();
 
-      // isLoading.value = false;
+      isLoading.value = false;
       // isError.value = false;
     } catch (error) {
       print('crashed');
@@ -43,16 +42,14 @@ class ProfileController extends GetxController {
 
   String profileImage = "";
   Future<void> getProfile() async {
-    profileModel.GetProfileResponseModel response =
-        await ApiServices.getProfile();
+    profileModel.GetProfileResponseModel response = await ApiServices.getProfile();
     // profileImage = response.data?.profileImage ?? "";
     controllerFullName.text = response.data?.fullname ?? "";
     controllerEmail.text = response.data?.email ?? "";
-    selectedGender = genderList.firstWhereOrNull(
-        (element) => (element.code) == (response.data?.gender));
+    selectedGender = genderList.firstWhereOrNull((element) => (element.code) == (response.data?.gender));
     controllerEmail.text = response.data?.email ?? "";
-    controllerDateOfBirth.text = (response.data?.dob ?? "").changeDateFormat(
-        fromFormat: "yyyy-MM-dd", toFormat: "dd / MMM / yyyy");
+    controllerDateOfBirth.text = (response.data?.dob ?? "")
+        .changeDateFormat(fromFormat: "yyyy-MM-dd", toFormat: "dd / MMM / yyyy");
     controllerAlternativeNumber.text = response.data?.alternativePhone ?? "";
     controllerWhatsAppNumber.text = response.data?.whatsappPhone ?? "";
     state = response.data?.state?.name ?? "";
@@ -85,14 +82,12 @@ class ProfileController extends GetxController {
     // selectedTransmissionType = transmissionTypes.firstWhereOrNull(
     //     (element) => (element.id) == (response.data?.transmissionType?.id));
     response.data?.licenseValidity != null
-        ? controllerLicenseValidityDate.text =
-            (response.data?.licenseValidity ?? "").changeDateFormat(
-                fromFormat: "yyy-MM-dd", toFormat: "dd / MMM / yyy")
+        ? controllerLicenseValidityDate.text = (response.data?.licenseValidity ?? "")
+            .changeDateFormat(fromFormat: "yyy-MM-dd", toFormat: "dd / MMM / yyy")
         : null;
 
     profileModel.ProfileImageModel imageResponse =
-        await ApiServices.getProfilePhoto(
-            queryParameter: {"document_type": "PPO"});
+        await ApiServices.getProfilePhoto(queryParameter: {"document_type": "PPO"});
     profileImage = imageResponse.data?.files?.firstOrNull?.file ?? "";
   }
 
@@ -111,8 +106,7 @@ class ProfileController extends GetxController {
   }
 
   Future<void> getWorkLocation() async {
-    GetAllWorkLocationsResponseModel response =
-        await ApiServices.getWorkLocation();
+    GetAllWorkLocationsResponseModel response = await ApiServices.getWorkLocation();
     workingLocations = response.data ?? [];
   }
 
@@ -122,21 +116,19 @@ class ProfileController extends GetxController {
   }
 
   Future<void> getTransmissionTypes() async {
-    GetTransmissionTypeResponseModel response =
-        await ApiServices.getTransmissionTypes();
+    GetTransmissionTypeResponseModel response = await ApiServices.getTransmissionTypes();
     transmissionTypes = response.data ?? [];
   }
 
   Future<void> getWorkExperience() async {
-    GetAllWorkExperienceResponseModel response =
-        await ApiServices.getWorkExperience();
+    GetAllWorkExperienceResponseModel response = await ApiServices.getWorkExperience();
     yearsOfDrivingExperience = response.data ?? [];
   }
 
   Future<void> getAllDistricts({required int? districtsID}) async {
     try {
-      GetAllDistrictsResponseModel response = await ApiServices.getAllDistricts(
-          queryParameter: {"state": (selectedState!.id).toString()});
+      GetAllDistrictsResponseModel response =
+          await ApiServices.getAllDistricts(queryParameter: {"state": (selectedState!.id).toString()});
       districtsList = response.data ?? [];
       if (districtsList.isEmpty) {
         Get.showSnackbar(GetSnackBar(
@@ -144,11 +136,9 @@ class ProfileController extends GetxController {
             backgroundColor: Colors.transparent,
             padding: EdgeInsets.zero,
             messageText: AppSnackBar(
-                text:
-                    "There are no Serviceable Districts in ${selectedState!.name ?? ""}")));
+                text: "There are no Serviceable Districts in ${selectedState!.name ?? ""}")));
       } else {
-        selectedDistrict = districtsList
-            .firstWhereOrNull((element) => element.id == districtsID);
+        selectedDistrict = districtsList.firstWhereOrNull((element) => element.id == districtsID);
       }
     } catch (error) {
       print(error);
@@ -196,8 +186,7 @@ class ProfileController extends GetxController {
     if (changeEmailFormKey.currentState?.validate() ?? false) {
       try {
         profileModel.UpdateProfileResponseModel response =
-            await ApiServices.upDateProfile(
-                body: {"email": controllerEmail.text});
+            await ApiServices.upDateProfile(body: {"email": controllerEmail.text});
         Get.back();
         Get.showSnackbar(GetSnackBar(
             duration: const Duration(seconds: 5),
@@ -221,9 +210,8 @@ class ProfileController extends GetxController {
   saveChangeAlternativeNumber() async {
     if (changeAlternativeNumber.currentState?.validate() ?? false) {
       try {
-        profileModel.UpdateProfileResponseModel response =
-            await ApiServices.upDateProfile(
-                body: {"alternative_phone": controllerAlternativeNumber.text});
+        profileModel.UpdateProfileResponseModel response = await ApiServices.upDateProfile(
+            body: {"alternative_phone": controllerAlternativeNumber.text});
         Get.back();
         Get.showSnackbar(GetSnackBar(
             duration: const Duration(seconds: 5),
@@ -248,8 +236,7 @@ class ProfileController extends GetxController {
     if (changeWhatsAppNumber.currentState?.validate() ?? false) {
       try {
         profileModel.UpdateProfileResponseModel response =
-            await ApiServices.upDateProfile(
-                body: {"whatsapp_phone": controllerWhatsAppNumber.text});
+            await ApiServices.upDateProfile(body: {"whatsapp_phone": controllerWhatsAppNumber.text});
         Get.back();
         Get.showSnackbar(GetSnackBar(
             duration: const Duration(seconds: 5),
@@ -273,11 +260,8 @@ class ProfileController extends GetxController {
   saveChangeLicenseValidityDateNumber() async {
     if (changeLicenseValidityDateNumber.currentState?.validate() ?? false) {
       try {
-        profileModel.UpdateProfileResponseModel response =
-            await ApiServices.upDateProfile(body: {
-          "license_validity":
-              controllerLicenseValidityDate.text.changeDateFormat()
-        });
+        profileModel.UpdateProfileResponseModel response = await ApiServices.upDateProfile(
+            body: {"license_validity": controllerLicenseValidityDate.text.changeDateFormat()});
         Get.back();
         Get.showSnackbar(GetSnackBar(
             duration: const Duration(seconds: 5),

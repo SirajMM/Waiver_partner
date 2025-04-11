@@ -81,8 +81,7 @@ class LeftMenuFleet extends StatelessWidget {
           LeftMenuItem(
             item: LeftMenuControllerFleet.to.help,
             onTap: () async {
-              final Uri whatsapp = Uri.parse(
-                  'https://api.whatsapp.com/send?phone=918943099085&text=Hi');
+              final Uri whatsapp = Uri.parse('https://api.whatsapp.com/send?phone=918943099085&text=Hi');
               launchUrl(whatsapp);
             },
           ),
@@ -95,7 +94,8 @@ class LeftMenuFleet extends StatelessWidget {
               } finally {
                 await box.erase();
                 await box.write(BoxKeys.userTypeCode, UserTypeCode.driver);
-                Get.toNamed(AppRoutes.signIn, arguments: UserType.driver);
+                Get.put(ApiServices(appBaseUrl: ''));
+                Get.toNamed(AppRoutes1.signIn, arguments: UserType.driver);
               }
             },
           ),
