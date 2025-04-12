@@ -57,8 +57,7 @@ class HomeController extends GetxController {
       final result = await Future.wait(apis);
 
       if (currentPosition.value == null) {
-        currentPosition.value =
-            convertToPosition(result[3] as loc.LocationData);
+        currentPosition.value = convertToPosition(result[3] as loc.LocationData);
         saveLocationData(result[3] as loc.LocationData);
       }
 
@@ -69,9 +68,7 @@ class HomeController extends GetxController {
           longitude: Rx(currentPosition.value?.longitude),
           name: "".obs);
 
-      getLocationDetails(
-              currentPosition.value!.latitude, currentPosition.value!.longitude)
-          .then(
+      getLocationDetails(currentPosition.value!.latitude, currentPosition.value!.longitude).then(
         (value) => pickUpLocation1?.name.value = value ?? '',
       );
 
@@ -137,8 +134,7 @@ class HomeController extends GetxController {
   bool rideIsActive = false;
   String? finalDropLocation;
   bool isTracking = false;
-  double currentDistance =
-      0; // Current distance in meters before it exceeds 100m
+  double currentDistance = 0; // Current distance in meters before it exceeds 100m
   double totalDistance = 0; // Total distance saved in Hive (in meters)
   List<Map<String, double>> latLongList = [];
   Box? distanceBox;
@@ -151,9 +147,7 @@ class HomeController extends GetxController {
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     var p = 0.017453292519943295; // Pi/180
     var c = math.cos;
-    var a = 0.5 -
-        c((lat2 - lat1) * p) / 2 +
-        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    var a = 0.5 - c((lat2 - lat1) * p) / 2 + c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
     return 12742 * math.asin(math.sqrt(a)); // Distance in kilometers
   }
 
@@ -214,12 +208,9 @@ class HomeController extends GetxController {
       saveLocationData(convertPositionToLocationData(position));
       if (isOnline.value) {
         WebSocketServices.sendLiveLocation(body: {
-          "passenger_id": driverState.value == DriverState.idle
-              ? RiderStatus.save
-              : passengerId ?? "placeholder",
-          "msg_type": driverState.value == DriverState.idle
-              ? RiderStatus.save
-              : RiderStatus.ride,
+          "passenger_id":
+              driverState.value == DriverState.idle ? RiderStatus.save : passengerId ?? "placeholder",
+          "msg_type": driverState.value == DriverState.idle ? RiderStatus.save : RiderStatus.ride,
           "ride_status": driverState.value.toString(),
           "current_loc_long": position.longitude,
           "current_loc_lat": position.latitude,
@@ -233,8 +224,7 @@ class HomeController extends GetxController {
 
   Future<void> latestActiveRide() async {
     try {
-      GetRideDetailsResponseModel response =
-          await ApiServices.latestActiveRide();
+      GetRideDetailsResponseModel response = await ApiServices.latestActiveRide();
       if ((response.data?.id ?? "").isNotEmpty) {
         rideIsActive = true;
         getOrderDetails(response: response);
@@ -263,14 +253,10 @@ class HomeController extends GetxController {
       ),
       value: '0 %',
       text: 'Acceptance');
-  DashBoardItemModel rating = DashBoardItemModel(
-      icon: Icon(Icons.star, color: AppColors.white),
-      value: '2.5',
-      text: 'Rating');
+  DashBoardItemModel rating =
+      DashBoardItemModel(icon: Icon(Icons.star, color: AppColors.white), value: '2.5', text: 'Rating');
   DashBoardItemModel cancellation = DashBoardItemModel(
-      icon: Icon(Icons.close, color: AppColors.white),
-      value: '0%',
-      text: 'Cancellation');
+      icon: Icon(Icons.close, color: AppColors.white), value: '0%', text: 'Cancellation');
 
   double? startLocationLat;
   double? startLocationLong;
@@ -287,11 +273,9 @@ class HomeController extends GetxController {
   String? pickUpLocation;
   String? dropOffLocation;
   String? passengerName;
-  TripsLocations? pickUpLocation1 =
-      TripsLocations(name: "".obs, latitude: 0.0.obs, longitude: 0.0.obs);
+  TripsLocations? pickUpLocation1 = TripsLocations(name: "".obs, latitude: 0.0.obs, longitude: 0.0.obs);
 
-  Future<void> getAndShowOrderDetails(
-      {required String id, bool? fromBackGroundCall}) async {
+  Future<void> getAndShowOrderDetails({required String id, bool? fromBackGroundCall}) async {
     player.play(AssetSource(AppAudio.notification));
     GetRideDetailsResponseModel response =
         await ApiServices.rideOrderDetails(queryParameters: {"ride_id": id});
@@ -302,10 +286,8 @@ class HomeController extends GetxController {
   void getOrderDetails({required GetRideDetailsResponseModel response}) {
     startLocationLat = double.parse(response.data?.startLocationLat ?? "0.0");
     startLocationLong = double.parse(response.data?.startLocationLong ?? "0.0");
-    startLocationLatMarker =
-        double.parse(response.data?.startLocationLat ?? "0.0");
-    startLocationLongMarker =
-        double.parse(response.data?.startLocationLong ?? "0.0");
+    startLocationLatMarker = double.parse(response.data?.startLocationLat ?? "0.0");
+    startLocationLongMarker = double.parse(response.data?.startLocationLong ?? "0.0");
     log("################### passenger latitude ##########################");
     log("################### Isonline ##########################");
     log(isOnline.value.toString());
@@ -340,6 +322,7 @@ class HomeController extends GetxController {
 
   Future<void> onMapCreate() async {
     try {
+      currentPosition.refresh();
       await googleMapController!.animateCamera(
         CameraUpdate.newLatLng(LatLng(
           currentPosition.value?.latitude ?? 0.0,
@@ -367,8 +350,7 @@ class HomeController extends GetxController {
     if (permission == LocationPermission.deniedForever) {
       throw Exception('Location permissions are permanently denied');
     }
-    return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
+    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
   }
 
   Future<void> makePhoneCall() async {
@@ -386,8 +368,7 @@ class HomeController extends GetxController {
       WalletResponse response = await ApiServices.getPartnerWallet();
 
       if (response.status == 200) {
-        walletBalance.value =
-            double.tryParse(response.data.amount ?? '') ?? 0.0;
+        walletBalance.value = double.tryParse(response.data.amount ?? '') ?? 0.0;
         isRefreshingWallet.value = false;
       } else {
         isRefreshingWallet.value = false;
@@ -447,8 +428,7 @@ class HomeController extends GetxController {
             ),
           ),
         );
-        await Future.delayed(
-            Duration(milliseconds: 300)); // Ensure Snackbar is shown
+        await Future.delayed(Duration(milliseconds: 300)); // Ensure Snackbar is shown
         Navigator.pop(context);
       } else {
         Get.showSnackbar(
@@ -586,15 +566,12 @@ class HomeController extends GetxController {
           body: {"ride_id": rideId, "ride_status": RideStatus.onGoing});
       if (response.status == 200) {
         driverState.value = DriverState.readyToGoToDestination;
-        await MobilityFeatures()
-            .startListening(Geolocator.getPositionStream().map((location) {
+        await MobilityFeatures().startListening(Geolocator.getPositionStream().map((location) {
           log("mobility features");
           log("${mobilityContext?.distanceTraveled}");
           log(location.toString());
           log(location.longitude.toString());
-          return LocationSample(
-              GeoLocation(location.latitude, location.longitude),
-              DateTime.now());
+          return LocationSample(GeoLocation(location.latitude, location.longitude), DateTime.now());
         }));
       }
     } finally {
@@ -617,8 +594,7 @@ class HomeController extends GetxController {
   }
 
   Future<String?> getLocationDetails(double latitude, double longitude) async {
-    GoogleLocationResponse response =
-        await ApiServices.getCurrentLocation(latitude, longitude);
+    GoogleLocationResponse response = await ApiServices.getCurrentLocation(latitude, longitude);
 
     for (var result in response.results ?? []) {
       for (var addressComponent in result.addressComponents ?? []) {
@@ -635,42 +611,31 @@ class HomeController extends GetxController {
   Future<String?> getLocationDetails1() async {
     if (driverState.value == DriverState.idle) {
       GoogleLocationResponse response = await ApiServices.getCurrentLocation(
-          pickUpLocation1?.latitude.value ?? 0.0,
-          pickUpLocation1?.longitude.value ?? 0.0);
+          pickUpLocation1?.latitude.value ?? 0.0, pickUpLocation1?.longitude.value ?? 0.0);
 
       String? neighborhood = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("neighborhood")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("neighborhood")))
           ?.longName;
 
       String? political = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("political")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("political")))
           ?.longName;
       String? sublocality = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("sublocality")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("sublocality")))
           ?.longName;
       String? locality = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("locality")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("locality")))
           ?.longName;
       String? postalCode = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("postal_code")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("postal_code")))
           ?.longName;
       String? premise = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("premise")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("premise")))
           ?.longName;
-      return ({
-        premise,
-        neighborhood,
-        political,
-        sublocality,
-        locality,
-        postalCode
-      }.toList().where((name) => name != null).join(","));
+      return ({premise, neighborhood, political, sublocality, locality, postalCode}
+          .toList()
+          .where((name) => name != null)
+          .join(","));
     } else {
       return "";
     }
@@ -681,8 +646,7 @@ class HomeController extends GetxController {
     log("mobilityContext?.stops");
     log("${mobilityContext?.stops}");
     try {
-      ChangeRideStatusModel response =
-          await ApiServices.changeRideStatus(body: {
+      ChangeRideStatusModel response = await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.paymentInitiated,
         "stops": mobilityContext?.stops,
@@ -752,10 +716,8 @@ class HomeController extends GetxController {
           startLocationLatMarker = 0.0;
           startLocationLatMarker = 0.0;
           if (type == RideStatus.reachedPickUp) {
-            await ApiServices.changeRideStatus(body: {
-              "ride_id": rideId,
-              "ride_status": RideStatus.reachedPickUp
-            });
+            await ApiServices.changeRideStatus(
+                body: {"ride_id": rideId, "ride_status": RideStatus.reachedPickUp});
             log("tracking -----------");
             log(isTracking.toString());
             isTracking = true;
@@ -803,8 +765,7 @@ class HomeController extends GetxController {
 
   Future<void> getFinalDropLocation() async {
     finalDropLocation = (await getLocationDetails(
-            currentPosition.value?.latitude ?? 0.0,
-            currentPosition.value?.longitude ?? 0.0)) ??
+            currentPosition.value?.latitude ?? 0.0, currentPosition.value?.longitude ?? 0.0)) ??
         "";
     paymentInitiated();
   }
@@ -822,14 +783,11 @@ class HomeController extends GetxController {
       if (Get.isBottomSheetOpen ?? false) {
         Get.back();
       }
-      Get.defaultDialog(
-          middleText:
-              "This order has expired and has been transferred to another driver");
+      Get.defaultDialog(middleText: "This order has expired and has been transferred to another driver");
     }
   }
 
-  Future<void> openMap(
-      {required double? latitude, required double? longitude}) async {
+  Future<void> openMap({required double? latitude, required double? longitude}) async {
     var uri = Uri.parse("google.navigation:q=$latitude,$longitude&mode=d");
     if (await canLaunch(uri.toString())) {
       await launch(uri.toString());
