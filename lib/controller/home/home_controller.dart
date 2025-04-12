@@ -61,7 +61,7 @@ class HomeController extends GetxController {
             convertToPosition(result[3] as loc.LocationData);
         saveLocationData(result[3] as loc.LocationData);
       }
-      isLoading.value = false;
+
       sendLiveLocation();
 
       pickUpLocation1 = TripsLocations(
@@ -349,8 +349,6 @@ class HomeController extends GetxController {
     } catch (e, s) {
       log(e.toString(), error: e, stackTrace: s);
       isError.value = true;
-    } finally {
-      isLoading.value = false;
     }
   }
 

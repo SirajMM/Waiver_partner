@@ -20,7 +20,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:waiver_driver/backend/call_funtionality.dart';
 import 'package:waiver_driver/controller/home/home_controller.dart';
 import 'package:waiver_driver/core/themes/app_theme.dart';
-import 'package:waiver_driver/core/themes/assets/audio.dart';
 import 'package:waiver_driver/firebase_options.dart';
 import 'package:waiver_driver/helper/init/init.dart';
 
@@ -28,7 +27,6 @@ import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:uuid/uuid.dart';
 import 'backend/model/home/home_model.dart';
 import 'backend/notificaton_services/notification_service/notification_service.dart';
-import 'core/callbackdispatcher/callback.dart';
 
 @pragma('vm:entry-point')
 ReceivePort? _receivePort;

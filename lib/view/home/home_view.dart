@@ -217,7 +217,7 @@ class HomeScreen extends StatelessWidget {
                                 SizedBox(
                                   width: 20.sp,
                                 ),
-                                Container(
+                                SizedBox(
                                   width: 275.sp,
                                   child: Column(
                                     crossAxisAlignment:
@@ -407,6 +407,7 @@ class HomeScreen extends StatelessWidget {
                     mapType: MapType.normal,
                     myLocationEnabled: true,
                     myLocationButtonEnabled: true,
+                    zoomControlsEnabled: false,
                     markers: {
                       Marker(
                         markerId: const MarkerId("1"),
@@ -767,7 +768,7 @@ class OrderCompletedBottomSheet extends StatelessWidget {
                 SizedBox(
                   width: 20.sp,
                 ),
-                Container(
+                SizedBox(
                   width: 275.sp,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1629,7 +1630,7 @@ class IncomingOrderBottomSheet extends StatelessWidget {
                 SizedBox(
                   width: 20.sp,
                 ),
-                Container(
+                SizedBox(
                   width: 260.sp,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
