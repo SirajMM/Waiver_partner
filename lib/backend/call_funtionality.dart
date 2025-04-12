@@ -161,7 +161,7 @@ class CallFunctionality {
       avatar: AppIcons.appLogo,
       handle: data?.body ?? "Incoming Call",
       type: 0, // Audio call
-      duration: 8000,
+      duration: 15000,
       textAccept: 'Accept',
       textDecline: 'Decline',
       missedCallNotification: const NotificationParams(

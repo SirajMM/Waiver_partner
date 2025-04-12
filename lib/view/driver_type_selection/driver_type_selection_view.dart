@@ -165,7 +165,8 @@ class TypeOfServicesListing extends StatelessWidget {
             text: "Fleet",
             onTap: () {
               box.write(BoxKeys.userTypeCode, UserTypeCode.fleet);
-              Get.toNamed(AppRoutes.signIn, arguments: UserType.fleet);
+              Get.toNamed(AppRoutes1.getSignInRoute(),
+                  arguments: UserType.fleet);
             },
           ),
         ),
@@ -176,7 +177,8 @@ class TypeOfServicesListing extends StatelessWidget {
             text: "Driver",
             onTap: () {
               box.write(BoxKeys.userTypeCode, UserTypeCode.driver);
-              Get.toNamed(AppRoutes.signIn, arguments: UserType.driver);
+              Get.toNamed(AppRoutes1.getSignInRoute(),
+                  arguments: UserType.driver);
             },
           ),
         )

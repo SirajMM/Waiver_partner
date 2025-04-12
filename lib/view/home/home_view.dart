@@ -403,7 +403,7 @@ class HomeScreen extends StatelessWidget {
                 child: GetX<HomeController>(builder: (controller) {
                   return GoogleMap(
                     padding: EdgeInsets.only(
-                        bottom: 90.sp, top: 600.sp, right: 10.sp),
+                        bottom: 100.sp, top: 660.sp, right: 10.sp),
                     mapType: MapType.normal,
                     myLocationEnabled: true,
                     myLocationButtonEnabled: true,
