@@ -7,9 +7,8 @@ import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 
-
 class SignInScreen extends StatelessWidget {
-  const SignInScreen({Key? key}) : super(key: key);
+  const SignInScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +75,7 @@ class WelcomeContainer extends StatelessWidget {
               child: BlueButton(
                 text: "Continue with Phone Number",
                 // onTap: () => Get.toNamed(AppRoutes.login),
-                onTap: () => Get.toNamed(AppRoutes1.getLoginRoute() ),
+                onTap: () => Get.toNamed(AppRoutes1.getLoginRoute()),
               ),
             ),
           ),

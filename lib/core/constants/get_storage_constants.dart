@@ -1,5 +1,10 @@
+import 'dart:ui';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:location/location.dart';
+
+import '../../main.dart';
+import '../colors/app_colors.dart';
 
 class BoxKeys {
   static String userType = "userType";
@@ -16,6 +21,7 @@ class BoxKeys {
   static String isRegistered = "isRegistered";
   static String darkMode = "0";
   static String paymentType = "paymentType";
+  static String lastLocation = "lastLocation";
 }
 
 class UserType {
@@ -88,6 +94,26 @@ class RiderStatus {
 }
 
 class AppConstants {
-  static Location? locationData;
+  static LocationData? locationData;
   static Position? currentPosition;
+
+  static Color getColor() {
+    String user = box.read(BoxKeys.userTypeCode);
+    if (user == UserTypeCode.driver) {
+      return AppColors.orange;
+    } else if (user == UserTypeCode.chauffeur) {
+      return AppColors.blue;
+    } else {
+      return AppColors.yellow;
+    }
+  }
+
+  static Color getButtonTextColor() {
+    String user = box.read(BoxKeys.userTypeCode);
+    if (user == UserTypeCode.fleet) {
+      return AppColors.black;
+    } else {
+      return AppColors.white;
+    }
+  }
 }

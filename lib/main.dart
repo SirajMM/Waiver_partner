@@ -4,7 +4,7 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:workmanager/workmanager.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +95,7 @@ void main() async {
   await requestPermissions();
   await GetStorage.init();
   await Hive.initFlutter();
-  Workmanager().initialize(callbackDispatcher, isInDebugMode: false);
+
   await MainBinding().dependencies();
 
   // Initialize Firebase before setting up message handlers

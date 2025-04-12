@@ -151,7 +151,7 @@ class SplashController extends GetxController implements GetxService {
 
     // Delayed execution for splash screen
     await Future.delayed(const Duration(seconds: 3));
-
+    AppConstants.locationData = getLocationData();
     final token = box.read(BoxKeys.token);
     log('Token: ${token ?? "No Token"}');
 
@@ -161,7 +161,7 @@ class SplashController extends GetxController implements GetxService {
     if (!serviceEnabled) {
       serviceEnabled = await Location().requestService();
       if (!serviceEnabled) {
-        print("Location services are disabled.");
+        log("Location services are disabled.");
         closeApp();
         return;
       }
@@ -256,9 +256,26 @@ class SplashController extends GetxController implements GetxService {
 
   void closeApp() {
     if (Platform.isAndroid) {
-      SystemNavigator.pop(); // Close app on Android
+      SystemNavigator.pop();
     } else if (Platform.isIOS) {
-      exit(0); // Close app on iOS
+      exit(0);
     }
+  }
+
+  LocationData? getLocationData() {
+    final data = box.read(BoxKeys.lastLocation);
+    if (data != null) {
+      return LocationData.fromMap({
+        'latitude': data['latitude'],
+        'longitude': data['longitude'],
+        'accuracy': data['accuracy'],
+        'altitude': data['altitude'],
+        'speed': data['speed'],
+        'speedAccuracy': data['speedAccuracy'],
+        'heading': data['heading'],
+        'time': data['time'],
+      });
+    }
+    return null;
   }
 }

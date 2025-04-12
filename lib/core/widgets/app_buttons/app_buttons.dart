@@ -47,14 +47,12 @@ class BlueButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(
               (isLoading ?? false) ? 55.sp : radius ?? 8.sp,
             ),
-            color: box.read(BoxKeys.userTypeCode) == UserTypeCode.driver
-                ? AppColors.orange
-                : AppColors.blue,
+            color: AppConstants.getColor(),
           ),
           child: Center(
             child: isLoading ?? false
                 ? CircularProgressIndicator(
-                    color: AppColors.white,
+                    color: AppConstants.getButtonTextColor(),
                   )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -67,7 +65,7 @@ class BlueButton extends StatelessWidget {
                         text,
                         style: TextStyle(
                           fontSize: fontSize ?? 16.sp,
-                          color: AppColors.white,
+                          color: AppConstants.getButtonTextColor(),
                         ),
                       ),
                       suffixIcon ??

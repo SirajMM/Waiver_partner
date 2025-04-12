@@ -5,15 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:location/location.dart';
-import 'package:permission_handler/permission_handler.dart' as ph;
+
+import '../../core/constants/get_storage_constants.dart';
 
 class NetworkController extends GetxService {
   final Connectivity _connectivity = Connectivity();
   @override
   void onInit() {
+    super.onInit();
     _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     Geolocator.getServiceStatusStream().listen(_requestPermission);
-    super.onInit();
+    Location().getLocation().then((value) => AppConstants.locationData = value);
   }
 
   Future<void> _updateConnectionStatus(

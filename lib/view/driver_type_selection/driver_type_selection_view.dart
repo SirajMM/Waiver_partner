@@ -86,18 +86,20 @@ class TypeOfServices extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Welcome! Opportunities \nawait.",
-                    style: TextStyle(
-                      height: 1,
-                      fontSize: 23.sp,
-                      fontWeight: FontWeight.w600,
+                  Expanded(
+                    child: Text(
+                      "Welcome! Opportunities await.",
+                      style: TextStyle(
+                        height: 1,
+                        fontSize: 23.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                   GestureDetector(
                     onTap: () async {
-                      final Uri whatsapp =
-                          Uri.parse('https://api.whatsapp.com/send?phone=918943099085&text=Hi');
+                      final Uri whatsapp = Uri.parse(
+                          'https://api.whatsapp.com/send?phone=918943099085&text=Hi');
                       launchUrl(whatsapp);
                     },
                     child: Container(
@@ -150,7 +152,8 @@ class TypeOfServicesListing extends StatelessWidget {
               onTap: () async {
                 box.write(BoxKeys.userTypeCode, UserTypeCode.chauffeur);
                 // Get.toNamed(AppRoutes.signIn, arguments: UserType.chauffeur);
-                Get.toNamed(AppRoutes1.getSignInRoute(), arguments: UserType.chauffeur);
+                Get.toNamed(AppRoutes1.getSignInRoute(),
+                    arguments: UserType.chauffeur);
               },
             ),
           ),

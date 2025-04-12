@@ -41,7 +41,8 @@ class HomeScreen extends StatelessWidget {
 
                   case DriverState.goingToPickUp:
                     return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 20.sp),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 15.sp, vertical: 20.sp),
                       decoration: BoxDecoration(
                           color: Get.theme.primaryColor,
                           boxShadow: [
@@ -52,7 +53,8 @@ class HomeScreen extends StatelessWidget {
                                 spreadRadius: 5)
                           ],
                           borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
+                              topLeft: Radius.circular(20.sp),
+                              topRight: Radius.circular(20.sp))),
                       child: ListView(
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
@@ -86,7 +88,8 @@ class HomeScreen extends StatelessWidget {
                                 ],
                               ),
                               IconButton(
-                                  onPressed: () => Get.bottomSheet(CancelOrder()),
+                                  onPressed: () =>
+                                      Get.bottomSheet(CancelOrder()),
                                   icon: Icon(Icons.close))
                             ],
                           ),
@@ -132,8 +135,10 @@ class HomeScreen extends StatelessWidget {
                                       child: Image.asset(AppIcons.navigation)),
                                   text: "Navigate",
                                   onTap: () => HomeController.to.openMap(
-                                      latitude: HomeController.to.startLocationLat,
-                                      longitude: HomeController.to.startLocationLong),
+                                      latitude:
+                                          HomeController.to.startLocationLat,
+                                      longitude:
+                                          HomeController.to.startLocationLong),
                                 ),
                               ],
                             ),
@@ -143,17 +148,20 @@ class HomeScreen extends StatelessWidget {
                           ),
                           BlueButton(
                               text: "Arrived at Pick Up",
-                              onTap: () => HomeController.to.reachedPickUpLocation()),
+                              onTap: () =>
+                                  HomeController.to.reachedPickUpLocation()),
                         ],
                       ),
                     );
 
                   case DriverState.arrivedAtPickUp:
-                    return EnterOtpBottomSheet(orderStatus: RideStatus.reachedPickUp);
+                    return EnterOtpBottomSheet(
+                        orderStatus: RideStatus.reachedPickUp);
 
                   case DriverState.readyToGoToDestination:
                     return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 20.sp),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 15.sp, vertical: 20.sp),
                       decoration: BoxDecoration(
                           color: Get.theme.primaryColor,
                           boxShadow: [
@@ -164,7 +172,8 @@ class HomeScreen extends StatelessWidget {
                                 spreadRadius: 5)
                           ],
                           borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
+                              topLeft: Radius.circular(20.sp),
+                              topRight: Radius.circular(20.sp))),
                       child: ListView(
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
@@ -211,7 +220,8 @@ class HomeScreen extends StatelessWidget {
                                 Container(
                                   width: 275.sp,
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         HomeController.to.pickUpLocation ?? "",
@@ -221,9 +231,11 @@ class HomeScreen extends StatelessWidget {
                                       ),
                                       Container(
                                         width: 200,
-                                        color: Get.theme.indicatorColor.withOpacity(.05),
+                                        color: Get.theme.indicatorColor
+                                            .withOpacity(.05),
                                         height: 2.sp,
-                                        margin: EdgeInsets.symmetric(vertical: 12.sp),
+                                        margin: EdgeInsets.symmetric(
+                                            vertical: 12.sp),
                                       ),
                                       Text(
                                         HomeController.to.dropOffLocation ?? "",
@@ -243,10 +255,12 @@ class HomeScreen extends StatelessWidget {
                           BlueButton(
                               text: "Start Trip",
                               onTap: () {
-                                HomeController.to.driverState.value = DriverState.goingToDestination;
+                                HomeController.to.driverState.value =
+                                    DriverState.goingToDestination;
                                 HomeController.to.openMap(
                                     latitude: HomeController.to.endLocationLat,
-                                    longitude: HomeController.to.endLocationLong);
+                                    longitude:
+                                        HomeController.to.endLocationLong);
                               }),
                         ],
                       ),
@@ -254,7 +268,8 @@ class HomeScreen extends StatelessWidget {
 
                   case DriverState.goingToDestination:
                     return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 20.sp),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 15.sp, vertical: 20.sp),
                       decoration: BoxDecoration(
                           color: Get.theme.primaryColor,
                           boxShadow: [
@@ -265,7 +280,8 @@ class HomeScreen extends StatelessWidget {
                                 spreadRadius: 5)
                           ],
                           borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
+                              topLeft: Radius.circular(20.sp),
+                              topRight: Radius.circular(20.sp))),
                       child: ListView(
                         shrinkWrap: true,
                         physics: NeverScrollableScrollPhysics(),
@@ -314,7 +330,8 @@ class HomeScreen extends StatelessWidget {
                                 text: "Navigate",
                                 onTap: () => HomeController.to.openMap(
                                     latitude: HomeController.to.endLocationLat,
-                                    longitude: HomeController.to.endLocationLong),
+                                    longitude:
+                                        HomeController.to.endLocationLong),
                               ),
                               SizedBox(
                                 width: 40.sp,
@@ -340,13 +357,15 @@ class HomeScreen extends StatelessWidget {
                           ),
                           BlueButton(
                               text: "Arrived at Destination",
-                              onTap: () => HomeController.to.reachedDropOffLocation()),
+                              onTap: () =>
+                                  HomeController.to.reachedDropOffLocation()),
                         ],
                       ),
                     );
 
                   case DriverState.reachedDestination:
-                    return EnterOtpBottomSheet(orderStatus: RideStatus.reachedDropOff);
+                    return EnterOtpBottomSheet(
+                        orderStatus: RideStatus.reachedDropOff);
 
                   case DriverState.paymentInitiated:
                     return box.read(BoxKeys.paymentType) == "CSH"
@@ -358,7 +377,8 @@ class HomeScreen extends StatelessWidget {
                         : const SizedBox();
                   case DriverState.loading:
                     return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 20.sp),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 15.sp, vertical: 20.sp),
                       decoration: BoxDecoration(
                           color: Get.theme.primaryColor,
                           boxShadow: [
@@ -369,7 +389,8 @@ class HomeScreen extends StatelessWidget {
                                 spreadRadius: 5)
                           ],
                           borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
+                              topLeft: Radius.circular(20.sp),
+                              topRight: Radius.circular(20.sp))),
                       child: LoadingBarsAnimation(
                         height: 200.sp,
                       ),
@@ -381,7 +402,8 @@ class HomeScreen extends StatelessWidget {
                 height: Get.height,
                 child: GetX<HomeController>(builder: (controller) {
                   return GoogleMap(
-                    padding: EdgeInsets.only(bottom: 90.sp, top: 600.sp, right: 10.sp),
+                    padding: EdgeInsets.only(
+                        bottom: 90.sp, top: 600.sp, right: 10.sp),
                     mapType: MapType.normal,
                     myLocationEnabled: true,
                     myLocationButtonEnabled: true,
@@ -406,7 +428,8 @@ class HomeScreen extends StatelessWidget {
                           ),
                         ),
                     },
-                    onCameraIdle: () async => controller.pickUpLocation1?.name.value =
+                    onCameraIdle: () async => controller
+                            .pickUpLocation1?.name.value =
                         await controller.getLocationDetails(
                             controller.currentPosition.value?.latitude ?? 0,
                             controller.currentPosition.value?.longitude ?? 0.0),
@@ -417,7 +440,8 @@ class HomeScreen extends StatelessWidget {
                       ),
                       zoom: 15,
                     ),
-                    onMapCreated: (GoogleMapController googleMapController) async {
+                    onMapCreated:
+                        (GoogleMapController googleMapController) async {
                       controller.googleMapController = googleMapController;
                       await controller.onMapCreate();
                     },
@@ -473,8 +497,9 @@ class MakingPaymentBottomSheet extends StatelessWidget {
                     blurRadius: 5,
                     spreadRadius: 5)
               ],
-              borderRadius:
-                  BorderRadius.only(topRight: Radius.circular(10.sp), topLeft: Radius.circular(10.sp))),
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(10.sp),
+                  topLeft: Radius.circular(10.sp))),
           width: Get.width,
           child: ListView(
             padding: EdgeInsets.all(20.sp),
@@ -491,7 +516,8 @@ class MakingPaymentBottomSheet extends StatelessWidget {
               Center(
                 child: Text(
                   HomeController.to.total ?? "",
-                  style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
+                  style:
+                      TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
                 ),
               ),
               SizedBox(
@@ -506,7 +532,8 @@ class MakingPaymentBottomSheet extends StatelessWidget {
                   children: [
                     Text(
                       "You've Earned",
-                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.sp),
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500, fontSize: 16.sp),
                     ),
                   ],
                 ),
@@ -586,17 +613,25 @@ class EnterOtpBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(24.sp),
-      decoration: BoxDecoration(boxShadow: [
-        BoxShadow(
-            color: AppColors.black.withOpacity(.1), offset: Offset(3, 3), blurRadius: 5, spreadRadius: 5)
-      ], color: Get.theme.primaryColor, borderRadius: BorderRadius.circular(8.sp)),
+      decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+                color: AppColors.black.withOpacity(.1),
+                offset: Offset(3, 3),
+                blurRadius: 5,
+                spreadRadius: 5)
+          ],
+          color: Get.theme.primaryColor,
+          borderRadius: BorderRadius.circular(8.sp)),
       child: ListView(
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         children: [
           Row(
             children: [
-              IconButton(onPressed: () => Get.bottomSheet(CancelOrder()), icon: Icon(Icons.close))
+              IconButton(
+                  onPressed: () => Get.bottomSheet(CancelOrder()),
+                  icon: Icon(Icons.close))
             ],
           ),
           Text(
@@ -664,7 +699,8 @@ class EnterOtpBottomSheet extends StatelessWidget {
                           margin: EdgeInsets.symmetric(horizontal: 55.sp),
                           child: Text(
                             "Please enter full Otp",
-                            style: TextStyle(fontSize: 14.sp, color: AppColors.red),
+                            style: TextStyle(
+                                fontSize: 14.sp, color: AppColors.red),
                           ),
                         ),
                       ],
@@ -779,7 +815,8 @@ class OrderCompletedBottomSheet extends StatelessWidget {
                           children: [
                             Text(
                               "Collect Cash",
-                              style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontSize: 24.sp, fontWeight: FontWeight.w600),
                             ),
                             SizedBox(
                               height: 20.sp,
@@ -817,7 +854,8 @@ class OrderCompletedBottomSheet extends StatelessWidget {
                           children: [
                             Text(
                               "Online Payment",
-                              style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontSize: 24.sp, fontWeight: FontWeight.w600),
                             ),
                             SizedBox(
                               height: 20.sp,
@@ -866,8 +904,9 @@ class PaymentConfirmationSheetCash extends StatelessWidget {
                 blurRadius: 5,
                 spreadRadius: 5)
           ],
-          borderRadius:
-              BorderRadius.only(topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.sp),
+              topRight: Radius.circular(20.sp))),
       child: ListView(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
@@ -904,7 +943,9 @@ class PaymentConfirmationSheetCash extends StatelessWidget {
           SizedBox(
             height: 20.sp,
           ),
-          BlueButton(text: "Confirm Payment", onTap: () => HomeController.to.confirmedPayment()),
+          BlueButton(
+              text: "Confirm Payment",
+              onTap: () => HomeController.to.confirmedPayment()),
         ],
       ),
     );
@@ -927,8 +968,9 @@ class PaymentConfirmationSheetOnline extends StatelessWidget {
                 blurRadius: 5,
                 spreadRadius: 5)
           ],
-          borderRadius:
-              BorderRadius.only(topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.sp),
+              topRight: Radius.circular(20.sp))),
       child: ListView(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
@@ -983,8 +1025,9 @@ class CancelTripBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(24.sp),
-      decoration:
-          BoxDecoration(color: Get.theme.primaryColor, borderRadius: BorderRadius.circular(8.sp)),
+      decoration: BoxDecoration(
+          color: Get.theme.primaryColor,
+          borderRadius: BorderRadius.circular(8.sp)),
       child: ListView(
         shrinkWrap: true,
         children: [
@@ -998,7 +1041,8 @@ class CancelTripBottomSheet extends StatelessWidget {
           ),
           RedButton(
             text: "Cancel",
-            onTap: () => Get.bottomSheet(const CancelReasonsBottomSheet(), isScrollControlled: true),
+            onTap: () => Get.bottomSheet(const CancelReasonsBottomSheet(),
+                isScrollControlled: true),
           ),
           SizedBox(
             height: 15.sp,
@@ -1020,8 +1064,9 @@ class CancelReasonsBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 10.sp),
-      decoration:
-          BoxDecoration(color: Get.theme.primaryColor, borderRadius: BorderRadius.circular(8.sp)),
+      decoration: BoxDecoration(
+          color: Get.theme.primaryColor,
+          borderRadius: BorderRadius.circular(8.sp)),
       child: ListView(
         shrinkWrap: true,
         children: [
@@ -1101,7 +1146,8 @@ class BottomSheetWhileDrivingItem extends StatelessWidget {
   final String text;
   final void Function()? onTap;
 
-  const BottomSheetWhileDrivingItem({super.key, required this.icon, required this.text, this.onTap});
+  const BottomSheetWhileDrivingItem(
+      {super.key, required this.icon, required this.text, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -1138,11 +1184,14 @@ class TextInsideBox extends StatelessWidget {
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(vertical: 12.sp),
       decoration: BoxDecoration(
-          border: Border.all(color: AppColors.grey155), borderRadius: BorderRadius.circular(8.sp)),
+          border: Border.all(color: AppColors.grey155),
+          borderRadius: BorderRadius.circular(8.sp)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(padding: EdgeInsets.symmetric(horizontal: 5.sp), child: icon ?? const SizedBox()),
+          Container(
+              padding: EdgeInsets.symmetric(horizontal: 5.sp),
+              child: icon ?? const SizedBox()),
           Text(
             text,
             style: TextStyle(
@@ -1191,8 +1240,11 @@ class DashBoardData extends StatelessWidget {
               children: [
                 GetX<HomeController>(builder: (controller) {
                   return Text(
-                    controller.isOnline.value ? "You’re online" : "You’re offline",
-                    style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w500),
+                    controller.isOnline.value
+                        ? "You’re online"
+                        : "You’re offline",
+                    style:
+                        TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w500),
                     textAlign: TextAlign.center,
                   );
                 }),
@@ -1251,14 +1303,18 @@ class ChangeOnlineStatusButton extends StatelessWidget {
                         blurRadius: 5,
                         spreadRadius: 5)
                   ],
-                  color: controller.isOnline.value ? Get.theme.primaryColor : AppColors.blue),
+                  color: controller.isOnline.value
+                      ? Get.theme.primaryColor
+                      : AppColors.blue),
               child: Container(
                 padding: EdgeInsets.all(15.sp),
                 margin: EdgeInsets.all(5.sp),
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: controller.isOnline.value ? AppColors.red : Get.theme.primaryColor,
+                      color: controller.isOnline.value
+                          ? AppColors.red
+                          : Get.theme.primaryColor,
                     ),
                     color: Colors.transparent),
                 child: controller.isOnlineButtonLoading.value
@@ -1266,7 +1322,9 @@ class ChangeOnlineStatusButton extends StatelessWidget {
                         height: 20.sp,
                         width: 20.sp,
                         child: CircularProgressIndicator(
-                          color: controller.isOnline.value ? AppColors.red : Get.theme.primaryColor,
+                          color: controller.isOnline.value
+                              ? AppColors.red
+                              : Get.theme.primaryColor,
                         ),
                       )
                     : Text(
@@ -1274,7 +1332,9 @@ class ChangeOnlineStatusButton extends StatelessWidget {
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 18.sp,
-                          color: controller.isOnline.value ? AppColors.red : Get.theme.primaryColor,
+                          color: controller.isOnline.value
+                              ? AppColors.red
+                              : Get.theme.primaryColor,
                         ),
                       ),
               ),
@@ -1446,7 +1506,9 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       title: Container(
         width: 185.sp, // Increased width to accommodate the refresh icon
-        decoration: BoxDecoration(color: AppColors.blue, borderRadius: BorderRadius.circular(50.sp)),
+        decoration: BoxDecoration(
+            color: AppConstants.getColor(),
+            borderRadius: BorderRadius.circular(50.sp)),
         padding: EdgeInsets.symmetric(vertical: 8.sp, horizontal: 30.sp),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1475,7 +1537,8 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
                     }
                   },
                   child: AnimatedRotation(
-                    turns: HomeController.to.isRefreshingWallet.value ? 1.0 : 0.0,
+                    turns:
+                        HomeController.to.isRefreshingWallet.value ? 1.0 : 0.0,
                     duration: const Duration(milliseconds: 1000),
                     curve: Curves.linear,
                     child: Icon(
@@ -1535,7 +1598,9 @@ class IncomingOrderBottomSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextInsideBox(text: "${((data?.duration ?? 0) / 3600).toStringAsFixed(1)} hr"),
+              TextInsideBox(
+                  text:
+                      "${((data?.duration ?? 0) / 3600).toStringAsFixed(1)} hr"),
               TextInsideBox(text: "${data?.distance} Km"),
               TextInsideBox(
                 text: (data?.customerRating ?? 4.0).toString(),
@@ -1649,15 +1714,19 @@ class AcceptButton extends StatelessWidget {
                 child: TweenAnimationBuilder(
                     onEnd: onEnd,
                     tween: Tween(
-                        begin:
-                            DateTime.now().add(const Duration(seconds: 15)).difference(DateTime.now()),
+                        begin: DateTime.now()
+                            .add(const Duration(seconds: 15))
+                            .difference(DateTime.now()),
                         end: Duration.zero),
-                    duration: DateTime.now().add(const Duration(seconds: 15)).difference(DateTime.now()),
+                    duration: DateTime.now()
+                        .add(const Duration(seconds: 15))
+                        .difference(DateTime.now()),
                     builder: (context, Duration date, child) {
                       return Text(
                         "${date.inSeconds}",
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: AppColors.white, fontSize: 15.sp),
+                        style:
+                            TextStyle(color: AppColors.white, fontSize: 15.sp),
                       );
                     }))
           ],
@@ -1726,7 +1795,10 @@ class AddStopBottomSheet extends StatelessWidget {
         children: [
           Text(
             "Add Stop ?",
-            style: TextStyle(color: AppColors.black, fontWeight: FontWeight.w600, fontSize: 20.sp),
+            style: TextStyle(
+                color: AppColors.black,
+                fontWeight: FontWeight.w600,
+                fontSize: 20.sp),
             textAlign: TextAlign.center,
           ),
           SizedBox(
