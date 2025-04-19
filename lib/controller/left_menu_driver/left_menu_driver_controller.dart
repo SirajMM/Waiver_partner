@@ -2,8 +2,10 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_utils/flutter_custom_utils.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:waiver_driver/backend/api/api_services/urls.dart';
 import 'package:waiver_driver/backend/model/left_menu_driver/left_menu_driver_model.dart';
+import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 import 'package:waiver_driver/core/themes/assets/icons.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
@@ -66,6 +68,14 @@ class LeftMenuControllerDriver extends GetxController {
   );
 
   changeDarkMode() {}
+
+  // Method to handle sharing the user ID
+  void shareUserId() {
+    final userId = box.read(BoxKeys.userID) ?? "";
+    if (userId.isNotEmpty) {
+      Share.share(userId);
+    }
+  }
 
   logoutUser() {
     Get.showOverlay(

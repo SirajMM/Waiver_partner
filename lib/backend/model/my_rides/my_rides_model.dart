@@ -82,7 +82,7 @@ class Ride {
   String? endLocation;
   String? startLocation;
   bool? isPaid;
-  DateTime? paidTime;
+  DateTime?  paidTime;
   DateTime? created;
   DateTime? createdAt;
   DateTime? updatedAt;
