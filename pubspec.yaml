@@ -1,7 +1,7 @@
 name: waiver_driver
 description: "Waiver Driver App"
 publish_to: 'none'
-version: 3.0.3+28
+version: 3.0.3+32
 
 environment:
   sdk: ^3.6.0
@@ -28,10 +28,11 @@ dependencies:
   connectivity_plus: ^6.1.1
   internet_connection_checker: ^3.0.1
   flutter_callkit_incoming: ^2.5.2
+  share_plus: ^10.1.4
 #  workmanager: ^0.5.2
 
 
-  share_plus: ^10.1.2
+
   firebase_core: ^3.8.1
   firebase_messaging: ^15.1.6
   awesome_notifications: ^0.10.1

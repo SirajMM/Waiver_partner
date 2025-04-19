@@ -4,6 +4,7 @@ import 'package:flutter_custom_utils/flutter_custom_utils.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:waiver_driver/backend/api/api_services/api_services.dart';
 import 'package:waiver_driver/backend/model/left_menu_driver/left_menu_driver_model.dart';
@@ -18,8 +19,6 @@ import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
 import '../../controller/left_menu_driver/left_menu_driver_controller.dart';
 import '../../helper/router/app_routes/route.dart';
-
-
 
 class LeftMenuDriver extends StatelessWidget {
   const LeftMenuDriver({super.key});
@@ -68,7 +67,8 @@ class LeftMenuDriver extends StatelessWidget {
           ),
           LeftMenuItem(
             item: LeftMenuControllerDriver.to.bankDetails,
-            onTap: () => Get.toNamed(AppRoutes1.getViewBankAccountScreenInRoute()),
+            onTap: () =>
+                Get.toNamed(AppRoutes1.getViewBankAccountScreenInRoute()),
           ),
           SizedBox(
             height: 30.sp,
@@ -112,39 +112,42 @@ class LeftMenuDriver extends StatelessWidget {
             height: 30.sp,
           ),
           LeftMenuItem(
-            item: LeftMenuControllerDriver.to.help,
-            onTap: () async
-              {
-                final Uri whatsapp= Uri.parse('https://api.whatsapp.com/send?phone=918943099085&text=Hi');
+              item: LeftMenuControllerDriver.to.help,
+              onTap: () async {
+                final Uri whatsapp = Uri.parse(
+                    'https://api.whatsapp.com/send?phone=918943099085&text=Hi');
                 launchUrl(whatsapp);
-              }
-          ),
+              }),
           const Divider().cPadSymmetric(v: 20.sp),
-        ( box.read(BoxKeys.userTypeCode))== UserTypeCode.chauffeur?SizedBox():
-          LeftMenuItem(
-            item: LeftMenuControllerDriver.to.switchToDiver,
-            onTap: () async {
-              Get.showOverlay(
-                  asyncFunction: () async {
-                    try {
-                      await ApiServices.logout(body: {});
-                    } finally {
-                      await FirebaseMessaging.instance.deleteToken();
-                      await box.erase();
-                      await box.write(BoxKeys.userTypeCode, UserTypeCode.fleet);
-                      Get.offAllNamed(AppRoutes1.getSignInRoute(),
-                          arguments: UserType.fleet);
-                    }
+          (box.read(BoxKeys.userTypeCode)) == UserTypeCode.chauffeur
+              ? SizedBox()
+              : LeftMenuItem(
+                  item: LeftMenuControllerDriver.to.switchToDiver,
+                  onTap: () async {
+                    Get.showOverlay(
+                        asyncFunction: () async {
+                          try {
+                            await ApiServices.logout(body: {});
+                          } finally {
+                            await FirebaseMessaging.instance.deleteToken();
+                            await box.erase();
+                            await box.write(
+                                BoxKeys.userTypeCode, UserTypeCode.fleet);
+                            Get.offAllNamed(AppRoutes1.getSignInRoute(),
+                                arguments: UserType.fleet);
+                          }
+                        },
+                        loadingWidget: LoadingBarsAnimation());
                   },
-                  loadingWidget: LoadingBarsAnimation());
-            },
-          ),
-          ( box.read(BoxKeys.userTypeCode))== UserTypeCode.chauffeur?SizedBox(): SizedBox(
-            height: 30.sp,
-          ),
+                ),
+          (box.read(BoxKeys.userTypeCode)) == UserTypeCode.chauffeur
+              ? SizedBox()
+              : SizedBox(
+                  height: 30.sp,
+                ),
           LeftMenuItem(
             item: LeftMenuControllerDriver.to.logOut,
-            onTap: () =>Get.bottomSheet(const LogoutBottomSheet()),
+            onTap: () => Get.bottomSheet(const LogoutBottomSheet()),
           )
         ],
       ),
@@ -196,16 +199,27 @@ class LeftMenuProfileItem extends StatelessWidget {
               ],
             ),
             SizedBox(
-              height: 5.sp,
+              height: 10.sp,
             ),
-            Container(
-              padding: EdgeInsets.only(left: 30.sp),
-              child: Text(
-                "#${box.read(BoxKeys.userID) ?? ""}",
-                style: TextStyle(
-                    fontSize: 12.sp,
-                    color: Get.theme.indicatorColor.withOpacity(0.5)),
-              ),
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.only(left: 30.sp),
+                  child: Text(
+                    "#${box.read(BoxKeys.userID) ?? ""}",
+                    style: TextStyle(
+                        fontSize: 10.sp,
+                        color: Get.theme.indicatorColor.withOpacity(0.5)),
+                  ),
+                ),
+                SizedBox(width: 8.sp),
+                GestureDetector(
+                  onTap: LeftMenuControllerDriver.to.shareUserId,
+                  child: Icon(Icons.share,
+                      size: 14.sp,
+                      color: Get.theme.indicatorColor.withOpacity(0.7)),
+                ),
+              ],
             )
           ],
         ),
@@ -224,14 +238,20 @@ class LeftMenuItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        color: Get.theme.primaryColor,
+        decoration: BoxDecoration(
+          color: Get.theme.primaryColor,
+          borderRadius: BorderRadius.circular(8.sp),
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.end,
+          // crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
+                SizedBox(
+                  height: 18.sp,
+                ),
                 Image.asset(
                   item.icon,
                   color: Get.theme.indicatorColor,
@@ -244,7 +264,7 @@ class LeftMenuItem extends StatelessWidget {
                   item.text,
                   style: TextStyle(
                     fontSize: 16.sp,
-                    height: 1,
+                    height: 1.2,
                   ),
                 ),
               ],
