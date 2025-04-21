@@ -64,8 +64,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  print("Background handler triggered!");
-  print("Message data: ${message.data}");
+  log("Background handler triggered!");
+  log("Message data: ${message.data}");
 
   // await MainBinding().dependencies();
   // await NotificationService.onInit();
@@ -74,7 +74,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   OrderDetailsModel data = OrderDetailsModel.fromJson(message.data);
 
   // Use a single player instance to avoid multiple instances
-  final AudioPlayer player = AudioPlayer();
 
   if (data.rideStatus == "RED") {
     // await player.play(AssetSource(AppAudio.notification));
@@ -94,21 +93,16 @@ void main() async {
 
   await MainBinding().dependencies();
 
-  // Initialize Firebase before setting up message handlers
-  if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp(name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
-  }
+  await Firebase.initializeApp(name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
+
   await requestPermissions();
 
-  // Register background handler before other Firebase setup
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  // Initialize notification service
   await NotificationService.onInit();
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  // Set up foreground message handlers
   FirebaseMessaging.onMessage.listen((message) => NotificationService.onMessage(notification: message));
 
   FirebaseMessaging.onMessageOpenedApp

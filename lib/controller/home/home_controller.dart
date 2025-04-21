@@ -60,7 +60,7 @@ class HomeController extends GetxController {
         currentPosition.value = convertToPosition(result[3] as loc.LocationData);
         saveLocationData(result[3] as loc.LocationData);
       }
-
+      isLoading.value = false;
       sendLiveLocation();
 
       pickUpLocation1 = TripsLocations(

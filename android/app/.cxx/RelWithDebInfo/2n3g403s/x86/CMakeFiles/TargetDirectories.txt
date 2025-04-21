@@ -1,0 +1,2 @@
+/Users/rijassulaimannalakath/projects/WavierDirverApp/android/app/.cxx/RelWithDebInfo/2n3g403s/x86/CMakeFiles/edit_cache.dir
+/Users/rijassulaimannalakath/projects/WavierDirverApp/android/app/.cxx/RelWithDebInfo/2n3g403s/x86/CMakeFiles/rebuild_cache.dir

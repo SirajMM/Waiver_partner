@@ -1,0 +1,2 @@
+/Users/rijassulaimannalakath/projects/WavierDirverApp/android/app/.cxx/Debug/6s205x62/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/rijassulaimannalakath/projects/WavierDirverApp/android/app/.cxx/Debug/6s205x62/armeabi-v7a/CMakeFiles/rebuild_cache.dir

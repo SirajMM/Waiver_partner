@@ -1,3 +1,6 @@
+import 'dart:developer';
+
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -13,8 +16,11 @@ import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:waiver_driver/main.dart';
 
+import '../../controller/Connectivity/network_controller.dart';
+import '../../controller/driver_type_selection/driver_type_selection_controller.dart';
+
 class DriverTypeSelectionScreen extends StatelessWidget {
-  const DriverTypeSelectionScreen({Key? key}) : super(key: key);
+  const DriverTypeSelectionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -98,8 +104,8 @@ class TypeOfServices extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      final Uri whatsapp = Uri.parse(
-                          'https://api.whatsapp.com/send?phone=918943099085&text=Hi');
+                      final Uri whatsapp =
+                          Uri.parse('https://api.whatsapp.com/send?phone=918943099085&text=Hi');
                       launchUrl(whatsapp);
                     },
                     child: Container(
@@ -152,35 +158,46 @@ class TypeOfServicesListing extends StatelessWidget {
               onTap: () async {
                 box.write(BoxKeys.userTypeCode, UserTypeCode.chauffeur);
                 // Get.toNamed(AppRoutes.signIn, arguments: UserType.chauffeur);
-                Get.toNamed(AppRoutes1.getSignInRoute(),
-                    arguments: UserType.chauffeur);
+                Get.toNamed(AppRoutes1.getSignInRoute(), arguments: UserType.chauffeur);
               },
             ),
           ),
         ),
         SizedBox(height: 14.sp),
-        Hero(
-          tag: UserType.fleet,
-          child: BlueOnlyButton(
-            text: "Fleet",
-            onTap: () {
-              box.write(BoxKeys.userTypeCode, UserTypeCode.fleet);
-              Get.toNamed(AppRoutes1.getSignInRoute(),
-                  arguments: UserType.fleet);
-            },
-          ),
+        GetX<NetworkController>(
+          builder: (controller) {
+            return Visibility(
+              visible: !controller.inReview.value,
+              child: Hero(
+                tag: UserType.fleet,
+                child: BlueOnlyButton(
+                  text: "Fleet",
+                  onTap: () {
+                    box.write(BoxKeys.userTypeCode, UserTypeCode.fleet);
+                    Get.toNamed(AppRoutes1.getSignInRoute(), arguments: UserType.fleet);
+                  },
+                ),
+              ),
+            );
+          },
         ),
         SizedBox(height: 14.sp),
-        Hero(
-          tag: UserType.driver,
-          child: BlueOnlyButton(
-            text: "Driver",
-            onTap: () {
-              box.write(BoxKeys.userTypeCode, UserTypeCode.driver);
-              Get.toNamed(AppRoutes1.getSignInRoute(),
-                  arguments: UserType.driver);
-            },
-          ),
+        GetX<NetworkController>(
+          builder: (controller) {
+            return Visibility(
+              visible: !controller.inReview.value,
+              child: Hero(
+                tag: UserType.driver,
+                child: BlueOnlyButton(
+                  text: "Driver",
+                  onTap: () {
+                    box.write(BoxKeys.userTypeCode, UserTypeCode.driver);
+                    Get.toNamed(AppRoutes1.getSignInRoute(), arguments: UserType.driver);
+                  },
+                ),
+              ),
+            );
+          },
         )
       ],
     );

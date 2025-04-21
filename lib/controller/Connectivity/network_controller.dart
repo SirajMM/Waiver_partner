@@ -1,6 +1,8 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -15,11 +17,13 @@ class NetworkController extends GetxService {
     super.onInit();
     _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     Geolocator.getServiceStatusStream().listen(_requestPermission);
+    checkForInReview();
     Location().getLocation().then((value) => AppConstants.locationData = value);
   }
 
-  Future<void> _updateConnectionStatus(
-      List<ConnectivityResult> connectivityResult) async {
+  RxBool inReview = false.obs;
+
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> connectivityResult) async {
     if (connectivityResult.contains(ConnectivityResult.none)) {
       Get.closeAllSnackbars();
       _showSnackbar(
@@ -91,5 +95,20 @@ class NetworkController extends GetxService {
       bool isEnabled = await Location().requestService();
       if (!isEnabled) _requestPermission(status);
     }
+  }
+
+  void checkForInReview() {
+    FirebaseDatabase.instance.ref().child("inReview").onValue.listen((DatabaseEvent event) {
+      final snapshot = event.snapshot;
+
+      final data = snapshot.value;
+      if (data is bool) {
+        inReview.value = data;
+      } else {
+        log('Unexpected type: ${data.runtimeType}');
+      }
+    }, onError: (error) {
+      log('Error receiving inReview update', error: error);
+    });
   }
 }

@@ -89,7 +89,7 @@ class LeftMenuControllerDriver extends GetxController {
       Get.showOverlay(
           asyncFunction: () async {
             try {
-              var response = await ApiServices.logout(body: {});
+              await ApiServices.logout(body: {});
             } finally {
               await FirebaseMessaging.instance.deleteToken();
 
