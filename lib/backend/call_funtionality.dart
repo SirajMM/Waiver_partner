@@ -155,8 +155,6 @@ class CallFunctionality {
 
     final params = CallKitParams(
       id: uuid,
-      acceptButtonIconPath: AppIcons.user,
-      declineButtonIconPath: AppIcons.user,
       nameCaller: data?.title ?? "Unknown Caller",
       appName: 'Callkit',
       avatar: AppIcons.appLogo,
@@ -183,8 +181,7 @@ class CallFunctionality {
         isShowLogo: false,
         ringtonePath: AppAudio.notification,
         backgroundColor: '#fbfafa', // Changed to a dark green color
-        backgroundUrl: AppIcons
-            .appIcon, // Changed to a car icon (replace with your actual icon)
+        backgroundUrl: AppIcons.appIcon, // Changed to a car icon (replace with your actual icon)
         actionColor: '#2d64f5', // Changed accept button to blue
         // incomingCallNotificationColor: '#E53935',  // Changed decline button to red
         textColor: '#ffffff',
