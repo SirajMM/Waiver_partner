@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -401,51 +402,63 @@ class HomeScreen extends StatelessWidget {
                 width: Get.width,
                 height: Get.height,
                 child: GetX<HomeController>(builder: (controller) {
-                  return GoogleMap(
-                    padding: EdgeInsets.only(
-                        bottom: 100.sp, top: 660.sp, right: 10.sp),
-                    mapType: MapType.normal,
-                    myLocationEnabled: true,
-                    myLocationButtonEnabled: true,
-                    zoomControlsEnabled: false,
-                    markers: {
-                      Marker(
-                        markerId: const MarkerId("1"),
-                        position: LatLng(
-                          controller.currentPosition.value?.latitude ?? 0.0,
-                          controller.currentPosition.value?.longitude ?? 0.0,
-                        ),
-                      ),
-                      if (controller.startLocationLatMarker != null &&
-                          controller.startLocationLongMarker != null &&
-                          controller.startLocationLatMarker != 0.0 &&
-                          controller.startLocationLongMarker != 0.0)
-                        Marker(
-                          icon: BitmapDescriptor.defaultMarker,
-                          markerId: const MarkerId("User"),
-                          position: LatLng(
-                            controller.startLocationLatMarker!.toDouble(),
-                            controller.startLocationLongMarker!.toDouble(),
+                  return Stack(
+                    children: [
+                      GoogleMap(
+                        padding: EdgeInsets.only(
+                            bottom: 100.sp, top: 600.sp, right: 10.sp),
+                        mapType: MapType.normal,
+                        // myLocationEnabled: true,
+                        myLocationButtonEnabled: true,
+                        zoomControlsEnabled: false,
+                        markers: {
+                          Marker(
+                            markerId: const MarkerId("1"),
+                            icon: BitmapDescriptor.defaultMarker,
+                            position: LatLng(
+                              controller.currentPosition.value?.latitude ?? 0.0,
+                              controller.currentPosition.value?.longitude ??
+                                  0.0,
+                            ),
                           ),
-                        ),
-                    },
-                    onCameraIdle: () async => controller
-                            .pickUpLocation1?.name.value =
-                        await controller.getLocationDetails(
+                          if (controller.startLocationLatMarker != null &&
+                              controller.startLocationLongMarker != null &&
+                              controller.startLocationLatMarker != 0.0 &&
+                              controller.startLocationLongMarker != 0.0)
+                            Marker(
+                              icon: BitmapDescriptor.defaultMarker,
+                              markerId: const MarkerId("User"),
+                              position: LatLng(
+                                controller.startLocationLatMarker!.toDouble(),
+                                controller.startLocationLongMarker!.toDouble(),
+                              ),
+                            ),
+                        },
+                        onCameraIdle: () async => controller
+                                .pickUpLocation1?.name.value =
+                            await controller.getLocationDetails(
+                                controller.currentPosition.value?.latitude ?? 0,
+                                controller.currentPosition.value?.longitude ??
+                                    0.0),
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(
                             controller.currentPosition.value?.latitude ?? 0,
-                            controller.currentPosition.value?.longitude ?? 0.0),
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(
-                        controller.currentPosition.value?.latitude ?? 0,
-                        controller.currentPosition.value?.longitude ?? 0,
+                            controller.currentPosition.value?.longitude ?? 0,
+                          ),
+                          // zoom: 15,
+                        ),
+                        onMapCreated:
+                            (GoogleMapController googleMapController) async {
+                          controller.googleMapController = googleMapController;
+                          await controller.onMapCreate();
+                        },
                       ),
-                      zoom: 15,
-                    ),
-                    onMapCreated:
-                        (GoogleMapController googleMapController) async {
-                      controller.googleMapController = googleMapController;
-                      await controller.onMapCreate();
-                    },
+                      Positioned(
+                        right: 0,
+                        top: 660.sp, // Adjust the top position as needed
+                        child: const Recenter(),
+                      ),
+                    ],
                   );
                   // : GoogleMap(
                   //     padding: EdgeInsets.only(
@@ -1830,4 +1843,103 @@ class AddStopBottomSheet extends StatelessWidget {
       ),
     );
   }
+}
+
+class Recenter extends StatelessWidget {
+  const Recenter({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return GetX<HomeController>(
+      builder: (controller) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            controller.recenterLoading.value
+                ? TooltipContainer()
+                : SizedBox.shrink(),
+            GestureDetector(
+              onTap: controller.recenter,
+              child: Container(
+                  padding: EdgeInsets.all(5.sp),
+                  margin: EdgeInsets.all(10.sp),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: context.theme.primaryColor,
+                    boxShadow: [
+                      BoxShadow(
+                          color: AppColors.black.withValues(alpha: .1),
+                          offset: Offset(3, 3),
+                          blurRadius: 5,
+                          spreadRadius: 5)
+                    ],
+                  ),
+                  child: controller.recenterLoading.value
+                      ? CupertinoActivityIndicator(radius: 12)
+                      : Icon(Icons.location_searching)),
+            )
+          ],
+        );
+      },
+    );
+  }
+}
+
+class TooltipContainer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppColors.grey249,
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black54,
+                blurRadius: 6,
+                offset: Offset(2, 2),
+              ),
+            ],
+          ),
+          child: Text(
+            'Fetching current location',
+            style: TextStyle(color: AppColors.grey93),
+          ),
+        ),
+        CustomPaint(
+          size: Size(10, 20), // Triangle size
+          painter: RightTrianglePainter(),
+        ),
+      ],
+    );
+  }
+}
+
+class RightTrianglePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final shadowPaint = Paint()..color = Colors.black54;
+    final trianglePaint = Paint()..color = AppColors.grey249;
+
+    final shadowPath = Path()
+      ..moveTo(1, 1)
+      ..lineTo(size.width + 3, size.height / 2 + 2)
+      ..lineTo(1, size.height + 2)
+      ..close();
+
+    final trianglePath = Path()
+      ..moveTo(0, 0)
+      ..lineTo(size.width, size.height / 2)
+      ..lineTo(0, size.height)
+      ..close();
+
+    canvas.drawPath(shadowPath, shadowPaint);
+    canvas.drawPath(trianglePath, trianglePaint);
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }

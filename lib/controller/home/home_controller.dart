@@ -100,7 +100,7 @@ class HomeController extends GetxController {
   //     appState.value = "Terminated";
   //     print(
   //         "⚠️ App Terminated - Scheduling WorkManager Task...${appState.value}");
-  //
+
   //     // changeDriverOnlineStatus();
   //     //   Workmanager().registerOneOffTask(
   //     //     "backgroundTask",
@@ -109,19 +109,20 @@ class HomeController extends GetxController {
   //   }
   // }
 
-  // void closeConnection() {
-  //   print("🔴 Closing WebSocket/Firebase connection...");
-  // }
-  //
-  // void resumeConnection() {
-  //   print("🟢 Reconnecting WebSocket/Firebase...");
-  // }
+  void closeConnection() {
+    log("🔴 Closing WebSocket/Firebase connection........................");
+    sendLiveLocation();
+  }
 
-  // @override
-  // void onClose() {
-  //   WidgetsBinding.instance.removeObserver(this);
-  //   super.onClose();
-  // }
+  void resumeConnection() {
+    print("🟢 Reconnecting WebSocket/Firebase...");
+  }
+
+  @override
+  void onClose() {
+    // WidgetsBinding.instance.removeObserver(this);
+    super.onClose();
+  }
 
   @override
   void dispose() {
@@ -142,6 +143,10 @@ class HomeController extends GetxController {
   double totalDistance = 0; // Total distance saved in Hive (in meters)
   List<Map<String, double>> latLongList = [];
   Box? distanceBox;
+
+  RxBool recenterLoading = false.obs;
+
+  RxDouble cameraZoom = 14.0.obs;
 
   Future<void> _initializeHive() async {
     distanceBox = await Hive.openBox('distanceBox');
@@ -296,7 +301,8 @@ class HomeController extends GetxController {
     GetRideDetailsResponseModel response =
         await ApiServices.rideOrderDetails(queryParameters: {"ride_id": id});
     getOrderDetails(response: response);
-    Get.bottomSheet(IncomingOrderBottomSheet(data: response.data));
+    Get.bottomSheet(IncomingOrderBottomSheet(data: response.data),
+        enableDrag: false, isDismissible: false);
   }
 
   void getOrderDetails({required GetRideDetailsResponseModel response}) {
@@ -630,6 +636,25 @@ class HomeController extends GetxController {
     }
 
     return null; // Return null if no sublocality or subpremise is found
+  }
+
+  void recenter() {
+    if (!recenterLoading.value) {
+      recenterLoading.value = true;
+      loc.Location().getLocation().then(
+        (newLoc) {
+          recenterLoading.value = false;
+          saveLocationData(newLoc);
+          googleMapController?.animateCamera(CameraUpdate.newCameraPosition(
+            CameraPosition(
+              zoom: cameraZoom.value,
+              target: LatLng(newLoc.latitude ?? 0.0, newLoc.longitude ?? 0.0),
+            ),
+          ));
+        },
+      );
+      cameraZoom.value = 15.0;
+    }
   }
 
   Future<String?> getLocationDetails1() async {
