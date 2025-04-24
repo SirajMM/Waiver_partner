@@ -155,14 +155,16 @@ class CallFunctionality {
 
     final params = CallKitParams(
       id: uuid,
+      acceptButtonIconPath: AppIcons.user,
+      declineButtonIconPath: AppIcons.user,
       nameCaller: data?.title ?? "Unknown Caller",
       appName: 'Callkit',
       avatar: AppIcons.appLogo,
       handle: data?.body ?? "Incoming Call",
       type: 0, // Audio call
       duration: 15000,
-      textAccept: 'Accept',
-      textDecline: 'Decline',
+      textAccept: 'Open the app',
+      textDecline: 'Ignore',
       missedCallNotification: const NotificationParams(
         showNotification: true,
         isShowCallback: false,
@@ -180,9 +182,11 @@ class CallFunctionality {
         isCustomNotification: true,
         isShowLogo: false,
         ringtonePath: AppAudio.notification,
-        backgroundColor: '#0955fa',
-        backgroundUrl: AppIcons.appIcon,
-        actionColor: '#4CAF50',
+        backgroundColor: '#fbfafa', // Changed to a dark green color
+        backgroundUrl: AppIcons
+            .appIcon, // Changed to a car icon (replace with your actual icon)
+        actionColor: '#2d64f5', // Changed accept button to blue
+        // incomingCallNotificationColor: '#E53935',  // Changed decline button to red
         textColor: '#ffffff',
       ),
       ios: const IOSParams(
