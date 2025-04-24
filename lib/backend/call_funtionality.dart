@@ -150,8 +150,7 @@ class CallFunctionality {
     // listenCallEvents(); // Ensure call events are always being listened to
   }
 
-  Future<void> showCallkitIncoming(
-      String uuid, RemoteMessage notification) async {
+  Future<void> showCallkitIncoming(String uuid, RemoteMessage notification) async {
     data = OrderDetailsModel.fromJson(notification.data);
 
     final params = CallKitParams(
@@ -214,8 +213,7 @@ class CallFunctionality {
     _isEventListenerRegistered = true;
 
     FlutterCallkitIncoming.onEvent.listen((event) {
-      final SendPort? sendPort =
-          IsolateNameServer.lookupPortByName('main_send_port');
+      final SendPort? sendPort = IsolateNameServer.lookupPortByName('main_send_port');
       if (event?.event == Event.actionCallAccept) {
         // _onCallAccepted(event?.body['id']);
         print("call data ${event?.body}");

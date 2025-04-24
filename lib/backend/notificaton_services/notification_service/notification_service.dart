@@ -64,6 +64,7 @@ class NotificationService {
   static onMessage({required RemoteMessage notification}) async {
     OrderDetailsModel data = OrderDetailsModel.fromJson(notification.data);
     await showNotification(data: data);
+    print(notification.notification);
     HomeController.to.driverState.value = DriverState.loading;
     print("notification.data");
     print(notification.data ?? "No message");

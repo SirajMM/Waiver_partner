@@ -135,7 +135,7 @@ class HomeController extends GetxController {
   String? finalDropLocation;
   bool isTracking = false;
   double currentDistance = 0; // Current distance in meters before it exceeds 100m
-  double totalDistance = 0; // Total distance saved in Hive (in meters)
+  double totalDistance = 0; // Total distance saved in Hive (in meters)x
   List<Map<String, double>> latLongList = [];
   Box? distanceBox;
 
