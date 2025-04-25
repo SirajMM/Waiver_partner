@@ -26,6 +26,7 @@ class PoliceClearanceCertificateController extends GetxController {
   static PoliceClearanceCertificateController get to => Get.find();
   @override
   void onInit() async {
+    super.onInit();
     try {
       isLoading.value = true;
       PoliceClearence = Get.arguments;

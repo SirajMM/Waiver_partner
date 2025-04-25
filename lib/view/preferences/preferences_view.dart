@@ -9,7 +9,7 @@ import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 import '../../core/colors/app_colors.dart';
 
 class PreferencesScreen extends StatelessWidget {
-  const PreferencesScreen({Key? key}) : super(key: key);
+  const PreferencesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -115,9 +115,10 @@ class PreferencesScreen extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class PreferenceListingItem extends StatelessWidget {
-  String text;
-  RxBool value;
+  final String text;
+  final RxBool value;
   void Function() onTap;
   PreferenceListingItem({
     super.key,

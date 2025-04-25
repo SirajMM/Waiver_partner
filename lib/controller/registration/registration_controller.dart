@@ -11,7 +11,7 @@ import 'package:waiver_driver/main.dart';
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/constants/enums/enums.dart';
 import '../../core/constants/get_storage_constants.dart';
-import '../../helper/router/app_routes/app_routes.dart';
+
 
 // class RegistrationControllerBinding extends Bindings {
 //   @override

@@ -556,10 +556,10 @@ class MakingPaymentBottomSheet extends StatelessWidget {
 }
 
 class InvoiceListingItem extends StatelessWidget {
-  String text;
-  String? amount;
+  final String text;
+  final String? amount;
 
-  InvoiceListingItem({
+  const InvoiceListingItem({
     super.key,
     required this.text,
     required this.amount,
@@ -1052,9 +1052,9 @@ class CancelReasonsBottomSheet extends StatelessWidget {
 }
 
 class CancelReasonItem extends StatelessWidget {
-  String reason;
+  final String reason;
 
-  CancelReasonItem({super.key, required this.reason});
+  const CancelReasonItem({super.key, required this.reason});
 
   @override
   Widget build(BuildContext context) {
@@ -1128,6 +1128,7 @@ class BottomSheetWhileDrivingItem extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class TextInsideBox extends StatelessWidget {
   String text;
   Widget? icon;

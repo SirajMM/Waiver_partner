@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:upgrader/upgrader.dart';
 import 'package:waiver_driver/backend/model/fleet_home_page/fleet_home_page_model.dart';
 import 'package:waiver_driver/controller/fleet_home_page/fleet_home_page_controller.dart';
 import 'package:waiver_driver/core/colors/app_colors.dart';
@@ -11,7 +10,6 @@ import 'package:waiver_driver/core/themes/assets/icons.dart';
 import 'package:waiver_driver/core/widgets/app_bar/app_bar.dart';
 import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_gradient.dart';
-import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 
 import '../../controller/left_menu_fleet/left_menu_fleet_controller.dart';
 import '../../helper/router/app_routes/route.dart';

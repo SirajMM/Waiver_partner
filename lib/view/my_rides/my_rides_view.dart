@@ -53,6 +53,7 @@ class MyRidesScreen extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class MyRidesListingItem extends StatelessWidget {
   Ride ride;
   MyRidesListingItem({
@@ -151,8 +152,8 @@ class MyRidesListingItem extends StatelessWidget {
 }
 
 class MyRideExpansionTile extends StatelessWidget {
-  String start;
-  String stop;
+  final String start;
+  final String stop;
   MyRideExpansionTile({
     super.key,
     required this.start,
@@ -217,6 +218,7 @@ class MyRideExpansionTile extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class MyRideTopItem extends StatelessWidget {
   Widget icon;
   String text;

@@ -9,9 +9,8 @@ import 'package:waiver_driver/core/widgets/app_bar/app_bar.dart';
 import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/core/widgets/count_down/count_down_view.dart';
 
-
 class OtpScreen extends StatelessWidget {
-  const OtpScreen({Key? key}) : super(key: key);
+  const OtpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

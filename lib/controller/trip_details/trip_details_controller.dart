@@ -17,6 +17,7 @@ class TripDetailsController extends GetxController {
 
   @override
   void onInit() async {
+    super.onInit();
     try {
       isLoading.value = true;
       rideId = Get.arguments;

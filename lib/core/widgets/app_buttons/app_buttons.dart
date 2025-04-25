@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 
-import 'package:waiver_driver/main.dart';
+
 
 import '../../colors/app_colors.dart';
 import '../../constants/get_storage_constants.dart';

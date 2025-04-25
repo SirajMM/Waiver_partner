@@ -10,22 +10,22 @@ dependencies:
   flutter:
     sdk: flutter
 
-  get: ^4.6.6
+  get: ^4.7.2
   get_storage: ^2.1.1
   flutter_svg: ^2.0.16
   google_fonts: ^6.2.1
   google_maps_flutter: ^2.12.1
   geolocator: ^14.0.0
   sms_autofill: ^2.4.1
-  flutter_screenutil: ^5.9.0
+  flutter_screenutil: ^5.9.3
   intl: ^0.20.0
   image_picker: ^1.1.2
   image_cropper: ^9.1.0
-  http: ^1.2.2
-  audioplayers: ^6.0.0
+  http: ^1.3.0
+  audioplayers: ^6.4.0
   cached_network_image: ^3.4.1
 
-  connectivity_plus: ^6.1.1
+  connectivity_plus: ^6.1.4
   internet_connection_checker: ^3.0.1
   flutter_callkit_incoming:
     path: lib/core/packages/flutter_callkit_incoming-master
@@ -38,17 +38,17 @@ dependencies:
   firebase_messaging: ^15.2.5
   awesome_notifications: ^0.10.1
   google_sign_in: ^6.1.4
-  web_socket_channel: ^3.0.2
-  url_launcher: ^6.2.6
-  flutter_custom_utils: ^0.4.23
+  web_socket_channel: ^3.0.3
+  url_launcher: ^6.3.1
+  flutter_custom_utils: ^0.4.33
   permission_handler: ^12.0.0+1
   websocket_universal: ^1.2.5
-  flutter_overlay_window: ^0.4.4
+  flutter_overlay_window: ^0.5.0
   mobility_features: ^6.0.0
   location: ^8.0.0
 #  carp_background_location: ^4.0.0
-  external_app_launcher: ^4.0.0
-  upgrader: ^11.3.0
+  external_app_launcher: ^4.0.3
+  upgrader: ^11.3.1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   firebase_database: ^11.3.5

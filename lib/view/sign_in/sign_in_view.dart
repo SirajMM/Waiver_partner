@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:waiver_driver/controller/sign_in/sign_in_controller.dart';
 import 'package:waiver_driver/core/themes/assets/images.dart';
 import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
-import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 
 class SignInScreen extends StatelessWidget {

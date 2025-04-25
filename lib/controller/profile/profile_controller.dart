@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/api/api_services/api_services.dart';
-import 'package:waiver_driver/backend/api/api_services/urls.dart';
 import 'package:waiver_driver/backend/model/profile/profile_model.dart' as profileModel;
 import 'package:waiver_driver/backend/model/registration/registration_model.dart';
 import 'package:waiver_driver/backend/parser/Profile/profilescreen_parser.dart';

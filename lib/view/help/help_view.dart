@@ -38,6 +38,7 @@ class HelpScreen extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class HelpListingItem extends StatelessWidget {
   HelpCategory helpCategory;
 

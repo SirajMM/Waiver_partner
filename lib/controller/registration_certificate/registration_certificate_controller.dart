@@ -25,6 +25,7 @@ class RegistrationCertificateControllerBinding extends Bindings {
 class RegistrationCertificateController extends GetxController {
   @override
   void onInit() async {
+    super.onInit();
     try {
       isLoading.value = true;
       registrartionCertificate = Get.arguments;

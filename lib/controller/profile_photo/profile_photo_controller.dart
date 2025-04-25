@@ -17,6 +17,7 @@ class ProfilePhotoController extends GetxController {
   static ProfilePhotoController get to => Get.find();
   @override
   void onInit() {
+    super.onInit();
     profilePhotoItem = Get.arguments;
     profilePhoto.value =
         profilePhotoItem?.documentProof?.files?.first.file ?? "";

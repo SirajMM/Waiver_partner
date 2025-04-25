@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:waiver_driver/backend/model/preferences/preferences_model.dart';
 import 'package:waiver_driver/backend/parser/Preference/preference_parser.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
-import 'package:waiver_driver/view/preferences/preferences_view.dart';
+
 
 import '../../backend/api/api_services/api_services.dart';
 

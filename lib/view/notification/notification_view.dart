@@ -13,7 +13,7 @@ import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
 
 class NotificationScreen extends StatelessWidget {
-  const NotificationScreen({Key? key}) : super(key: key);
+  const NotificationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +55,7 @@ class NotificationScreen extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class NotificationListingItem extends StatelessWidget {
   NotificationModel notification;
   NotificationListingItem({super.key, required this.notification});

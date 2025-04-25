@@ -11,7 +11,6 @@ import 'package:waiver_driver/core/widgets/error_page/error_page.dart';
 import 'package:waiver_driver/view/home/home_view.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
-
 class RatingScreen extends StatelessWidget {
   const RatingScreen({Key? key}) : super(key: key);
 
@@ -86,6 +85,7 @@ class RatingScreen extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class RatingContainer extends StatelessWidget {
   ReviewModel review;
   RatingContainer({super.key, required this.review});
@@ -117,7 +117,7 @@ class RatingContainer extends StatelessWidget {
 }
 
 class StarBuilder extends StatelessWidget {
-  int count;
+  final int count;
   StarBuilder({super.key, required this.count});
 
   @override

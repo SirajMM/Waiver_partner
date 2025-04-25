@@ -12,7 +12,7 @@ import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 
 
 class FaqListingScreen extends StatelessWidget {
-  const FaqListingScreen({Key? key}) : super(key: key);
+  const FaqListingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +33,7 @@ class FaqListingScreen extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class FaqListingItem extends StatelessWidget {
   Faq faq;
   FaqListingItem({super.key, required this.faq});

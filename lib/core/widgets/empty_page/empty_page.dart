@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class EmptyPage extends StatelessWidget {
-  String? text;
-  EmptyPage({super.key, this.text});
+  final String? text;
+  const EmptyPage({super.key, this.text});
 
   @override
   Widget build(BuildContext context) {

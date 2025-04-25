@@ -133,6 +133,7 @@ class AppTextFormField extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class AppDropDownFormField<T> extends StatelessWidget {
   final String header;
   final String? placeHolder;

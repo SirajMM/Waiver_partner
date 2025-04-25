@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:get/get.dart';
+
 import 'package:waiver_driver/backend/model/home/home_model.dart';
 import 'package:waiver_driver/controller/home/home_controller.dart';
 import 'package:waiver_driver/core/colors/app_colors.dart';
@@ -13,7 +13,7 @@ import 'package:waiver_driver/helper/init/init.dart';
 
 import 'package:waiver_driver/main.dart';
 
-import '../../../core/themes/assets/icons.dart';
+
 
 class NotificationService {
   static Future<void> onInit() async {

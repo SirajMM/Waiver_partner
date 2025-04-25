@@ -12,7 +12,6 @@ import 'package:waiver_driver/core/widgets/app_bar/app_bar.dart';
 import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_gradient.dart';
 import 'package:waiver_driver/core/widgets/error_page/error_page.dart';
-import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
@@ -224,6 +223,7 @@ class ChauffeurProofItemList extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class AddProofItem extends StatelessWidget {
   ProofModel proof;
   Function() onTap;
@@ -263,6 +263,7 @@ class AddProofItem extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class ChauffeurProofItemContainer extends StatelessWidget {
   ApprovalStatus status;
 

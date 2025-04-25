@@ -500,6 +500,7 @@ class RegistrationScreen extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class SelectVehicleTypeListingItem extends StatelessWidget {
   VehicleType vehicle;
   SelectVehicleTypeListingItem({super.key, required this.vehicle});
@@ -522,6 +523,7 @@ class SelectVehicleTypeListingItem extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class SelectTransmissionTypeListingItem extends StatelessWidget {
   Transmission transmissionType;
   SelectTransmissionTypeListingItem(

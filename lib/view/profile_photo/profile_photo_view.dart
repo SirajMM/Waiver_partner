@@ -9,7 +9,6 @@ import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_gradient.dart';
 import 'package:waiver_driver/core/widgets/upload_image_template/upload_image_template.dart';
 
-
 class ProfilePhotoScreen extends StatelessWidget {
   const ProfilePhotoScreen({Key? key}) : super(key: key);
 
@@ -109,7 +108,7 @@ class ProfilePhotoScreen extends StatelessWidget {
 }
 
 class ChauffeurProofInstructionItem extends StatelessWidget {
-  String text;
+  final String text;
   ChauffeurProofInstructionItem({super.key, required this.text});
   @override
   Widget build(BuildContext context) {

@@ -16,11 +16,8 @@ import 'package:waiver_driver/backend/binding/Registraion/registration_binding.d
 import 'package:waiver_driver/backend/binding/WaitingForAuthorization/waitingforauthorization_binding.dart';
 import 'package:waiver_driver/backend/binding/signIn/signin_binding.dart';
 import 'package:waiver_driver/backend/binding/splash/splash_binding.dart';
-import 'package:waiver_driver/controller/driver_type_selection/driver_type_selection_controller.dart';
 import 'package:waiver_driver/controller/fleet_registration/fleet_registration_controller.dart';
-import 'package:waiver_driver/controller/reason_for_cancel/reason_for_cancel_controller.dart';
-import 'package:waiver_driver/controller/registration_certificate/registration_certificate_controller.dart';
-import 'package:waiver_driver/controller/splash/splash_controller.dart';
+
 import 'package:waiver_driver/view/chauffeur_proof/chauffeur_proof_view.dart';
 import 'package:waiver_driver/view/driver_type_selection/driver_type_selection_view.dart';
 import 'package:waiver_driver/view/fleet_home_page/fleet_home_page_view.dart';
@@ -30,7 +27,6 @@ import 'package:waiver_driver/view/my_rides/my_rides_view.dart';
 import 'package:waiver_driver/view/notification/notification_view.dart';
 import 'package:waiver_driver/view/otp/otp_view.dart';
 import 'package:waiver_driver/view/registration/registration_view.dart';
-import 'package:waiver_driver/view/registration_certificate/registration_certificate_view.dart';
 import 'package:waiver_driver/view/sign_in/sign_in_view.dart';
 import 'package:waiver_driver/view/splash/splash_view.dart';
 
@@ -58,7 +54,6 @@ import '../../../view/reason_for_cancel/reason_for_cancel_view.dart';
 import '../../../view/setting/setting_view.dart';
 import '../../../view/view_bank_account/view_bank_bank_view.dart';
 import '../../../view/waiting_for_authorization/waiting_for_authorization_view.dart';
-import 'app_routes.dart';
 
 class AppRoutes1 {
   static String splash = "/splash";

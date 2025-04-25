@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:waiver_driver/backend/model/earning/earning_model.dart';
 import 'package:waiver_driver/controller/earning/earning_controller.dart';
-import 'package:waiver_driver/controller/home/home_controller.dart';
 import 'package:waiver_driver/core/colors/app_colors.dart';
 import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 import 'package:waiver_driver/core/themes/assets/icons.dart';
@@ -108,6 +107,7 @@ class EarningGraph extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class EarningGraphBar extends StatelessWidget {
   EarningsByDay? graphValue;
   EarningGraphBar({super.key, required this.graphValue});
@@ -241,6 +241,7 @@ class TodayTab extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class EarningListingItem extends StatelessWidget {
   EarningListItem earning;
 
@@ -826,8 +827,8 @@ class EarningSummaryToday extends StatelessWidget {
 }
 
 class DetailsItemView extends StatelessWidget {
-  String text;
-  String value;
+  final String text;
+  final String value;
 
   DetailsItemView({super.key, required this.text, required this.value});
   @override
@@ -874,7 +875,7 @@ class TodayOrWeekSelection extends StatelessWidget {
 }
 
 class TodayOrWeekSelectionItem extends StatelessWidget {
-  String header;
+  final String header;
   TodayOrWeekSelectionItem({super.key, required this.header});
   @override
   Widget build(BuildContext context) {

@@ -10,13 +10,12 @@ import 'package:waiver_driver/core/themes/assets/icons.dart';
 import 'package:waiver_driver/core/widgets/app_bar/app_bar.dart';
 import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_gradient.dart';
-import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 import 'package:waiver_driver/main.dart';
 
 import '../../helper/router/app_routes/route.dart';
 
 class SettingScreen extends StatelessWidget {
-  const SettingScreen({Key? key}) : super(key: key);
+  const SettingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +77,7 @@ class SettingScreen extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class SettingListingItem extends StatelessWidget {
   SettingItemModel setting;
   void Function() onTap;

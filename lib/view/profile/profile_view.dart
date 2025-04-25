@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:waiver_driver/backend/model/driver_profile/driver_profile_model.dart';
 import 'package:waiver_driver/backend/model/profile/profile_model.dart'
     as profileModel;
 import 'package:waiver_driver/backend/model/registration/registration_model.dart';
@@ -834,6 +833,7 @@ class ProfilePhoto extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class SelectVehicleTypeListingItemProfile extends StatelessWidget {
   profileModel.State vehicle;
   SelectVehicleTypeListingItemProfile({super.key, required this.vehicle});
@@ -854,6 +854,7 @@ class SelectVehicleTypeListingItemProfile extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class SelectTransmissionTypeListingItemProfile extends StatelessWidget {
   Transmission transmission;
   SelectTransmissionTypeListingItemProfile(

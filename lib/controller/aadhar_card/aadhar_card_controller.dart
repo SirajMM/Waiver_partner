@@ -223,9 +223,9 @@ uploadPhoto({required ImageSource source}) async {
         cropperImage.path,
       );
       
-      final File file2 = File(cropperImage.path);
-      final int fileSize1 = await file1.length();
-      print("******************* File size After cropping: ${fileSize} bytes");
+      // final File file2 = File(cropperImage.path);
+      // final int fileSize1 = await file1.length();
+      // print("******************* File size After cropping: ${fileSize} bytes");
       
       try {
         // Attempt to upload the file

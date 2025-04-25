@@ -24,6 +24,7 @@ class DrivingLicenceControllerBinding extends Bindings {
 class DrivingLicenceController extends GetxController {
   @override
   void onInit() async {
+    super.onInit();
     try {
       isLoading.value = true;
       drivingLisence = Get.arguments;

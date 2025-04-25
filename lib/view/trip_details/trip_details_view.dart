@@ -13,7 +13,6 @@ import 'package:waiver_driver/view/rating/rating_view.dart';
 
 import '../../helper/router/app_routes/app_routes.dart';
 
-
 class TripDetailsView extends StatelessWidget {
   const TripDetailsView({super.key});
 
@@ -179,9 +178,9 @@ class TripDetailsView extends StatelessWidget {
 }
 
 class TripDetailsItemView extends StatelessWidget {
-  String text;
-  String value;
-  TripDetailsItemView({super.key, required this.text, required this.value});
+  final String text;
+  final String value;
+  const TripDetailsItemView({super.key, required this.text, required this.value});
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -207,9 +206,9 @@ class TripDetailsItemView extends StatelessWidget {
 }
 
 class ReceiptItemView extends StatelessWidget {
-  String text;
-  String value;
-  ReceiptItemView({super.key, required this.text, required this.value});
+  final String text;
+  final String value;
+  const ReceiptItemView({super.key, required this.text, required this.value});
   @override
   Widget build(BuildContext context) {
     return Row(

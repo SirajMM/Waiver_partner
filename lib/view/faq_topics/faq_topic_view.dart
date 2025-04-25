@@ -41,6 +41,7 @@ class FaqTopicsScreen extends StatelessWidget {
   }
 }
 
+// ignore: must_be_immutable
 class FaqTopicListingItem extends StatelessWidget {
   FaqModel faq;
   FaqTopicListingItem({super.key, required this.faq});

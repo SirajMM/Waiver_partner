@@ -124,16 +124,10 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:location/location.dart';
-import 'package:waiver_driver/backend/parser/splash/splash_parser.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 
 import '../../core/constants/get_storage_constants.dart';
-import '../../helper/init/init.dart';
-import '../../helper/no_internet_view.dart';
-import '../../helper/router/app_routes/app_routes.dart';
 import '../../main.dart';
 
 // Binding to ensure SplashController is initialized only once

@@ -11,8 +11,6 @@ import '../../backend/api/api_services/api_services.dart';
 import '../../backend/model/aadhar_card/aadhar_card_model.dart';
 import '../../core/constants/get_storage_constants.dart';
 
-
-
 class DrivingLicenceControllerBinding extends Bindings {
   @override
   void dependencies() {
@@ -23,6 +21,7 @@ class DrivingLicenceControllerBinding extends Bindings {
 class DrivingLicenceController extends GetxController {
   @override
   void onInit() async {
+    super.onInit();
     try {
       isLoading.value = true;
       drivingLisence = Get.arguments;

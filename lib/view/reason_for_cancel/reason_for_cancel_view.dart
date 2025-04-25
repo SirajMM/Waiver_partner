@@ -13,7 +13,7 @@ class ReasonForCancelScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    ReasonForCancelController controller = Get.find();
+    // ReasonForCancelController controller = Get.find();
     return Scaffold(
       appBar: appBar(
         title: "Cancel Trip",

@@ -14,6 +14,7 @@ class FaqDetailsController extends GetxController {
   static FaqDetailsController get to => Get.find();
   @override
   void onInit() {
+    super.onInit();
     Faq faq = Get.arguments;
     question = faq.question ?? "";
     answer = faq.answer ?? "";

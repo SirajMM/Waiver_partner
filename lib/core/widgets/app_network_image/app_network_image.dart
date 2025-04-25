@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:waiver_driver/core/themes/assets/icons.dart';
 
 import '../../../backend/api/api_services/urls.dart';
 import '../../colors/app_colors.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
 
 class AppNetworkImage extends StatelessWidget {
   final String imageUrl;
