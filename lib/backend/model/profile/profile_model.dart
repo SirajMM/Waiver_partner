@@ -12,6 +12,160 @@ import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
 import '../registration/registration_model.dart';
 
+// GetProfileResponseModel getProfileResponseModelFromJson(String str) =>
+//     GetProfileResponseModel.fromJson(json.decode(str));
+//
+// String getProfileResponseModelToJson(GetProfileResponseModel data) => json.encode(data.toJson());
+//
+// class GetProfileResponseModel {
+//   int? status;
+//   String? message;
+//   ProfileData? data;
+//
+//   GetProfileResponseModel({
+//     this.status,
+//     this.message,
+//     this.data,
+//   });
+//
+//   factory GetProfileResponseModel.fromJson(Map<String, dynamic> json) => GetProfileResponseModel(
+//         status: json["status"],
+//         message: json["message"],
+//         data: json["data"] == null ? null : ProfileData.fromJson(json["data"]),
+//       );
+//
+//   Map<String, dynamic> toJson() => {
+//         "status": status,
+//         "message": message,
+//         "data": data?.toJson(),
+//       };
+// }
+//
+// class ProfileData {
+//   String? id;
+//   State? state;
+//   District? district;
+//   List<Transmission>? transmissionType;
+//   List<State>? vehicleType;
+//   DrivingExperience? drivingExperience;
+//   WorkLocation? workLocation;
+//   String? uniqueId;
+//   String? fullname;
+//   String? gender;
+//   String? status;
+//   String? email;
+//   String? dob;
+//   bool? isVerified;
+//   bool? isOnline;
+//   String? rating;
+//   String? alternativePhone;
+//   String? whatsappPhone;
+//   String? address;
+//   String? licenseValidity;
+//   String? profileImage;
+//   bool? isProfileImageVerified;
+//   String? createdAt;
+//   String? updatedAt;
+//   String? user;
+//   bool? has_Vehicle_Assigned;
+//
+//   ProfileData({
+//     this.id,
+//     this.state,
+//     this.district,
+//     this.transmissionType,
+//     this.vehicleType,
+//     this.drivingExperience,
+//     this.workLocation,
+//     this.uniqueId,
+//     this.fullname,
+//     this.gender,
+//     this.status,
+//     this.email,
+//     this.dob,
+//     this.isVerified,
+//     this.isOnline,
+//     this.rating,
+//     this.alternativePhone,
+//     this.whatsappPhone,
+//     this.address,
+//     this.licenseValidity,
+//     this.profileImage,
+//     this.isProfileImageVerified,
+//     this.createdAt,
+//     this.updatedAt,
+//     this.user,
+//     this.has_Vehicle_Assigned,
+//   });
+//
+//   factory ProfileData.fromJson(Map<String, dynamic> json) => ProfileData(
+//         id: json["id"],
+//         state: json["state"] == null ? null : State.fromJson(json["state"]),
+//         district: json["district"] == null ? null : District.fromJson(json["district"]),
+//         transmissionType: json["transmission_type"] == null
+//             ? []
+//             : List<Transmission>.from(json["transmission_type"]!.map((x) => Transmission.fromJson(x))),
+//         vehicleType: json["vehicle_type"] == null
+//             ? []
+//             : List<State>.from(json["vehicle_type"]!.map((x) => State.fromJson(x))),
+//         drivingExperience: json["driving_experience"] == null
+//             ? null
+//             : DrivingExperience.fromJson(json["driving_experience"]),
+//         workLocation:
+//             json["work_location"] == null ? null : WorkLocation.fromJson(json["work_location"]),
+//         uniqueId: json["unique_id"],
+//         fullname: json["fullname"],
+//         gender: json["gender"],
+//         status: json["status"],
+//         email: json["email"],
+//         dob: json["dob"],
+//         isVerified: json["is_verified"],
+//         isOnline: json["is_online"],
+//         rating: json["rating"].toString(),
+//         alternativePhone: json["alternative_phone"],
+//         whatsappPhone: json["whatsapp_phone"],
+//         address: json["address"],
+//         licenseValidity: json["license_validity"],
+//         profileImage: json["profile_image"],
+//         isProfileImageVerified: json["is_profile_image_verified"],
+//         has_Vehicle_Assigned: json["has_vehicle_assigned"],
+//         createdAt: json["created_at"].toString(),
+//         updatedAt: json["updated_at"].toString(),
+//         user: json["user"],
+//       );
+//
+//   Map<String, dynamic> toJson() => {
+//         "id": id,
+//         "state": state?.toJson(),
+//         "district": district?.toJson(),
+//         "transmission_type":
+//             transmissionType == null ? [] : List<dynamic>.from(transmissionType!.map((x) => x.toJson())),
+//         "vehicle_type":
+//             vehicleType == null ? [] : List<dynamic>.from(vehicleType!.map((x) => x.toJson())),
+//         "driving_experience": drivingExperience?.toJson(),
+//         "work_location": workLocation?.toJson(),
+//         "unique_id": uniqueId,
+//         "fullname": fullname,
+//         "gender": gender,
+//         "status": status,
+//         "email": email,
+//         "dob": dob,
+//         "is_verified": isVerified,
+//         "is_online": isOnline,
+//         "rating": rating,
+//         "alternative_phone": alternativePhone,
+//         "whatsapp_phone": whatsappPhone,
+//         "address": address,
+//         "license_validity": licenseValidity,
+//         "profile_image": profileImage,
+//         "is_profile_image_verified": isProfileImageVerified,
+//         "created_at": createdAt,
+//         "updated_at": updatedAt,
+//         "user": user,
+//         "has_vehicle_assigned": has_Vehicle_Assigned,
+//       };
+// }
+
 GetProfileResponseModel getProfileResponseModelFromJson(String str) =>
     GetProfileResponseModel.fromJson(json.decode(str));
 
@@ -29,16 +183,16 @@ class GetProfileResponseModel {
   });
 
   factory GetProfileResponseModel.fromJson(Map<String, dynamic> json) => GetProfileResponseModel(
-        status: json["status"],
-        message: json["message"],
-        data: json["data"] == null ? null : ProfileData.fromJson(json["data"]),
-      );
+    status: json["status"],
+    message: json["message"],
+    data: json["data"] == null ? null : ProfileData.fromJson(json["data"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "status": status,
-        "message": message,
-        "data": data?.toJson(),
-      };
+    "status": status,
+    "message": message,
+    "data": data?.toJson(),
+  };
 }
 
 class ProfileData {
@@ -64,9 +218,13 @@ class ProfileData {
   String? licenseValidity;
   String? profileImage;
   bool? isProfileImageVerified;
+  String? deleted;
   String? createdAt;
   String? updatedAt;
   String? user;
+  bool? hasVehicleAssigned;
+  bool? availableStatus;
+  VehicleDetails? vehicleDetails;
 
   ProfileData({
     this.id,
@@ -91,75 +249,155 @@ class ProfileData {
     this.licenseValidity,
     this.profileImage,
     this.isProfileImageVerified,
+    this.deleted,
     this.createdAt,
     this.updatedAt,
     this.user,
+    this.hasVehicleAssigned,
+    this.availableStatus,
+    this.vehicleDetails,
   });
 
   factory ProfileData.fromJson(Map<String, dynamic> json) => ProfileData(
-        id: json["id"],
-        state: json["state"] == null ? null : State.fromJson(json["state"]),
-        district: json["district"] == null ? null : District.fromJson(json["district"]),
-        transmissionType: json["transmission_type"] == null
-            ? []
-            : List<Transmission>.from(json["transmission_type"]!.map((x) => Transmission.fromJson(x))),
-        vehicleType: json["vehicle_type"] == null
-            ? []
-            : List<State>.from(json["vehicle_type"]!.map((x) => State.fromJson(x))),
-        drivingExperience: json["driving_experience"] == null
-            ? null
-            : DrivingExperience.fromJson(json["driving_experience"]),
-        workLocation:
-            json["work_location"] == null ? null : WorkLocation.fromJson(json["work_location"]),
-        uniqueId: json["unique_id"],
-        fullname: json["fullname"],
-        gender: json["gender"],
-        status: json["status"],
-        email: json["email"],
-        dob: json["dob"],
-        isVerified: json["is_verified"],
-        isOnline: json["is_online"],
-        rating: json["rating"].toString(),
-        alternativePhone: json["alternative_phone"],
-        whatsappPhone: json["whatsapp_phone"],
-        address: json["address"],
-        licenseValidity: json["license_validity"],
-        profileImage: json["profile_image"],
-        isProfileImageVerified: json["is_profile_image_verified"],
-        createdAt: json["created_at"].toString(),
-        updatedAt: json["updated_at"].toString(),
-        user: json["user"],
-      );
+    id: json["id"],
+    state: json["state"] == null ? null : State.fromJson(json["state"]),
+    district: json["district"] == null ? null : District.fromJson(json["district"]),
+    transmissionType: json["transmission_type"] == null
+        ? []
+        : List<Transmission>.from(json["transmission_type"]!.map((x) => Transmission.fromJson(x))),
+    vehicleType: json["vehicle_type"] == null
+        ? []
+        : List<State>.from(json["vehicle_type"]!.map((x) => State.fromJson(x))),
+    drivingExperience: json["driving_experience"] == null
+        ? null
+        : DrivingExperience.fromJson(json["driving_experience"]),
+    workLocation:
+    json["work_location"] == null ? null : WorkLocation.fromJson(json["work_location"]),
+    uniqueId: json["unique_id"],
+    fullname: json["fullname"],
+    gender: json["gender"],
+    status: json["status"],
+    email: json["email"],
+    dob: json["dob"],
+    isVerified: json["is_verified"],
+    isOnline: json["is_online"],
+    rating: json["rating"].toString(),
+    alternativePhone: json["alternative_phone"],
+    whatsappPhone: json["whatsapp_phone"],
+    address: json["address"],
+    licenseValidity: json["license_validity"],
+    profileImage: json["profile_image"],
+    isProfileImageVerified: json["is_profile_image_verified"],
+    deleted: json["deleted"],
+    hasVehicleAssigned: json["has_vehicle_assigned"],
+    availableStatus: json["available_status"],
+    vehicleDetails: json["vehicle_details"] == null ? null : VehicleDetails.fromJson(json["vehicle_details"]),
+    createdAt: json["created_at"].toString(),
+    updatedAt: json["updated_at"].toString(),
+    user: json["user"],
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "state": state?.toJson(),
-        "district": district?.toJson(),
-        "transmission_type":
-            transmissionType == null ? [] : List<dynamic>.from(transmissionType!.map((x) => x.toJson())),
-        "vehicle_type":
-            vehicleType == null ? [] : List<dynamic>.from(vehicleType!.map((x) => x.toJson())),
-        "driving_experience": drivingExperience?.toJson(),
-        "work_location": workLocation?.toJson(),
-        "unique_id": uniqueId,
-        "fullname": fullname,
-        "gender": gender,
-        "status": status,
-        "email": email,
-        "dob": dob,
-        "is_verified": isVerified,
-        "is_online": isOnline,
-        "rating": rating,
-        "alternative_phone": alternativePhone,
-        "whatsapp_phone": whatsappPhone,
-        "address": address,
-        "license_validity": licenseValidity,
-        "profile_image": profileImage,
-        "is_profile_image_verified": isProfileImageVerified,
-        "created_at": createdAt,
-        "updated_at": updatedAt,
-        "user": user,
-      };
+    "id": id,
+    "state": state?.toJson(),
+    "district": district?.toJson(),
+    "transmission_type":
+    transmissionType == null ? [] : List<dynamic>.from(transmissionType!.map((x) => x.toJson())),
+    "vehicle_type":
+    vehicleType == null ? [] : List<dynamic>.from(vehicleType!.map((x) => x.toJson())),
+    "driving_experience": drivingExperience?.toJson(),
+    "work_location": workLocation?.toJson(),
+    "unique_id": uniqueId,
+    "fullname": fullname,
+    "gender": gender,
+    "status": status,
+    "email": email,
+    "dob": dob,
+    "is_verified": isVerified,
+    "is_online": isOnline,
+    "rating": rating,
+    "alternative_phone": alternativePhone,
+    "whatsapp_phone": whatsappPhone,
+    "address": address,
+    "license_validity": licenseValidity,
+    "profile_image": profileImage,
+    "is_profile_image_verified": isProfileImageVerified,
+    "deleted": deleted,
+    "created_at": createdAt,
+    "updated_at": updatedAt,
+    "user": user,
+    "has_vehicle_assigned": hasVehicleAssigned,
+    "available_status": availableStatus,
+    "vehicle_details": vehicleDetails?.toJson(),
+  };
+}
+
+class VehicleDetails {
+  String? id;
+  String? deleted;
+  String? registrationNumber;
+  String? brand;
+  String? name;
+  String? permitEndDate;
+  String? insuranceEndDate;
+  bool? isValid;
+  String? status;
+  String? createdAt;
+  String? updatedAt;
+  String? user;
+  int? vehicleType;
+  int? transmissionType;
+
+  VehicleDetails({
+    this.id,
+    this.deleted,
+    this.registrationNumber,
+    this.brand,
+    this.name,
+    this.permitEndDate,
+    this.insuranceEndDate,
+    this.isValid,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+    this.user,
+    this.vehicleType,
+    this.transmissionType,
+  });
+
+  factory VehicleDetails.fromJson(Map<String, dynamic> json) => VehicleDetails(
+    id: json["id"],
+    deleted: json["deleted"],
+    registrationNumber: json["registration_number"],
+    brand: json["brand"],
+    name: json["name"],
+    permitEndDate: json["permit_end_date"],
+    insuranceEndDate: json["insurance_end_date"],
+    isValid: json["is_valid"],
+    status: json["status"],
+    createdAt: json["created_at"],
+    updatedAt: json["updated_at"],
+    user: json["user"],
+    vehicleType: json["vehicle_type"],
+    transmissionType: json["transmission_type"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "deleted": deleted,
+    "registration_number": registrationNumber,
+    "brand": brand,
+    "name": name,
+    "permit_end_date": permitEndDate,
+    "insurance_end_date": insuranceEndDate,
+    "is_valid": isValid,
+    "status": status,
+    "created_at": createdAt,
+    "updated_at": updatedAt,
+    "user": user,
+    "vehicle_type": vehicleType,
+    "transmission_type": transmissionType,
+  };
 }
 
 class District {

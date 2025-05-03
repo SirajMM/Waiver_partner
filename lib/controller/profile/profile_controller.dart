@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/api/api_services/api_services.dart';
@@ -32,13 +34,14 @@ class ProfileController extends GetxController {
       // isError.value = false;
     } catch (error) {
       print('crashed');
-      print(error);
+      log(error.toString());
       isError.value = true;
     } finally {
       isLoading.value = false;
     }
   }
-
+  bool? has_Vehicle_Assigned;
+  profileModel.VehicleDetails? vehicleDetails;
   String profileImage = "";
   Future<void> getProfile() async {
     profileModel.GetProfileResponseModel response = await ApiServices.getProfile();
@@ -67,6 +70,9 @@ class ProfileController extends GetxController {
     // selectedWorkingLocation = workingLocations.firstWhereOrNull(
     //     (element) => (element.id) == (response.data?.workLocation?.id));
     vehicleTypes = response.data?.vehicleType ?? [];
+    has_Vehicle_Assigned = response.data?.hasVehicleAssigned;
+    vehicleDetails = response.data?.vehicleDetails;
+    box.write(BoxKeys.isTaken, has_Vehicle_Assigned);
     // for (var item in vehicleTypes) {
     //   for (var item2 in response.data?.vehicleType ?? []) {
     //     if (item.id == item2.id) {
@@ -89,6 +95,7 @@ class ProfileController extends GetxController {
         await ApiServices.getProfilePhoto(queryParameter: {"document_type": "PPO"});
     profileImage = imageResponse.data?.files?.firstOrNull?.file ?? "";
   }
+
 
   String userTypeCode = box.read(BoxKeys.userTypeCode) ?? "";
 

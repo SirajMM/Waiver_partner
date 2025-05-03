@@ -447,7 +447,7 @@ class Data {
   int? drivingExperience;
   int? workLocation;
   List<Transmission>? transmissionType;
-  List<State>? vehicleType;
+  List<Statemodel>? vehicleType;
 
   Data({
     this.id,
@@ -509,8 +509,8 @@ class Data {
                 .map((x) => Transmission.fromJson(x))),
         vehicleType: json["vehicle_type"] == null
             ? []
-            : List<State>.from(
-                json["vehicle_type"]!.map((x) => State.fromJson(x))),
+            : List<Statemodel>.from(
+                json["vehicle_type"]!.map((x) => Statemodel.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {

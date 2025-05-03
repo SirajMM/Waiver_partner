@@ -20,6 +20,7 @@ import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:waiver_driver/main.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
+import '../../core/widgets/snackbar/snackbar.dart';
 import '../left_menu_driver/left_menu_driver_view.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -1244,10 +1245,25 @@ class ChangeOnlineStatusButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         GestureDetector(
-          onTap: () {
-            HomeController.to.changeDriverOnlineStatus();
-            // WakelockPlus.toggle(enable: enable);
-            enable = !enable;
+          onTap: () async{
+            String useTypeCode =  await box.read(BoxKeys.userTypeCode) ?? "";
+            if(HomeController.to.isAssinged.value == false && useTypeCode == UserTypeCode.driver ){
+              Get.showSnackbar(
+                const GetSnackBar(
+                  duration: Duration(seconds: 3),
+                  backgroundColor: Colors.transparent,
+                  padding: EdgeInsets.zero,
+                  messageText: AppSnackBar(
+                    text: "Your have no assinged vehicles",
+                  ),
+                ),
+              );
+            }else{
+              HomeController.to.changeDriverOnlineStatus();
+              // WakelockPlus.toggle(enable: enable);
+              enable = !enable;
+            }
+
           },
           child: GetX<HomeController>(builder: (controller) {
             return Container(
@@ -1278,7 +1294,7 @@ class ChangeOnlineStatusButton extends StatelessWidget {
                           color: controller.isOnline.value ? AppColors.red : Get.theme.primaryColor,
                         ),
                       )
-                    : Text(
+                    :  Text(
                         controller.isOnline.value ? "Stop" : "GO",
                         style: TextStyle(
                           fontWeight: FontWeight.w500,

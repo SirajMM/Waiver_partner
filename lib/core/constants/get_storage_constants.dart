@@ -22,6 +22,9 @@ class BoxKeys {
   static String darkMode = "0";
   static String paymentType = "paymentType";
   static String lastLocation = "lastLocation";
+  static String  buildNumber = "buildNumber";
+  static String  version = "version";
+  static String  isTaken = "isAssinged";
 }
 
 class UserType {

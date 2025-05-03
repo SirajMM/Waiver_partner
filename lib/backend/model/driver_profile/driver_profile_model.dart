@@ -4,12 +4,14 @@
 
 import 'dart:convert';
 
+import 'package:waiver_driver/backend/model/registration/registration_model.dart';
+
 GetDriverProfileResponseModel getDriverProfileResponseModelFromJson(
-        String str) =>
+    String str) =>
     GetDriverProfileResponseModel.fromJson(json.decode(str));
 
 String getDriverProfileResponseModelToJson(
-        GetDriverProfileResponseModel data) =>
+    GetDriverProfileResponseModel data) =>
     json.encode(data.toJson());
 
 class GetDriverProfileResponseModel {
@@ -31,18 +33,18 @@ class GetDriverProfileResponseModel {
       );
 
   Map<String, dynamic> toJson() => {
-        "status": status,
-        "message": message,
-        "data": data?.toJson(),
-      };
+    "status": status,
+    "message": message,
+    "data": data?.toJson(),
+  };
 }
 
 class Data {
   String? id;
-  State? state;
+  Statemodel? state;
   District? district;
-  State? transmissionType;
-  List<State>? vehicleType;
+  List<Transmission>? transmissionType;
+  List<Statemodel>? vehicleType;
   DrivingExperience? drivingExperience;
   WorkLocation? workLocation;
   String? uniqueId;
@@ -53,7 +55,7 @@ class Data {
   String? dob;
   bool? isVerified;
   bool? isOnline;
-  int? rating;
+  String? rating;
   String? alternativePhone;
   String? whatsappPhone;
   String? address;
@@ -63,6 +65,10 @@ class Data {
   DateTime? createdAt;
   DateTime? updatedAt;
   String? user;
+  dynamic deleted;
+  bool? availableStatus;
+  bool? hasVehicleAssigned;
+  VehicleDetails? vehicleDetails;
 
   Data({
     this.id,
@@ -90,82 +96,161 @@ class Data {
     this.createdAt,
     this.updatedAt,
     this.user,
+    this.deleted,
+    this.availableStatus,
+    this.hasVehicleAssigned,
+    this.vehicleDetails,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
-        id: json["id"],
-        state: json["state"] == null ? null : State.fromJson(json["state"]),
-        district: json["district"] == null
-            ? null
-            : District.fromJson(json["district"]),
-        transmissionType: json["transmission_type"] == null
-            ? null
-            : State.fromJson(json["transmission_type"]),
-        vehicleType: json["vehicle_type"] == null
-            ? []
-            : List<State>.from(
-                json["vehicle_type"]!.map((x) => State.fromJson(x))),
-        drivingExperience: json["driving_experience"] == null
-            ? null
-            : DrivingExperience.fromJson(json["driving_experience"]),
-        workLocation: json["work_location"] == null
-            ? null
-            : WorkLocation.fromJson(json["work_location"]),
-        uniqueId: json["unique_id"],
-        fullname: json["fullname"],
-        gender: json["gender"],
-        status: json["status"],
-        email: json["email"],
-        dob: json["dob"],
-        isVerified: json["is_verified"],
-        isOnline: json["is_online"],
-        rating: json["rating"],
-        alternativePhone: json["alternative_phone"],
-        whatsappPhone: json["whatsapp_phone"],
-        address: json["address"],
-        licenseValidity: json["license_validity"],
-        profileImage: json["profile_image"],
-        isProfileImageVerified: json["is_profile_image_verified"],
-        createdAt: json["created_at"] == null
-            ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
-        user: json["user"],
-      );
+    id: json["id"],
+    state: json["state"] == null ? null : Statemodel.fromJson(json["state"]),
+    district: json["district"] == null
+        ? null
+        : District.fromJson(json["district"]),
+    transmissionType: json["transmission_type"] == null
+        ? []
+        : List<Transmission>.from(json["transmission_type"]!.map((x) => Transmission.fromJson(x))),
+    vehicleType: json["vehicle_type"] == null
+        ? []
+        : List<Statemodel>.from(json["vehicle_type"]!.map((x) => Statemodel.fromJson(x))),
+    drivingExperience: json["driving_experience"] == null
+        ? null
+        : DrivingExperience.fromJson(json["driving_experience"]),
+    workLocation: json["work_location"] == null
+        ? null
+        : WorkLocation.fromJson(json["work_location"]),
+    uniqueId: json["unique_id"],
+    fullname: json["fullname"],
+    gender: json["gender"],
+    status: json["status"],
+    email: json["email"],
+    dob: json["dob"],
+    isVerified: json["is_verified"],
+    isOnline: json["is_online"],
+    rating: json["rating"],
+    alternativePhone: json["alternative_phone"],
+    whatsappPhone: json["whatsapp_phone"],
+    address: json["address"],
+    licenseValidity: json["license_validity"],
+    profileImage: json["profile_image"],
+    isProfileImageVerified: json["is_profile_image_verified"],
+    createdAt: json["created_at"] == null
+        ? null
+        : DateTime.parse(json["created_at"]),
+    updatedAt: json["updated_at"] == null
+        ? null
+        : DateTime.parse(json["updated_at"]),
+    user: json["user"],
+    deleted: json["deleted"],
+    availableStatus: json["available_status"],
+    hasVehicleAssigned: json["has_vehicle_assigned"],
+    vehicleDetails: json["vehicle_details"] == null
+        ? null
+        : VehicleDetails.fromJson(json["vehicle_details"]),
+  );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "state": state?.toJson(),
-        "district": district?.toJson(),
-        "transmission_type": transmissionType?.toJson(),
-        "vehicle_type": vehicleType == null
-            ? []
-            : List<dynamic>.from(vehicleType!.map((x) => x.toJson())),
-        "driving_experience": drivingExperience?.toJson(),
-        "work_location": workLocation?.toJson(),
-        "unique_id": uniqueId,
-        "fullname": fullname,
-        "gender": gender,
-        "status": status,
-        "email": email,
-        "dob": dob,
-        "is_verified": isVerified,
-        "is_online": isOnline,
-        "rating": rating,
-        "alternative_phone": alternativePhone,
-        "whatsapp_phone": whatsappPhone,
-        "address": address,
-        "license_validity": licenseValidity,
-        "profile_image": profileImage,
-        "is_profile_image_verified": isProfileImageVerified,
-        "created_at":
-            "${createdAt!.year.toString().padLeft(4, '0')}-${createdAt!.month.toString().padLeft(2, '0')}-${createdAt!.day.toString().padLeft(2, '0')}",
-        "updated_at":
-            "${updatedAt!.year.toString().padLeft(4, '0')}-${updatedAt!.month.toString().padLeft(2, '0')}-${updatedAt!.day.toString().padLeft(2, '0')}",
-        "user": user,
-      };
+    "id": id,
+    "state": state?.toJson(),
+    "district": district?.toJson(),
+    "transmission_type": transmissionType == null ? [] : List<dynamic>.from(transmissionType!.map((x) => x.toJson())),
+    "vehicle_type": vehicleType == null
+        ? []
+        : List<dynamic>.from(vehicleType!.map((x) => x.toJson())),
+    "driving_experience": drivingExperience?.toJson(),
+    "work_location": workLocation?.toJson(),
+    "unique_id": uniqueId,
+    "fullname": fullname,
+    "gender": gender,
+    "status": status,
+    "email": email,
+    "dob": dob,
+    "is_verified": isVerified,
+    "is_online": isOnline,
+    "rating": rating,
+    "alternative_phone": alternativePhone,
+    "whatsapp_phone": whatsappPhone,
+    "address": address,
+    "license_validity": licenseValidity,
+    "profile_image": profileImage,
+    "is_profile_image_verified": isProfileImageVerified,
+    "created_at": createdAt?.toIso8601String(),
+    "updated_at": updatedAt?.toIso8601String(),
+    "user": user,
+    "deleted": deleted,
+    "available_status": availableStatus,
+    "has_vehicle_assigned": hasVehicleAssigned,
+    "vehicle_details": vehicleDetails?.toJson(),
+  };
+}
+
+class VehicleDetails {
+  String? id;
+  dynamic deleted;
+  String? registrationNumber;
+  String? brand;
+  String? name;
+  String? permitEndDate;
+  String? insuranceEndDate;
+  bool? isValid;
+  String? status;
+  String? createdAt;
+  String? updatedAt;
+  String? user;
+  int? vehicleType;
+  int? transmissionType;
+
+  VehicleDetails({
+    this.id,
+    this.deleted,
+    this.registrationNumber,
+    this.brand,
+    this.name,
+    this.permitEndDate,
+    this.insuranceEndDate,
+    this.isValid,
+    this.status,
+    this.createdAt,
+    this.updatedAt,
+    this.user,
+    this.vehicleType,
+    this.transmissionType,
+  });
+
+  factory VehicleDetails.fromJson(Map<String, dynamic> json) => VehicleDetails(
+    id: json["id"],
+    deleted: json["deleted"],
+    registrationNumber: json["registration_number"],
+    brand: json["brand"],
+    name: json["name"],
+    permitEndDate: json["permit_end_date"],
+    insuranceEndDate: json["insurance_end_date"],
+    isValid: json["is_valid"],
+    status: json["status"],
+    createdAt: json["created_at"],
+    updatedAt: json["updated_at"],
+    user: json["user"],
+    vehicleType: json["vehicle_type"],
+    transmissionType: json["transmission_type"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "deleted": deleted,
+    "registration_number": registrationNumber,
+    "brand": brand,
+    "name": name,
+    "permit_end_date": permitEndDate,
+    "insurance_end_date": insuranceEndDate,
+    "is_valid": isValid,
+    "status": status,
+    "created_at": createdAt,
+    "updated_at": updatedAt,
+    "user": user,
+    "vehicle_type": vehicleType,
+    "transmission_type": transmissionType,
+  };
 }
 
 class District {
@@ -213,16 +298,16 @@ class DrivingExperience {
       };
 }
 
-class State {
+class Statemodel {
   int? id;
   String? name;
 
-  State({
+  Statemodel({
     this.id,
     this.name,
   });
 
-  factory State.fromJson(Map<String, dynamic> json) => State(
+  factory Statemodel.fromJson(Map<String, dynamic> json) => Statemodel(
         id: json["id"],
         name: json["name"],
       );

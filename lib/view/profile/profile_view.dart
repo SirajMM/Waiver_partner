@@ -524,6 +524,159 @@ class ProfileScreen extends StatelessWidget {
                                       SizedBox(
                                         height: 30.sp,
                                       ),
+
+                                      ProfileController.to.has_Vehicle_Assigned == true
+                                       ?Column(
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                        children: [
+                                          Text("Assinged Vehicle :-",
+                                              style: TextStyle(
+                                                  fontSize: 17.sp,
+                                                  fontWeight: FontWeight.w600)),
+                                          SizedBox(
+                                            height: 20.sp,
+                                          ),
+                                          Text("Vehicle Name",
+                                              style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w600)),
+                                          SizedBox(
+                                            height: 7.sp,
+                                          ),
+                                          Container(
+                                            height: 45.sp,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                BorderRadius.circular(8),
+                                                color: AppColors.grey155),
+                                            child: Center(
+                                              child: Row(
+                                                children: [
+                                                  SizedBox(
+                                                    width: 14.sp,
+                                                  ),
+                                                  Text(
+                                                    ProfileController
+                                                        .to.vehicleDetails?.name ??
+                                                        "",
+                                                    style: TextStyle(
+                                                        fontSize: 16.sp,
+                                                        color: AppColors.grey93),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 12.sp,
+                                          ),
+                                          Text("Brand",
+                                              style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w600)),
+                                          SizedBox(
+                                            height: 7.sp,
+                                          ),
+                                          Container(
+                                            height: 45.sp,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                BorderRadius.circular(8),
+                                                color: AppColors.grey155),
+                                            child: Center(
+                                              child: Row(
+                                                children: [
+                                                  SizedBox(
+                                                    width: 14.sp,
+                                                  ),
+                                                  Text(
+                                                    ProfileController
+                                                        .to.vehicleDetails?.brand ??
+                                                        "",
+                                                    style: TextStyle(
+                                                        fontSize: 16.sp,
+                                                        color: AppColors.grey93),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 12.sp,
+                                          ),
+                                          Text("Registration Number ",
+                                              style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w600)),
+                                          SizedBox(
+                                            height: 7.sp,
+                                          ),
+                                          Container(
+                                            height: 45.sp,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                BorderRadius.circular(8),
+                                                color: AppColors.grey155),
+                                            child: Center(
+                                              child: Row(
+                                                children: [
+                                                  SizedBox(
+                                                    width: 14.sp,
+                                                  ),
+                                                  Text(
+                                                    ProfileController
+                                                        .to.vehicleDetails?.registrationNumber ??
+                                                        "",
+                                                    style: TextStyle(
+                                                        fontSize: 16.sp,
+                                                        color: AppColors.grey93),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: 12.sp,
+                                          ),
+                                          Text("Transmission Type",
+                                              style: TextStyle(
+                                                  fontSize: 15.sp,
+                                                  fontWeight: FontWeight.w600)),
+                                          SizedBox(
+                                            height: 7.sp,
+                                          ),
+                                          Container(
+                                            height: 45.sp,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                BorderRadius.circular(8),
+                                                color: AppColors.grey155),
+                                            child: Center(
+                                              child: Row(
+                                                children: [
+                                                  SizedBox(
+                                                    width: 14.sp,
+                                                  ),
+                                                  Text(
+                                                    ProfileController
+                                                        .to.vehicleDetails?.transmissionType.toString() ??
+                                                        "",
+                                                    style: TextStyle(
+                                                        fontSize: 16.sp,
+                                                        color: AppColors.grey93),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ): const SizedBox(),
+
+                                      SizedBox(
+                                        height: 30.sp,
+                                      ),
+
                                     ],
                                   )
                                 : const SizedBox(),

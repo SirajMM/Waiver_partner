@@ -13,6 +13,9 @@ import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 import 'package:waiver_driver/helper/validator/validators/validators.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
+import '../../backend/model/driver_profile/driver_profile_model.dart';
+
+import '../../core/colors/app_colors.dart';
 import '../../core/widgets/app_network_image/app_network_image.dart';
 
 class DriverProfileScreen extends StatelessWidget {
@@ -154,6 +157,77 @@ class DriverProfileScreen extends StatelessWidget {
                         SizedBox(
                           height: 12.sp,
                         ),
+
+                        Theme(
+                          data: ThemeData(
+                              dividerColor: Colors.transparent),
+                          child: ExpansionTile(
+                            backgroundColor: AppColors.white,
+                            collapsedBackgroundColor:
+                            AppColors.white,
+                            collapsedShape:
+                            RoundedRectangleBorder(
+                              side: BorderSide(
+                                  color: AppColors.grey155),
+                              borderRadius:
+                              BorderRadius.circular(8.sp),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                  color: AppColors.grey155),
+                              borderRadius:
+                              BorderRadius.circular(8.sp),
+                            ),
+                            childrenPadding: EdgeInsets.zero,
+                            title: const Text("Vehicle Types"),
+                            children: DriverProfileController
+                                .to.vehicleTypes
+                                .map((vehicle) =>
+                                SelectVehicleTypeListingItemProfile(
+                                  vehicle: vehicle,
+                                ))
+                                .toList(),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 12.sp,
+                        ),
+                        Theme(
+                          data: ThemeData(
+                              dividerColor: Colors.transparent),
+                          child: ExpansionTile(
+                            backgroundColor: AppColors.white,
+                            collapsedBackgroundColor:
+                            AppColors.white,
+                            collapsedShape:
+                            RoundedRectangleBorder(
+                              side: BorderSide(
+                                  color: AppColors.grey155),
+                              borderRadius:
+                              BorderRadius.circular(8.sp),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              side: BorderSide(
+                                  color: AppColors.grey155),
+                              borderRadius:
+                              BorderRadius.circular(8.sp),
+                            ),
+                            childrenPadding: EdgeInsets.zero,
+                            title:
+                            const Text("Transmission Types"),
+                            children: DriverProfileController
+                                .to.transmissionType!
+                                .map((transmission) =>
+                                SelectTransmissionTypeListingItemProfile(
+                                  transmission: transmission,
+                                ))
+                                .toList(),
+                          ),
+                        ),
+
+                        SizedBox(
+                          height: 12.sp,
+                        ),
                         AppTextFormField(
                           controller:
                               DriverProfileController.to.controllerAddress,
@@ -201,6 +275,46 @@ class ProfilePhotoDriverProfile extends StatelessWidget {
           radius: 70.sp,
           isProfile: true,
         ),
+      ],
+    );
+  }
+}
+class SelectVehicleTypeListingItemProfile extends StatelessWidget {
+  Statemodel vehicle;
+  SelectVehicleTypeListingItemProfile({super.key, required this.vehicle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Checkbox(
+            value: true,
+            onChanged: (value) {
+              // vehicle.isSelected?.value = value ?? false;
+              // controller.showVehicleTypeError.value = false;
+            }),
+        Text(vehicle.name ?? "")
+      ],
+    );
+  }
+}
+
+class SelectTransmissionTypeListingItemProfile extends StatelessWidget {
+  Transmission transmission;
+  SelectTransmissionTypeListingItemProfile(
+      {super.key, required this.transmission});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Checkbox(
+            value: true,
+            onChanged: (value) {
+              // vehicle.isSelected?.value = value ?? false;
+              // controller.showVehicleTypeError.value = false;
+            }),
+        Text(transmission.name ?? "")
       ],
     );
   }

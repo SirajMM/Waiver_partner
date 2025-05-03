@@ -1,11 +1,15 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/model/driver_profile/driver_profile_model.dart';
 import 'package:waiver_driver/backend/model/fleet_home_page/fleet_home_page_model.dart';
 import 'package:waiver_driver/backend/model/registration/registration_model.dart';
+import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
-
+import 'package:waiver_driver/main.dart';
 import '../../backend/api/api_services/api_services.dart';
+
 
 class DriverProfileControllerBinding extends Bindings {
   @override
@@ -29,6 +33,7 @@ class DriverProfileController extends GetxController {
       await Future.wait([getDriverProfile(), getAllStates()]);
       isError.value = false;
     } catch (error) {
+      log(error.toString());
       isError.value = true;
     } finally {
       isLoading.value = false;
@@ -46,10 +51,14 @@ class DriverProfileController extends GetxController {
   TextEditingController controllerAddress = TextEditingController();
   List<StatesModel> statesList = [];
   List<DistrictModel> districtsList = [];
+  List<Transmission>? transmissionType;
+  List<Statemodel> vehicleTypes = [];
   GenderModel? selectedGender;
   StatesModel? selectedState;
   DistrictModel? selectedDistrict;
   String? profileImage;
+  bool? has_Vehicle_Assigned;
+  VehicleDetails? vehicleDetails;
   List<GenderModel> genderList = [
     GenderModel(label: "Male", code: "M"),
     GenderModel(label: "Female", code: "F"),
@@ -103,6 +112,20 @@ class DriverProfileController extends GetxController {
     selectedState = statesList.firstWhereOrNull(
         (element) => (element.id) == (response.data?.state?.id));
     await getAllDistricts(districtsID: response.data?.district?.id);
+    transmissionType = response.data?.transmissionType ?? [];
+    vehicleTypes = response.data?.vehicleType ?? [];
     controllerAddress.text = response.data?.address ?? "";
+    has_Vehicle_Assigned = response.data?.hasVehicleAssigned;
+    vehicleDetails = response.data?.vehicleDetails;
   }
+  Future <bool> hasAssigned()async{
+    String userTypeCode = await box.read(BoxKeys.userTypeCode);
+    if(userTypeCode==UserTypeCode.driver && has_Vehicle_Assigned==true){
+      return true;
+    }else{
+      return false;
+    }
+
+  }
+
 }

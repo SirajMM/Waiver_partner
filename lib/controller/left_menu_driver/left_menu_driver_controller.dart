@@ -12,7 +12,6 @@ import 'package:waiver_driver/helper/router/app_routes/route.dart';
 
 import '../../backend/api/api_services/api_services.dart';
 
-
 import '../../main.dart';
 
 import '../../view/loading_animation/loading_animation.dart';
@@ -21,10 +20,14 @@ class LeftMenuControllerDriver extends GetxController {
   @override
   void onInit() {
     Get.put(ApiServices(appBaseUrl: AppUrls.base));
+    getAppVersion();
     super.onInit();
   }
 
   static LeftMenuControllerDriver get to => Get.find();
+
+  final RxString version = ''.obs;
+  final RxString buildNumber = ''.obs;
 
   LeftMenuItemModel myEarning = LeftMenuItemModel(
     icon: AppIcons.wallet,
@@ -75,6 +78,11 @@ class LeftMenuControllerDriver extends GetxController {
     if (userId.isNotEmpty) {
       Share.share(userId);
     }
+  }
+
+  Future<void> getAppVersion() async {
+    version.value = await box.read(BoxKeys.version) ?? "0.0";
+    buildNumber.value = await box.read(BoxKeys.buildNumber) ?? "0.0";
   }
 
   logoutUser() {
