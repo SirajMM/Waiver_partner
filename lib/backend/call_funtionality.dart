@@ -269,10 +269,10 @@ class CallFunctionality {
     print("Ride Status: $rideStatus");
 
     switch (rideStatus) {
-      case "RED":
+      case "RED"|| "FRED":
         HomeController.to.getAndShowOrderDetails(id: rideId ?? "");
         break;
-      case "cancelled": // <-- Use string value instead of RideStatus.cancelled
+      case "cancelled" || "FCAD": // <-- Use string value instead of RideStatus.cancelled
         _player.stop();
         HomeController.to.resetDistance();
         HomeController.to.isTracking = false;

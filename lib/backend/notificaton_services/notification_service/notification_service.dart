@@ -72,9 +72,9 @@ class NotificationService {
     print(notification.notification?.title);
     box.write(BoxKeys.paymentType, data.paymentType);
     print("***********************${data.rideStatus}");
-    if (data.rideStatus == "RED") {
+    if (data.rideStatus == "RED" || data.rideStatus == RideStatus.favRideRequested) {
       HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
-    } else if (data.rideStatus == RideStatus.cancelled) {
+    } else if (data.rideStatus == RideStatus.cancelled || data.rideStatus == RideStatus.favRideCancelled)  {
       final player = AudioPlayer();
       player.stop();
       HomeController.to.resetDistance();

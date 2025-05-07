@@ -89,6 +89,8 @@ class RideStatus {
   static String reachedDropOff = "RDF";
   static String paymentInitiated = "PID";
   static String paymentCompleted = "PCD";
+  static String favRideRequested = "FRED";
+  static String favRideCancelled = "FCAD";
 }
 
 class RiderStatus {

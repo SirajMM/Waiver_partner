@@ -66,18 +66,20 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   log("Background handler triggered!");
   log("Message data: ${message.data}");
-
+  OrderDetailsModel data = OrderDetailsModel.fromJson(message.data);
   // await MainBinding().dependencies();
   // await NotificationService.onInit();
-  CallFunctionality.onInit();
+  if (data.rideStatus == "RED"|| data.rideStatus == "FRED") {
+    CallFunctionality.onInit();
+    // await player.play(AssetSource(AppAudio.notification));
+  }
 
-  OrderDetailsModel data = OrderDetailsModel.fromJson(message.data);
+
+
 
   // Use a single player instance to avoid multiple instances
 
-  if (data.rideStatus == "RED") {
-    // await player.play(AssetSource(AppAudio.notification));
-  }
+
 
   // await NotificationService.showNotification(data: data);
 
