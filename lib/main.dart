@@ -71,7 +71,12 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // await NotificationService.onInit();
   if (data.rideStatus == "RED"|| data.rideStatus == "FRED") {
     CallFunctionality.onInit();
+    final CallFunctionality callFunctionality = CallFunctionality();
+    callFunctionality.listenCallEvents();
+    callFunctionality.showCallkitIncoming(const Uuid().v4(), message);
     // await player.play(AssetSource(AppAudio.notification));
+  }else{
+    await NotificationService.showNotification(data: data);
   }
 
 
@@ -83,9 +88,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
   // await NotificationService.showNotification(data: data);
 
-  final CallFunctionality callFunctionality = CallFunctionality();
-  callFunctionality.listenCallEvents();
-  callFunctionality.showCallkitIncoming(const Uuid().v4(), message);
+
 }
 
 void main() async {
