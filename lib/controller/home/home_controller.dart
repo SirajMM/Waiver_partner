@@ -746,6 +746,7 @@ class HomeController extends GetxController {
         "location_long": currentPosition.value?.longitude.toString()
       });
       if (response.status == 200) {
+        await getRidePayment();
         resetDistance();
         // getRidePayment();
       }
@@ -771,6 +772,8 @@ class HomeController extends GetxController {
       total = response.data?.total;
       paymentType = response.data?.paymentType;
       waiverCharge = response.data?.waiverCharge;
+      driverState.value = DriverState.completed;
+      Get.back();
     }
   }
 
@@ -788,8 +791,10 @@ class HomeController extends GetxController {
         body: {"ride_id": rideId, "ride_status": RideStatus.completed});
     if (response.status == 200) {
       Get.back();
-      await getRidePayment();
+      // await getRidePayment();
       driverState.value = DriverState.completed;
+      driverState.value = DriverState.idle;
+      fetchWalletBalance();
     }
   }
 
@@ -807,15 +812,17 @@ class HomeController extends GetxController {
           startLocationLatMarker = 0.0;
           startLocationLatMarker = 0.0;
           if (type == RideStatus.reachedPickUp) {
-            await ApiServices.changeRideStatus(body: {
-              "ride_id": rideId,
-              "ride_status": RideStatus.reachedPickUp
-            });
+            // await ApiServices.changeRideStatus(body: {
+            //   "ride_id": rideId,
+            //   "ride_status": RideStatus.reachedPickUp
+            // });
+            goingToDropOffLocation();
+
             log("tracking -----------");
             log(isTracking.toString());
             isTracking = true;
             // trackDistance();
-            goingToDropOffLocation();
+            // goingToDropOffLocation();
           } else {
             MobilityFeatures().stopListening();
             // ChangeRideStatusModel response = await ApiServices.changeRideStatus(
@@ -823,8 +830,9 @@ class HomeController extends GetxController {
             //       "ride_id": rideId,
             //       "ride_status": RideStatus.paymentInitiated
             //     });
-
+           // confirmedPayment();
             getFinalDropLocation();
+
           }
           code = " ";
         } else {

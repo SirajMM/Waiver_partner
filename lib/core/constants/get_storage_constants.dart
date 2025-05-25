@@ -85,7 +85,7 @@ class RideStatus {
   static String completed = "COD";
   static String paused = "PSD";
   static String resumed = "RSD";
-  static String reachedPickUp = "RDP";
+  static String  reachedPickUp = "RDP";
   static String reachedDropOff = "RDF";
   static String paymentInitiated = "PID";
   static String paymentCompleted = "PCD";

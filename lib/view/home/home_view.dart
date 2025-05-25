@@ -350,14 +350,22 @@ class HomeScreen extends StatelessWidget {
                   case DriverState.reachedDestination:
                     return EnterOtpBottomSheet(orderStatus: RideStatus.reachedDropOff);
 
+                  // case DriverState.paymentInitiated:
+                  //   return box.read(BoxKeys.paymentType) == "CSH"
+                  //       ? const PaymentConfirmationSheetCash()
+                  //       : const PaymentConfirmationSheetOnline();
                   case DriverState.paymentInitiated:
-                    return box.read(BoxKeys.paymentType) == "CSH"
-                        ? const PaymentConfirmationSheetCash()
-                        : const PaymentConfirmationSheetOnline();
-                  case DriverState.completed:
-                    return HomeController.to.rideIsActive
-                        ? const MakingPaymentBottomSheet()
-                        : const SizedBox();
+                  //   return box.read(BoxKeys.paymentType) == "CSH"
+                  //   return const PaymentConfirmationSheetOnline(titleText: "Payment",text: "Waiting for payment",);
+                      return const MakingPaymentBottomSheet(isPay: false,);
+                  // case DriverState.completed:
+                  //   return HomeController.to.rideIsActive
+                  //       ? const MakingPaymentBottomSheet()
+                  //       : const SizedBox();
+                case DriverState.completed:
+                  return HomeController.to.rideIsActive
+                      ? const MakingPaymentBottomSheet(isPay: true,)
+                      : const SizedBox();
                   case DriverState.loading:
                     return Container(
                       padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 20.sp),
@@ -459,7 +467,8 @@ class HomeScreen extends StatelessWidget {
 }
 
 class MakingPaymentBottomSheet extends StatelessWidget {
-  const MakingPaymentBottomSheet({super.key});
+  final bool isPay;
+  const MakingPaymentBottomSheet({super.key, required this.isPay});
 
   @override
   Widget build(BuildContext context) {
@@ -538,13 +547,14 @@ class MakingPaymentBottomSheet extends StatelessWidget {
               SizedBox(
                 height: 15.sp,
               ),
-              BlueButton(
+             isPay ? BlueButton(
                 text: "Confirm",
                 onTap: () {
                   // HomeController.to.completeRide();
-                  HomeController.to.driverState.value = DriverState.idle;
+                  HomeController.to.confirmedPayment();
+                  // HomeController.to.driverState.value = DriverState.idle;
                 },
-              ),
+              ):SizedBox(),
               SizedBox(
                 height: 15.sp,
               )
@@ -916,7 +926,9 @@ class PaymentConfirmationSheetCash extends StatelessWidget {
 }
 
 class PaymentConfirmationSheetOnline extends StatelessWidget {
-  const PaymentConfirmationSheetOnline({super.key});
+  final String titleText;
+  final String text;
+   const PaymentConfirmationSheetOnline({super.key, required this.text, required this.titleText});
 
   @override
   Widget build(BuildContext context) {
@@ -938,7 +950,7 @@ class PaymentConfirmationSheetOnline extends StatelessWidget {
         physics: NeverScrollableScrollPhysics(),
         children: [
           Text(
-            "Online Payment",
+            titleText,
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 20.sp,
@@ -963,7 +975,7 @@ class PaymentConfirmationSheetOnline extends StatelessWidget {
             height: 20.sp,
           ),
           Text(
-            "Please wait until customer completes the payment",
+            text,
             textAlign: TextAlign.center,
           ),
           SizedBox(

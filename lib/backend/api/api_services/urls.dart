@@ -59,7 +59,7 @@ class AppUrls {
   static String faqs = "/api/v1/home/faqs/";
   static String earnings = "/api/v1/home/earnings/";
   static String latestActiveRide = "/api/v1/ride/latest-active-ride/";
-  static String changeRideStatus = "/api/v1/ride/change-ride-status/";
+  static String changeRideStatus = "/api/v2/change-ride-status/";
   static String rideCancelReasons = "/api/v1/ride/ride-cancel-reasons/";
   static String paymentType = "/api/v1/ride/payment-type/";
   static String getRidePayment = "/api/v1/ride/ride-payment/";
