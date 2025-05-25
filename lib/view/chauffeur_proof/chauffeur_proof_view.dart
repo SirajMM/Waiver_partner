@@ -280,9 +280,9 @@ class ChauffeurProofItemContainer extends StatelessWidget {
       case ApprovalStatus.waitingForApproval:
         return CircleWithIcon(
           height: 20.sp,
-          color: AppColors.blue,
+          color: AppColors.green40,
           child: Icon(
-            Icons.timelapse,
+            Icons.check,
             size: 16.sp,
             color: AppColors.white,
           ),
