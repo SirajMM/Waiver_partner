@@ -11,6 +11,8 @@ import 'package:waiver_driver/core/widgets/empty_page/empty_page.dart';
 import 'package:waiver_driver/core/widgets/error_page/error_page.dart';
 import 'package:waiver_driver/helper/router/app_routes/app_routes.dart';
 
+import '../../core/colors/app_colors.dart';
+import '../../core/widgets/app_network_image/app_network_image.dart';
 import '../loading_animation/loading_animation.dart';
 
 class MyRidesScreen extends StatelessWidget {
@@ -63,90 +65,142 @@ class MyRidesListingItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Get.toNamed(
-        AppRoutes.tripDetails,
-        arguments: ride.id,
-      ),
-      child: Container(
-        margin: EdgeInsets.only(bottom: 15.sp),
-        decoration: BoxDecoration(
-          color: Get.theme.indicatorColor.withOpacity(.05),
-          borderRadius: BorderRadius.circular(8.sp),
-        ),
-        padding: EdgeInsets.all(16.sp),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                MyRideTopItem(
-                  icon: CircleWithIcon(
-                    height: 30.sp,
-                    color: Get.theme.indicatorColor,
-                    child: Image.asset(
-                      AppIcons.location,
-                      color: Get.theme.primaryColor,
-                      height: 15.sp,
-                    ),
-                  ),
-                  text: ride.distance ?? "",
-                ),
-                MyRideTopItem(
-                  icon: CircleWithIcon(
-                    height: 30.sp,
-                    color: Get.theme.indicatorColor,
-                    child: Image.asset(
-                      AppIcons.clock,
-                      color: Get.theme.primaryColor,
-                      height: 15.sp,
-                    ),
-                  ),
-                  text: (ride.duration ?? 0).toString(),
-                ),
-                MyRideTopItem(
-                  icon: CircleWithIcon(
-                    height: 30.sp,
-                    color: Get.theme.indicatorColor,
-                    child: Image.asset(
-                      AppIcons.wallet,
-                      color: Get.theme.primaryColor,
-                      height: 15.sp,
-                    ),
-                  ),
-                  text: ride.amount.toString() ?? "",
-                ),
-              ],
+    String formatISTTime(String startTime) {
+      DateTime dateTime = DateTime.parse(startTime).toLocal();
+      String formattedDate =
+      DateFormat('d MMM yyyy \'at\' h:mm a').format(dateTime);
+      return formattedDate;
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double width = constraints.maxWidth;
+        double imageSize = width * 0.12;
+        return GestureDetector(
+
+          child: Container(
+            margin: EdgeInsets.only(bottom: 15.sp),
+            decoration: BoxDecoration(
+              color: Get.theme.indicatorColor.withOpacity(.05),
+              borderRadius: BorderRadius.circular(8.sp),
             ),
-            SizedBox(
-              height: 10.sp,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            padding: EdgeInsets.all(16.sp),
+            child: Column(
               children: [
-                Text(
-                  "Date & Time",
-                  style: TextStyle(fontSize: 14.sp),
+                Padding(
+                  padding:  EdgeInsets.only(left:8.0.h,right: 8.h,top: 8.h,bottom: 8.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: AppColors.grey249,
+                        child: AppNetworkImage(
+                          imageUrl:  ride.passenger_profile_image?? "",
+                          height: imageSize,
+                          radius: 50,
+                        ),
+                      ),
+                      SizedBox(width: 20.sp),
+                      Row(
+                        children: [
+                          // Expanded(
+                          //   child:
+                            Text(
+                              ride.passenger == null
+                                  ? "Passenger Name Not Available"
+                                  : ride.passenger ?? '',
+                              style: TextStyle(
+                                  fontSize: 15.sp,
+                                  fontWeight: FontWeight.w500),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          // ),
+
+                        ],
+                      ),
+                    ],
+
+                  ),
                 ),
-                ride.paidTime != null
-                    ? Text(
-                        DateFormat("dd MMM yyyy 'at' hh:mm a")
-                            .format(ride.paidTime!),
+                Divider(color: context.theme.dividerColor,thickness: 0.5,endIndent: 10.w,indent: 10.w,),
+                SizedBox(height: 20.h,),
+                Padding(
+                  padding:  EdgeInsets.only(left:8.0.h,right: 8.h),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      MyRideTopItem(
+                        icon: CircleWithIcon(
+                          height: 30.sp,
+                          color: Get.theme.indicatorColor,
+                          child: Image.asset(
+                            AppIcons.location,
+                            color: Get.theme.primaryColor,
+                            height: 15.sp,
+                          ),
+                        ),
+                        text: "${ride.distance?? ""} km  ",
+                      ),
+                      MyRideTopItem(
+                        icon: CircleWithIcon(
+                          height: 30.sp,
+                          color: Get.theme.indicatorColor,
+                          child: Image.asset(
+                            AppIcons.clock,
+                            color: Get.theme.primaryColor,
+                            height: 15.sp,
+                          ),
+                        ),
+                        text: "${(ride.duration! ~/ 60) } mins"
+                      ),
+                      MyRideTopItem(
+                        icon: CircleWithIcon(
+                          height: 30.sp,
+                          color: Get.theme.indicatorColor,
+                          child: Image.asset(
+                            AppIcons.wallet,
+                            color: Get.theme.primaryColor,
+                            height: 15.sp,
+                          ),
+                        ),
+                        text: "₹${ride.amount}" ?? "",
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 10.sp,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left:8.0,),
+                      child: Text(
+                        "Date & Time : ",
                         style: TextStyle(fontSize: 14.sp),
-                      )
-                    : const SizedBox()
+                      ),
+                    ),
+                    ride.paidTime != null
+                        ? Text(
+                        formatISTTime(ride.paidTime!.toString()),
+                            style: TextStyle(fontSize: 14.sp),
+                          )
+                        : const SizedBox()
+                  ],
+                ),
+                SizedBox(
+                  height: 18.sp,
+                ),
+                MyRideExpansionTile(
+                  start: ride.startLocation ?? "",
+                  stop: ride.endLocation ?? "",
+                )
               ],
             ),
-            SizedBox(
-              height: 18.sp,
-            ),
-            MyRideExpansionTile(
-              start: ride.startLocation ?? "",
-              stop: ride.endLocation ?? "",
-            )
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 }

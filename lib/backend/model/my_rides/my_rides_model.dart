@@ -88,6 +88,7 @@ class Ride {
   DateTime? updatedAt;
   String? driver;
   String? passenger;
+  String? passenger_profile_image;
 
   Ride({
     this.id,
@@ -110,6 +111,7 @@ class Ride {
     this.updatedAt,
     this.driver,
     this.passenger,
+    this.passenger_profile_image,
   });
 
   factory Ride.fromJson(Map<String, dynamic> json) => Ride(
@@ -143,6 +145,7 @@ class Ride {
             : DateTime.parse(json["updated_at"]),
         driver: json["driver"],
         passenger: json["passenger"],
+        passenger_profile_image: json["passenger_profile_image  "],
       );
 
   Map<String, dynamic> toJson() => {
@@ -168,6 +171,7 @@ class Ride {
             "${updatedAt!.year.toString().padLeft(4, '0')}-${updatedAt!.month.toString().padLeft(2, '0')}-${updatedAt!.day.toString().padLeft(2, '0')}",
         "driver": driver,
         "passenger": passenger,
+        "passenger_profile_image": passenger_profile_image,
       };
 }
 
