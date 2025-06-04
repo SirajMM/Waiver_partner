@@ -65,6 +65,7 @@ class RegistrationScreen extends StatelessWidget {
                                     .to.controllerFullName,
                                 header: 'Full Name',
                                 placeHolder: "e.g. Alex",
+                                restrictEmojis: true,
                                 validator: (value) => Validators.isEmpty(
                                   value: value,
                                 ),
@@ -87,7 +88,7 @@ class RegistrationScreen extends StatelessWidget {
                               ),
                               AppDropDownFormField(
                                 header: 'Gender',
-                                placeHolder: 'Select',
+                                placeHolder: 'Gender',
                                 itemList: RegistrationController.to.genderList,
                                 onChange: (GenderModel? gender) {
                                   RegistrationController.to.selectedGender =
@@ -105,7 +106,7 @@ class RegistrationScreen extends StatelessWidget {
                                         AppDatePickerFormField(
                                           header:
                                               'Date of Birth as per Documents',
-                                          placeHolder: "Select",
+                                          placeHolder: "Date of Birth",
                                           initialDate: DateTime.now().subtract(
                                               const Duration(days: 365 * 23)),
                                           startDate: DateTime.now().subtract(
@@ -188,7 +189,7 @@ class RegistrationScreen extends StatelessWidget {
                                       children: [
                                         AppDropDownFormField(
                                           header: 'District',
-                                          placeHolder: 'Select',
+                                          placeHolder: 'District',
                                           itemList: RegistrationController
                                               .to.districtsList,
                                           onChange: (DistrictModel? district) {
@@ -215,6 +216,7 @@ class RegistrationScreen extends StatelessWidget {
                                     RegistrationController.to.controllerAddress,
                                 header: 'Address as per Documents',
                                 placeHolder: "e.g. 221b baker street",
+                                restrictEmojis: true,
                                 validator: (value) => Validators.isEmpty(
                                   value: value,
                                 ),
@@ -231,7 +233,7 @@ class RegistrationScreen extends StatelessWidget {
                                         AppDropDownFormField(
                                           header:
                                               'Experience in driving (Years)',
-                                          placeHolder: 'Select',
+                                          placeHolder: 'Driving Experience',
                                           itemList: RegistrationController
                                               .to.yearsOfDrivingExperience,
                                           onChange: (WorkExperience?
@@ -255,7 +257,7 @@ class RegistrationScreen extends StatelessWidget {
                                         AppDropDownFormField(
                                           header:
                                               'Where you wish to work with us',
-                                          placeHolder: 'Select',
+                                          placeHolder: 'Preferred location',
                                           itemList: RegistrationController
                                               .to.statesList,
                                           onChange: (StatesModel? statesList) {
@@ -450,7 +452,7 @@ class RegistrationScreen extends StatelessWidget {
                                         ),
                                         AppDatePickerFormField(
                                           header: 'License validity date?',
-                                          placeHolder: "Select",
+                                          placeHolder: "License validity date",
                                           initialDate: DateTime.now().add(
                                             const Duration(days: 28 * 6),
                                           ),

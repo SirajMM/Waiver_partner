@@ -73,6 +73,7 @@ class BankAccountScreen extends StatelessWidget {
                               .to.controllerAccountHolderName,
                           header: 'Account Holder name',
                           placeHolder: "e.g john smith",
+                            restrictEmojis: true,
                           validator: (value) => Validators.isEmpty(
                             value: value,
                           ),
@@ -124,6 +125,7 @@ class BankAccountScreen extends StatelessWidget {
                           header: 'IFSC',
                           placeHolder: "e.g. AAAA0000000",
                           textCapitalization: TextCapitalization.characters,
+                          restrictEmojis: true,
                           validator: (value) => Validators.isBankISFCNumber(
                             value: value,
                           ),

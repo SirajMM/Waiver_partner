@@ -43,7 +43,7 @@ class RegistrationController extends GetxController {
               getWorkLocation(),
               getTransmissionTypes(),
               getVehicleTypes(),
-              // getAllDistricts(),
+              getAllDistricts(),
             ]
           : [
               getAllStates(),
@@ -127,7 +127,7 @@ class RegistrationController extends GetxController {
   Rx<DropDownState> districtDropDownState = DropDownState.hidden.obs;
   Future<void> getAllDistricts() async {
     try {
-      districtDropDownState.value = DropDownState.loading;
+      districtDropDownState.value = DropDownState.loaded;
       selectedDistrict = null;
       GetAllDistrictsResponseModel response = await ApiServices.getAllDistricts(
           queryParameter: {"state": (53).toString()});

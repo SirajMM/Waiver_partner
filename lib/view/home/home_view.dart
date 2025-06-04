@@ -1644,7 +1644,7 @@ class IncomingOrderBottomSheet extends StatelessWidget {
               child: AppCountDown(
                 style: TextStyle(color: AppColors.white),
                 onEnd: () => HomeController.to.orderTimeOut(),
-                endDate: DateTime.now().add(const Duration(seconds: 20)),
+                endDate: DateTime.now().add(const Duration(seconds: 14)),
               ),
             ),
           )
