@@ -66,6 +66,7 @@ class RegistrationScreen extends StatelessWidget {
                                 header: 'Full Name',
                                 placeHolder: "e.g. Alex",
                                 restrictEmojis: true,
+                                restrictSpecialCharacters: true,
                                 validator: (value) => Validators.isEmpty(
                                   value: value,
                                 ),

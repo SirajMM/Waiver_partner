@@ -134,6 +134,43 @@ import '../../colors/app_colors.dart';
 // }
 import 'package:flutter/services.dart';
 
+
+// Custom formatter to restrict special characters
+class NoSpecialCharacterFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    // Allow only alphanumeric characters and spaces
+    final filteredText = newValue.text.replaceAll(RegExp(r'[^a-zA-Z0-9\s]'), '');
+
+    return TextEditingValue(
+      text: filteredText,
+      selection: TextSelection.collapsed(offset: filteredText.length),
+    );
+  }
+}
+
+// Alternative formatter with more customization options
+class CustomCharacterFormatter extends TextInputFormatter {
+  final String allowedPattern;
+
+  CustomCharacterFormatter({required this.allowedPattern});
+
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue,
+      TextEditingValue newValue,
+      ) {
+    final filteredText = newValue.text.replaceAll(RegExp(allowedPattern), '');
+
+    return TextEditingValue(
+      text: filteredText,
+      selection: TextSelection.collapsed(offset: filteredText.length),
+    );
+  }
+}
 // Custom TextInputFormatter to filter out emojis
 class NoEmojiFormatter extends TextInputFormatter {
   @override
@@ -163,6 +200,9 @@ class NoEmojiFormatter extends TextInputFormatter {
   }
 }
 
+
+
+
 class AppTextFormField extends StatelessWidget {
   final String header;
   final int? maxLInes;
@@ -179,7 +219,8 @@ class AppTextFormField extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType? textInputType;
   final List<TextInputFormatter>? inputFormatters;
-  final bool restrictEmojis; // New parameter to control emoji restriction
+  final bool restrictEmojis; // Parameter to control emoji restriction
+  final bool restrictSpecialCharacters; // New parameter to control special character restriction
 
   AppTextFormField({
     super.key,
@@ -199,11 +240,12 @@ class AppTextFormField extends StatelessWidget {
     this.textInputType,
     this.inputFormatters,
     this.restrictEmojis = false, // Default to false to maintain backward compatibility
+    this.restrictSpecialCharacters = false, // Default to false to maintain backward compatibility
   });
 
   @override
   Widget build(BuildContext context) {
-    // Combine existing formatters with emoji restriction if needed
+    // Combine existing formatters with restrictions if needed
     List<TextInputFormatter> combinedFormatters = [];
 
     if (inputFormatters != null) {
@@ -212,6 +254,10 @@ class AppTextFormField extends StatelessWidget {
 
     if (restrictEmojis) {
       combinedFormatters.add(NoEmojiFormatter());
+    }
+
+    if (restrictSpecialCharacters) {
+      combinedFormatters.add(NoSpecialCharacterFormatter());
     }
 
     return Column(

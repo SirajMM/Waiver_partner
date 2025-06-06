@@ -20,6 +20,10 @@ import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:waiver_driver/main.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
+import '../../controller/home/Widget/GoingToDestinationWidget.dart';
+import '../../controller/home/Widget/LoadingStateWidget.dart';
+import '../../controller/home/Widget/ReadyToGoToDestinationWidget.dart';
+import '../../controller/home/Widget/goingToPickUpWidget.dart';
 import '../../core/widgets/snackbar/snackbar.dart';
 import '../left_menu_driver/left_menu_driver_view.dart';
 
@@ -42,310 +46,16 @@ class HomeScreen extends StatelessWidget {
                     return const DashBoardData();
 
                   case DriverState.goingToPickUp:
-                    return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 20.sp),
-                      decoration: BoxDecoration(
-                          color: Get.theme.primaryColor,
-                          boxShadow: [
-                            BoxShadow(
-                                color: AppColors.black.withOpacity(.1),
-                                offset: Offset(3, 3),
-                                blurRadius: 5,
-                                spreadRadius: 5)
-                          ],
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
-                      child: ListView(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(
-                                width: 30.sp,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "${(HomeController.to.timeToDropOffLocation ?? 0) > 3600 ? Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inHours.toStringAsFixed(2) : Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inMinutes.toStringAsFixed(2)} mins",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 20.sp,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 20.sp,
-                                  ),
-                                  Text(
-                                    "${HomeController.to.distanceToDropOffLocation} Km",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontSize: 20.sp,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              IconButton(
-                                  onPressed: () => Get.bottomSheet(CancelOrder()),
-                                  icon: Icon(Icons.close))
-                            ],
-                          ),
-                          SizedBox(
-                            height: 20.sp,
-                          ),
-                          Text(
-                            "Picking up ${HomeController.to.passengerName ?? "Passenger"}",
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(
-                            height: 20.sp,
-                          ),
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 50.sp),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    HomeController.to.makePhoneCall();
-                                  },
-                                  child: BottomSheetWhileDrivingItem(
-                                      icon: CircleWithIcon(
-                                          height: 35.sp,
-                                          color: AppColors.blue,
-                                          padding: EdgeInsets.all(8.sp),
-                                          child: Image.asset(AppIcons.phone)),
-                                      text: "Call"),
-                                ),
-                                // BottomSheetWhileDrivingItem(
-                                //     icon: CircleWithIcon(
-                                //         height: 35.sp,
-                                //         color: AppColors.blue,
-                                //         padding: EdgeInsets.all(8.sp),
-                                //         child: Image.asset(AppIcons.message)),
-                                //     text: "Message"),
-                                BottomSheetWhileDrivingItem(
-                                  icon: CircleWithIcon(
-                                      height: 35.sp,
-                                      color: AppColors.blue,
-                                      padding: EdgeInsets.all(8.sp),
-                                      child: Image.asset(AppIcons.navigation)),
-                                  text: "Navigate",
-                                  onTap: () => HomeController.to.openMap(
-                                      latitude: HomeController.to.startLocationLat,
-                                      longitude: HomeController.to.startLocationLong),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 20.sp,
-                          ),
-                          BlueButton(
-                              text: "Arrived at Pick Up",
-                              onTap: () => HomeController.to.reachedPickUpLocation()),
-                        ],
-                      ),
-                    );
+                    return Going_To_Pick_screen();
 
                   case DriverState.arrivedAtPickUp:
                     return EnterOtpBottomSheet(orderStatus: RideStatus.reachedPickUp);
 
                   case DriverState.readyToGoToDestination:
-                    return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 20.sp),
-                      decoration: BoxDecoration(
-                          color: Get.theme.primaryColor,
-                          boxShadow: [
-                            BoxShadow(
-                                color: AppColors.black.withOpacity(.1),
-                                offset: Offset(3, 3),
-                                blurRadius: 5,
-                                spreadRadius: 5)
-                          ],
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
-                      child: ListView(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "${(HomeController.to.timeToDropOffLocation ?? 0) > 3600 ? Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inHours.toStringAsFixed(2) : Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inMinutes.toStringAsFixed(2)} mins",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 20.sp,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 20.sp,
-                              ),
-                              Text(
-                                "${HomeController.to.distanceToDropOffLocation} Km",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 20.sp,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 20.sp,
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(5.sp),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10.sp),
-                                border: Border.all(color: AppColors.grey155)),
-                            child: Row(
-                              children: [
-                                Image.asset(
-                                  AppIcons.startAndStop,
-                                  height: 90.sp,
-                                ),
-                                SizedBox(
-                                  width: 20.sp,
-                                ),
-                                SizedBox(
-                                  width: 275.sp,
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        HomeController.to.pickUpLocation ?? "",
-                                        style: TextStyle(fontSize: 16.sp),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Container(
-                                        width: 200,
-                                        color: Get.theme.indicatorColor.withOpacity(.05),
-                                        height: 2.sp,
-                                        margin: EdgeInsets.symmetric(vertical: 12.sp),
-                                      ),
-                                      Text(
-                                        HomeController.to.dropOffLocation ?? "",
-                                        style: TextStyle(fontSize: 16.sp),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 20.sp,
-                          ),
-                          BlueButton(
-                              text: "Start Trip",
-                              onTap: () {
-                                HomeController.to.driverState.value = DriverState.goingToDestination;
-                                HomeController.to.openMap(
-                                    latitude: HomeController.to.endLocationLat,
-                                    longitude: HomeController.to.endLocationLong);
-                              }),
-                        ],
-                      ),
-                    );
+                    return ReadyToGoToDestinationWidget();
 
                   case DriverState.goingToDestination:
-                    return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 20.sp),
-                      decoration: BoxDecoration(
-                          color: Get.theme.primaryColor,
-                          boxShadow: [
-                            BoxShadow(
-                                color: AppColors.black.withOpacity(.1),
-                                offset: Offset(3, 3),
-                                blurRadius: 5,
-                                spreadRadius: 5)
-                          ],
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
-                      child: ListView(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                "${(HomeController.to.timeToDropOffLocation ?? 0) > 3600 ? Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inHours.toStringAsFixed(2) : Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inMinutes.toStringAsFixed(2)} mins",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 20.sp,
-                                ),
-                              ),
-                              SizedBox(
-                                width: 20.sp,
-                              ),
-                              Text(
-                                "${HomeController.to.distanceToDropOffLocation} Km",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 20.sp,
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 20.sp,
-                          ),
-                          Text(
-                            "Dropping off ${HomeController.to.passengerName ?? "Alex John"}",
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(
-                            height: 20.sp,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              BottomSheetWhileDrivingItem(
-                                icon: CircleWithIcon(
-                                    height: 35.sp,
-                                    color: AppColors.blue,
-                                    padding: EdgeInsets.all(8.sp),
-                                    child: Image.asset(AppIcons.navigation)),
-                                text: "Navigate",
-                                onTap: () => HomeController.to.openMap(
-                                    latitude: HomeController.to.endLocationLat,
-                                    longitude: HomeController.to.endLocationLong),
-                              ),
-                              SizedBox(
-                                width: 40.sp,
-                              ),
-                              BottomSheetWhileDrivingItem(
-                                icon: CircleWithIcon(
-                                    height: 35.sp,
-                                    color: AppColors.blue,
-                                    // padding: EdgeInsets.all(8.sp),
-                                    child: Icon(
-                                      Icons.u_turn_right_rounded,
-                                      color: AppColors.white,
-                                    )),
-                                text: "Add Stop",
-                                onTap: () {
-                                  Get.bottomSheet(AddStopBottomSheet());
-                                },
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 20.sp,
-                          ),
-                          BlueButton(
-                              text: "Arrived at Destination",
-                              onTap: () => HomeController.to.reachedDropOffLocation()),
-                        ],
-                      ),
-                    );
+                    return GoingToDestinationWidget();
 
                   case DriverState.reachedDestination:
                     return EnterOtpBottomSheet(orderStatus: RideStatus.reachedDropOff);
@@ -367,23 +77,7 @@ class HomeScreen extends StatelessWidget {
                       ? const MakingPaymentBottomSheet(isPay: true,)
                       : const SizedBox();
                   case DriverState.loading:
-                    return Container(
-                      padding: EdgeInsets.symmetric(horizontal: 15.sp, vertical: 20.sp),
-                      decoration: BoxDecoration(
-                          color: Get.theme.primaryColor,
-                          boxShadow: [
-                            BoxShadow(
-                                color: AppColors.black.withOpacity(.1),
-                                offset: Offset(3, 3),
-                                blurRadius: 5,
-                                spreadRadius: 5)
-                          ],
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
-                      child: LoadingBarsAnimation(
-                        height: 200.sp,
-                      ),
-                    );
+                    return LoadingStateWidget();
                 }
               }),
               body: SizedBox(
@@ -433,38 +127,19 @@ class HomeScreen extends StatelessWidget {
                       await controller.onMapCreate();
                     },
                   );
-                  // : GoogleMap(
-                  //     padding: EdgeInsets.only(
-                  //         bottom: 90.sp, top: 600.sp, right: 10.sp),
-                  //     mapType: MapType.normal,
-                  //     initialCameraPosition: CameraPosition(
-                  //       target: LatLng(
-                  //         9.9816,
-                  //         76.2999,
-                  //       ),
-                  //       zoom: 15,
-                  //     ),
-                  //     // Disable map gestures
-                  //     zoomControlsEnabled: false, // Hide zoom buttons
-                  //     zoomGesturesEnabled:
-                  //         false, // Disable zoom gestures
-                  //     scrollGesturesEnabled:
-                  //         false, // Disable panning/scrolling
-                  //     rotateGesturesEnabled: false, // Disable rotation
-                  //     tiltGesturesEnabled: false, // Disable tilt
-                  //     compassEnabled: false, // Hide compass
-                  //     // If you need to prevent ALL touch interactions
-                  //     gestureRecognizers: <Factory<
-                  //         OneSequenceGestureRecognizer>>{
-                  //       Factory<EagerGestureRecognizer>(
-                  //           () => EagerGestureRecognizer()),
-                  //     },
-                  //   );
                 }),
               ));
     });
   }
 }
+
+
+
+
+
+
+
+
 
 class MakingPaymentBottomSheet extends StatelessWidget {
   final bool isPay;
@@ -1144,7 +819,7 @@ class BottomSheetWhileDrivingItem extends StatelessWidget {
 // ignore: must_be_immutable
 class TextInsideBox extends StatelessWidget {
   String text;
-  Widget? icon;
+  IconData? icon;
 
   TextInsideBox({super.key, required this.text, this.icon});
 
@@ -1159,7 +834,7 @@ class TextInsideBox extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(padding: EdgeInsets.symmetric(horizontal: 5.sp), child: icon ?? const SizedBox()),
+          Container(padding: EdgeInsets.symmetric(horizontal: 5.sp), child: Icon(icon)),
           Text(
             text,
             style: TextStyle(
@@ -1577,11 +1252,7 @@ class IncomingOrderBottomSheet extends StatelessWidget {
               TextInsideBox(text: "${data?.distance} Km"),
               TextInsideBox(
                 text: (data?.customerRating ?? 4.0).toString(),
-                icon: Image.asset(
-                  AppIcons.star,
-                  color: Get.theme.primaryColor,
-                  height: 16,
-                ),
+                icon: Icons.star
               ),
             ],
           ),

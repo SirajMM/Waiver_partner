@@ -72,28 +72,63 @@ class NotificationService {
     print(notification.notification?.title);
     box.write(BoxKeys.paymentType, data.paymentType);
     print("***********************${data.rideStatus}");
-    if (data.rideStatus == "RED" || data.rideStatus == RideStatus.favRideRequested) {
-      HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
-    } else if (data.rideStatus == RideStatus.cancelled || data.rideStatus == RideStatus.favRideCancelled)  {
-      final player = AudioPlayer();
-      player.stop();
-      HomeController.to.resetDistance();
-      HomeController.to.isTracking = false;
-      HomeController.to.rideIsActive = false;
-      HomeController.to.driverState.value = DriverState.idle;
-      // Get.bottomSheet(OrderCompletedBottomSheet());
-    } else if (data.rideStatus == RideStatus.paymentInitiated) {
-      HomeController.to.isTracking = false;
-      HomeController.to.rideIsActive = true;
-      HomeController.to.driverState.value = DriverState.paymentInitiated;
-    } else if (data.rideStatus == RideStatus.completed) {
-      HomeController.to.isTracking = false;
-      HomeController.to.rideIsActive = true;
-      await HomeController.to.getRidePayment();
-      HomeController.to.driverState.value = DriverState.completed;
-    } else {
-      HomeController.to.driverState.value = DriverState.idle;
+
+    switch (data.rideStatus) {
+      case "RED":
+      case "FRED":
+        HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
+        break;
+
+      case "CAD":
+      case "FCAD":
+        final player = AudioPlayer();
+        player.stop();
+        HomeController.to.resetDistance();
+        HomeController.to.isTracking = false;
+        HomeController.to.rideIsActive = false;
+        HomeController.to.driverState.value = DriverState.idle;
+        // Get.bottomSheet(OrderCompletedBottomSheet());
+        break;
+
+      case "PID":
+        HomeController.to.isTracking = false;
+        HomeController.to.rideIsActive = true;
+        HomeController.to.driverState.value = DriverState.paymentInitiated;
+        break;
+
+      case "COD":
+        HomeController.to.isTracking = false;
+        HomeController.to.rideIsActive = true;
+        await HomeController.to.getRidePayment();
+        HomeController.to.driverState.value = DriverState.completed;
+        break;
+
+      default:
+        HomeController.to.driverState.value = DriverState.idle;
+        break;
     }
+    // if (data.rideStatus == "RED" || data.rideStatus == RideStatus.favRideRequested) {
+    //   HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
+    // } else if (data.rideStatus == RideStatus.cancelled || data.rideStatus == RideStatus.favRideCancelled)  {
+    //   final player = AudioPlayer();
+    //   player.stop();
+    //   HomeController.to.resetDistance();
+    //   HomeController.to.isTracking = false;
+    //   HomeController.to.rideIsActive = false;
+    //   HomeController.to.driverState.value = DriverState.idle;
+    //   // Get.bottomSheet(OrderCompletedBottomSheet());
+    // } else if (data.rideStatus == RideStatus.paymentInitiated) {
+    //   HomeController.to.isTracking = false;
+    //   HomeController.to.rideIsActive = true;
+    //   HomeController.to.driverState.value = DriverState.paymentInitiated;
+    // } else if (data.rideStatus == RideStatus.completed) {
+    //   HomeController.to.isTracking = false;
+    //   HomeController.to.rideIsActive = true;
+    //   await HomeController.to.getRidePayment();
+    //   HomeController.to.driverState.value = DriverState.completed;
+    // } else {
+    //   HomeController.to.driverState.value = DriverState.idle;
+    // }
   }
 
   static onMessageOpenedApp({required RemoteMessage notification}) async {
@@ -102,28 +137,63 @@ class NotificationService {
     print("############################notification.data#################################");
     print(notification.data);
     print(notification.notification);
-    if (data.rideStatus == "RED") {
-      HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
-    } else if (data.rideStatus == RideStatus.cancelled) {
-      final player = AudioPlayer();
-      player.stop();
-      HomeController.to.resetDistance();
-      HomeController.to.isTracking = false;
-      HomeController.to.rideIsActive = false;
-      HomeController.to.driverState.value = DriverState.idle;
-      // Get.bottomSheet(OrderCompletedBottomSheet());
-    } else if (data.rideStatus == RideStatus.paymentInitiated) {
-      HomeController.to.isTracking = false;
-      HomeController.to.rideIsActive = true;
-      HomeController.to.driverState.value = DriverState.paymentInitiated;
-    } else if (data.rideStatus == RideStatus.completed) {
-      HomeController.to.isTracking = false;
-      HomeController.to.rideIsActive = true;
-      await HomeController.to.getRidePayment();
-      HomeController.to.driverState.value = DriverState.completed;
-    } else {
-      HomeController.to.driverState.value = DriverState.idle;
+
+    switch (data.rideStatus) {
+      case "RED":
+      case "FRED":
+       await HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
+        break;
+
+      case "CAD":
+      case "FCAD":
+        final player = AudioPlayer();
+        player.stop();
+        HomeController.to.resetDistance();
+        HomeController.to.isTracking = false;
+        HomeController.to.rideIsActive = false;
+        HomeController.to.driverState.value = DriverState.idle;
+        // Get.bottomSheet(OrderCompletedBottomSheet());
+        break;
+
+      case "PID":
+        HomeController.to.isTracking = false;
+        HomeController.to.rideIsActive = true;
+        HomeController.to.driverState.value = DriverState.paymentInitiated;
+        break;
+
+      case "COD":
+        HomeController.to.isTracking = false;
+        HomeController.to.rideIsActive = true;
+        await HomeController.to.getRidePayment();
+        HomeController.to.driverState.value = DriverState.completed;
+        break;
+
+      default:
+        HomeController.to.driverState.value = DriverState.idle;
+        break;
     }
+    // if (data.rideStatus == "RED") {
+    //   HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
+    // } else if (data.rideStatus == RideStatus.cancelled) {
+    //   final player = AudioPlayer();
+    //   player.stop();
+    //   HomeController.to.resetDistance();
+    //   HomeController.to.isTracking = false;
+    //   HomeController.to.rideIsActive = false;
+    //   HomeController.to.driverState.value = DriverState.idle;
+    //   // Get.bottomSheet(OrderCompletedBottomSheet());
+    // } else if (data.rideStatus == RideStatus.paymentInitiated) {
+    //   HomeController.to.isTracking = false;
+    //   HomeController.to.rideIsActive = true;
+    //   HomeController.to.driverState.value = DriverState.paymentInitiated;
+    // } else if (data.rideStatus == RideStatus.completed) {
+    //   HomeController.to.isTracking = false;
+    //   HomeController.to.rideIsActive = true;
+    //   await HomeController.to.getRidePayment();
+    //   HomeController.to.driverState.value = DriverState.completed;
+    // } else {
+    //   HomeController.to.driverState.value = DriverState.idle;
+    // }
   }
 
   static Future<void> showNotification({required OrderDetailsModel data}) async {
