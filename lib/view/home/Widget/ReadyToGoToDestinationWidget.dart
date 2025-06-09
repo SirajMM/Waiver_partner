@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
+import '../../../controller/home/home_controller.dart';
 import '../../../core/colors/app_colors.dart';
 import '../../../core/constants/enums/enums.dart';
 import '../../../core/themes/assets/icons.dart';
 import '../../../core/widgets/app_buttons/app_buttons.dart';
-import '../home_controller.dart';
+
 
 class ReadyToGoToDestinationWidget extends StatelessWidget {
   const ReadyToGoToDestinationWidget({

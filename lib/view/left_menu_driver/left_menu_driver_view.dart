@@ -117,27 +117,27 @@ class LeftMenuDriver extends StatelessWidget {
                 launchUrl(whatsapp);
               }),
           const Divider().cPadSymmetric(v: 20.sp),
-          (box.read(BoxKeys.userTypeCode)) == UserTypeCode.chauffeur
-              ? SizedBox()
-              : LeftMenuItem(
-                  item: LeftMenuControllerDriver.to.switchToDiver,
-                  onTap: () async {
-                    Get.showOverlay(
-                        asyncFunction: () async {
-                          try {
-                            await ApiServices.logout(body: {});
-                          } finally {
-                            await FirebaseMessaging.instance.deleteToken();
-                            await box.erase();
-                            await box.write(
-                                BoxKeys.userTypeCode, UserTypeCode.fleet);
-                            Get.offAllNamed(AppRoutes1.getSignInRoute(),
-                                arguments: UserType.fleet);
-                          }
-                        },
-                        loadingWidget: LoadingBarsAnimation());
-                  },
-                ),
+          // (box.read(BoxKeys.userTypeCode)) == UserTypeCode.chauffeur
+          //     ? SizedBox()
+          //     : LeftMenuItem(
+          //         item: LeftMenuControllerDriver.to.switchToDiver,
+          //         onTap: () async {
+          //           Get.showOverlay(
+          //               asyncFunction: () async {
+          //                 try {
+          //                   await ApiServices.logout(body: {});
+          //                 } finally {
+          //                   await FirebaseMessaging.instance.deleteToken();
+          //                   await box.erase();
+          //                   await box.write(
+          //                       BoxKeys.userTypeCode, UserTypeCode.fleet);
+          //                   Get.offAllNamed(AppRoutes1.getSignInRoute(),
+          //                       arguments: UserType.fleet);
+          //                 }
+          //               },
+          //               loadingWidget: LoadingBarsAnimation());
+          //         },
+          //       ),
           (box.read(BoxKeys.userTypeCode)) == UserTypeCode.chauffeur
               ? SizedBox()
               : SizedBox(

@@ -18,12 +18,14 @@ import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_grad
 import 'package:waiver_driver/core/widgets/count_down/count_down_view.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:waiver_driver/main.dart';
+import 'package:waiver_driver/view/home/Widget/GoingToDestinationWidget.dart';
+import 'package:waiver_driver/view/home/Widget/LoadingStateWidget.dart';
+import 'package:waiver_driver/view/home/Widget/ReadyToGoToDestinationWidget.dart';
+import 'package:waiver_driver/view/home/Widget/goingToPickUpWidget.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
-import '../../controller/home/Widget/GoingToDestinationWidget.dart';
-import '../../controller/home/Widget/LoadingStateWidget.dart';
-import '../../controller/home/Widget/ReadyToGoToDestinationWidget.dart';
-import '../../controller/home/Widget/goingToPickUpWidget.dart';
+
+import '../../controller/profile/profile_controller.dart';
 import '../../core/widgets/snackbar/snackbar.dart';
 import '../left_menu_driver/left_menu_driver_view.dart';
 
@@ -933,6 +935,9 @@ class ChangeOnlineStatusButton extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () async{
+           await ProfileController.to.getProfile();
+            HomeController.to.isAssinged.value =  await HomeController.to.hasAssigned();
+            Future.delayed(Duration(milliseconds: 500));
             String useTypeCode =  await box.read(BoxKeys.userTypeCode) ?? "";
             if(HomeController.to.isAssinged.value == false && useTypeCode == UserTypeCode.driver ){
               Get.showSnackbar(

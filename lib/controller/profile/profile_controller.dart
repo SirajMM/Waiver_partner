@@ -72,7 +72,7 @@ class ProfileController extends GetxController {
     vehicleTypes = response.data?.vehicleType ?? [];
     has_Vehicle_Assigned = response.data?.hasVehicleAssigned;
     vehicleDetails = response.data?.vehicleDetails;
-    box.write(BoxKeys.isTaken, has_Vehicle_Assigned);
+    await box.write(BoxKeys.isTaken, has_Vehicle_Assigned);
     // for (var item in vehicleTypes) {
     //   for (var item2 in response.data?.vehicleType ?? []) {
     //     if (item.id == item2.id) {
