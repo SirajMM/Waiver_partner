@@ -1311,6 +1311,7 @@ class IncomingOrderBottomSheet extends StatelessWidget {
             height: 15,
           ),
           BlueButton(
+            isLoading: HomeController.to.isButtonLoading.value,
             text: "Accept",
             onTap: () => HomeController.to.acceptOrder(),
             suffixIcon: CircleWithIcon(

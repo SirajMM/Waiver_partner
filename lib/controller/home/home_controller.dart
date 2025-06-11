@@ -243,6 +243,7 @@ class HomeController extends GetxController {
   }
 
   RxBool isLoading = false.obs;
+  RxBool isButtonLoading = false.obs;
   RxBool isError = false.obs;
 
   Future<void> latestActiveRide() async {
@@ -289,6 +290,7 @@ class HomeController extends GetxController {
   double? startLocationLat;
   double? startLocationLong;
   double? startLocationLatMarker;
+  bool isBottomSheetOpen = false;
   double? startLocationLongMarker;
   double? endLocationLat;
   double? endLocationLong;
@@ -310,8 +312,25 @@ class HomeController extends GetxController {
     GetRideDetailsResponseModel response =
         await ApiServices.rideOrderDetails(queryParameters: {"ride_id": id});
     getOrderDetails(response: response);
-    Get.bottomSheet(IncomingOrderBottomSheet(data: response.data),
-        enableDrag: false, isDismissible: false);
+    // Get.bottomSheet(IncomingOrderBottomSheet(data: response.data),
+    //     enableDrag: false, isDismissible: false
+    // );
+    showMyBottomSheet(IncomingOrderBottomSheet(data: response.data));
+  }
+
+  void showMyBottomSheet(Widget bottom) {
+    if (isBottomSheetOpen) return; // Prevent opening if already open
+
+    isBottomSheetOpen = true;
+
+    Get.bottomSheet(
+      enableDrag: false, isDismissible: false,
+      // Your bottom sheet content
+        bottom,
+    ).then((_) {
+      // Reset flag when bottom sheet is closed
+      isBottomSheetOpen = false;
+    });
   }
 
   void getOrderDetails({required GetRideDetailsResponseModel response}) {
@@ -563,11 +582,14 @@ class HomeController extends GetxController {
 
   Future<void> acceptOrder() async {
     try {
+
       driverState.value = DriverState.loading;
       player.stop();
       ChangeRideStatusModel response = await ApiServices.changeRideStatus(
           body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
       if (response.status == 200) {
+        isButtonLoading.value=true;
+        log(isButtonLoading.toString());
         if (driverState.value == DriverState.idle) {
           startLocationLongMarker = 0.0;
           startLocationLatMarker = 0.0;
@@ -810,7 +832,8 @@ class HomeController extends GetxController {
       if (response.status == 200) {
         if (response.status == 200) {
           startLocationLatMarker = 0.0;
-          startLocationLatMarker = 0.0;
+          startLocationLongMarker = 0.0;
+          recenter();
           if (type == RideStatus.reachedPickUp) {
             // await ApiServices.changeRideStatus(body: {
             //   "ride_id": rideId,
