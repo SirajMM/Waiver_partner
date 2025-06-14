@@ -142,8 +142,8 @@ class OtpController extends GetxController {
           }
         }
       }
-    } catch (error) {
-      log(error.toString());
+    } catch (error, s) {
+      log(error.toString(), stackTrace: s);
       Get.showSnackbar(const GetSnackBar(
           duration: Duration(seconds: 5),
           backgroundColor: Colors.transparent,
