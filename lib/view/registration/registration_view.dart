@@ -26,480 +26,464 @@ class RegistrationScreen extends StatelessWidget {
         builder: (controller) {
           return controller.isLoading.value
               ? const LoadingBarsAnimation()
-              : controller.isError.value
-                  ? const ErrorPage()
-                  : Form(
-                      key: RegistrationController.to.registrationFormKey,
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 15.sp),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            // padding: EdgeInsets.symmetric(horizontal: 15.sp),
-                            children: [
-                              SizedBox(
-                                height: 20.sp,
-                              ),
-                              Text(
-                                "Welcome new Waiver partner! Drive forward",
-                                style: TextStyle(
-                                    height: 1,
-                                    fontSize: 24.sp,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                              SizedBox(
-                                height: 12.sp,
-                              ),
-                              Text(
-                                "Please enter the partner details",
-                                style: TextStyle(
-                                    fontSize: 16.sp,
-                                    height: 1,
-                                    fontWeight: FontWeight.w200),
-                              ),
-                              SizedBox(
-                                height: 30.sp,
-                              ),
-                              AppTextFormField(
-                                controller: RegistrationController
-                                    .to.controllerFullName,
-                                header: 'Full Name',
-                                placeHolder: "e.g. Alex",
-                                restrictEmojis: true,
-                                // restrictSpecialCharacters: true,
-                                inputFormatters: [
-                                  CustomCharacterFormatter(allowedPattern: r'[^a-zA-Z\-.]')
-                                ],
-                                validator: (value) => Validators.isEmpty(
-                                  value: value,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 12.sp,
-                              ),
-                              AppTextFormField(
-                                controller:
-                                    RegistrationController.to.controllerEmail,
-                                header: 'Email Address',
-                                placeHolder: "e.g. alex@gmail.com",
-                                validator: (value) => Validators.isEMail(
-                                  value: value,
-                                ),
-                                textInputType: TextInputType.emailAddress,
-                              ),
-                              SizedBox(
-                                height: 12.sp,
-                              ),
-                              AppDropDownFormField(
-                                header: 'Gender',
-                                placeHolder: 'Gender',
-                                itemList: RegistrationController.to.genderList,
-                                onChange: (GenderModel? gender) {
-                                  RegistrationController.to.selectedGender =
-                                      gender;
-                                },
-                                value: RegistrationController.to.selectedGender,
-                                label: (GenderModel gender) => gender.label,
-                              ),
-                              SizedBox(
-                                height: 12.sp,
-                              ),
-                              !RegistrationController.to.isFleet()
-                                  ? Column(
-                                      children: [
-                                        AppDatePickerFormField(
-                                          header:
-                                              'Date of Birth as per Documents',
-                                          placeHolder: "Date of Birth",
-                                          initialDate: DateTime.now().subtract(
-                                              const Duration(days: 365 * 23)),
-                                          startDate: DateTime.now().subtract(
-                                              const Duration(days: 365 * 85)),
-                                          lastDate: DateTime.now().subtract(
-                                              const Duration(days: 365 * 23)),
-                                          validator: (value) =>
-                                              Validators.isEmpty(value: value),
-                                          controller: RegistrationController
-                                              .to.controllerDateOfBirth,
-                                        ),
-                                        SizedBox(
-                                          height: 12.sp,
-                                        ),
-                                      ],
-                                    )
-                                  : const SizedBox(),
-                              AppTextFormField(
-                                controller: RegistrationController
-                                    .to.controllerAlternativeNumber,
-                                header: 'Alternative Number',
-                                maxLength: 10,
-                                placeHolder: " e.g. xxxxxxxxxx",
-                                validator: (value) => Validators.isMobile(
-                                  value: value,
-                                ),
-                                textInputType: TextInputType.phone,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly
-                                ],
-                              ),
-                              SizedBox(
-                                height: 12.sp,
-                              ),
-                              AppTextFormField(
-                                controller: RegistrationController
-                                    .to.controllerWhatsAppNumber,
-                                header: 'Whatsapp Number',
-                                maxLength: 10,
-                                placeHolder: " e.g. xxxxxxxxxx",
-                                validator: (value) => Validators.isMobile(
-                                  value: value,
-                                ),
-                                textInputType: TextInputType.phone,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly
-                                ],
-                              ),
-                              // SizedBox(
-                              //   height: 12.sp,
-                              // ),
-                              // AppDropDownFormField(
-                              //   header: 'State',
-                              //   placeHolder: 'Select',
-                              //   itemList: RegistrationController.to.statesList,
-                              //   onChange: (StatesModel? state) {
-                              //
-                              //     RegistrationController.to.selectedState = state;
-                              //     print(state?.id);
-                              //     RegistrationController.to.getAllDistricts();
-                              //   },
-                              //   value: RegistrationController.to.selectedState,
-                              //   label: (StatesModel state) => state.name,
-                              // ),
-                              SizedBox(
-                                height: 12.sp,
-                              ),
-                              GetX<RegistrationController>(
-                                  builder: (controller) {
-                                switch (
-                                    controller.districtDropDownState.value) {
-                                  case DropDownState.hidden:
-                                    return const SizedBox();
-                                  case DropDownState.loading:
-                                    return LoadingAnimationDots(
-                                      height: 50.sp,
-                                    );
-                                  case DropDownState.loaded:
-                                    return Column(
-                                      children: [
-                                        AppDropDownFormField(
-                                          header: 'District',
-                                          placeHolder: 'District',
-                                          itemList: RegistrationController
-                                              .to.districtsList,
-                                          onChange: (DistrictModel? district) {
-                                            RegistrationController
-                                                .to.selectedDistrict = district;
-                                          },
-                                          value: RegistrationController
-                                              .to.selectedDistrict,
-                                          label: (DistrictModel district) =>
-                                              district.name,
-                                        ),
-                                        SizedBox(
-                                          height: 12.sp,
-                                        ),
-                                      ],
-                                    );
-                                }
-                              }),
-                              SizedBox(
-                                height: 12.sp,
-                              ),
-                              AppTextFormField(
-                                controller:
-                                    RegistrationController.to.controllerAddress,
-                                header: 'Address as per Documents',
-                                placeHolder: "e.g. 221b baker street",
-                                restrictEmojis: true,
-                                validator: (value) => Validators.isEmpty(
-                                  value: value,
-                                ),
-                                maxLInes: 5,
-                                minLines: 1,
-                              ),
-                              SizedBox(
-                                height: 12.sp,
-                              ),
-                              RegistrationController.to.userTypeCode !=
-                                      UserTypeCode.fleet
-                                  ? Column(
-                                      children: [
-                                        AppDropDownFormField(
-                                          header:
-                                              'Experience in driving (Years)',
-                                          placeHolder: 'Driving Experience',
-                                          itemList: RegistrationController
-                                              .to.yearsOfDrivingExperience,
-                                          onChange: (WorkExperience?
-                                              yearsOfDrivingExperience) {
-                                            RegistrationController.to
-                                                    .selectedYearsOfDrivingExperience =
-                                                yearsOfDrivingExperience;
-                                          },
-                                          value: RegistrationController.to
-                                              .selectedYearsOfDrivingExperience,
-                                          label: (WorkExperience
-                                                  yearsOfDrivingExperience) =>
-                                              (yearsOfDrivingExperience
-                                                          .experience ??
-                                                      0)
-                                                  .toString(),
-                                        ),
-                                        SizedBox(
-                                          height: 12.sp,
-                                        ),
-                                        AppDropDownFormField(
-                                          header:
-                                              'Where you wish to work with us',
-                                          placeHolder: 'Preferred location',
-                                          itemList: RegistrationController
-                                              .to.statesList,
-                                          onChange: (StatesModel? statesList) {
-                                            RegistrationController.to
-                                                .selectStatelist = statesList;
-                                          },
-                                          value: RegistrationController
-                                              .to.selectStatelist,
-                                          label: (StatesModel statesList) =>
-                                              statesList.name,
-                                        ),
-                                        SizedBox(
-                                          height: 12.sp,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "Vehicle Types",
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  color: AppColors.black,
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          height: 7.sp,
-                                        ),
-                                        Theme(
-                                          data: ThemeData(
-                                              dividerColor: Colors.transparent),
-                                          child: ExpansionTile(
-                                            backgroundColor: AppColors.white,
-                                            collapsedBackgroundColor:
-                                                AppColors.white,
-                                            collapsedShape:
-                                                RoundedRectangleBorder(
-                                              side: BorderSide(
-                                                  color: AppColors.grey155),
-                                              borderRadius:
-                                                  BorderRadius.circular(8.sp),
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              side: BorderSide(
-                                                  color: AppColors.grey155),
-                                              borderRadius:
-                                                  BorderRadius.circular(8.sp),
-                                            ),
-                                            childrenPadding: EdgeInsets.zero,
-                                            title: const Text("Vehicle Types"),
-                                            children: RegistrationController
-                                                .to.vehicleTypes
-                                                .map((vehicle) =>
-                                                    SelectVehicleTypeListingItem(
-                                                      vehicle: vehicle,
-                                                    ))
-                                                .toList(),
-                                          ),
-                                        ),
-                                        GetX<RegistrationController>(
-                                            builder: (controller) {
-                                          return controller
-                                                  .showVehicleTypeError.value
-                                              ? Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    SizedBox(
-                                                      height: 2.sp,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          "Please select at least one vehicle type",
-                                                          style: TextStyle(
-                                                              fontSize: 12.sp,
-                                                              color:
-                                                                  Colors.red),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                )
-                                              : const SizedBox();
-                                        }),
-                                        SizedBox(
-                                          height: 12.sp,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "Familiar transmission types?",
-                                              textAlign: TextAlign.start,
-                                              style: TextStyle(
-                                                  fontSize: 15.sp,
-                                                  color: AppColors.black,
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                          ],
-                                        ),
-                                        Theme(
-                                          data: ThemeData(
-                                              dividerColor: Colors.transparent),
-                                          child: ExpansionTile(
-                                            backgroundColor: AppColors.white,
-                                            collapsedBackgroundColor:
-                                                AppColors.white,
-                                            collapsedShape:
-                                                RoundedRectangleBorder(
-                                              side: BorderSide(
-                                                  color: AppColors.grey155),
-                                              borderRadius:
-                                                  BorderRadius.circular(8.sp),
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              side: BorderSide(
-                                                  color: AppColors.grey155),
-                                              borderRadius:
-                                                  BorderRadius.circular(8.sp),
-                                            ),
-                                            childrenPadding: EdgeInsets.zero,
-                                            title: const Text(
-                                                "Familiar transmission types"),
-                                            children: RegistrationController
-                                                .to.transmissionTypes
-                                                .map((transmission) =>
-                                                    SelectTransmissionTypeListingItem(
-                                                      transmissionType:
-                                                          transmission,
-                                                    ))
-                                                .toList(),
-                                          ),
-                                        ),
-                                        GetX<RegistrationController>(
-                                            builder: (controller) {
-                                          return controller
-                                                  .showTransmissionTypeError
-                                                  .value
-                                              ? Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    SizedBox(
-                                                      height: 2.sp,
-                                                    ),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          "Please select at least one familiar transmission type",
-                                                          style: TextStyle(
-                                                              fontSize: 12.sp,
-                                                              color:
-                                                                  Colors.red),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                )
-                                              : const SizedBox();
-                                        }),
-                                        // AppDropDownFormField(
-                                        //   header:
-                                        //       'Familiar transmission types?',
-                                        //   placeHolder: 'Select',
-                                        //   itemList: RegistrationController
-                                        //       .to.transmissionTypes,
-                                        //   onChange:
-                                        //       (Transmission? transmissionType) {
-                                        //     RegistrationController.to
-                                        //             .selectedTransmissionType =
-                                        //         transmissionType;
-                                        //   },
-                                        //   value: RegistrationController
-                                        //       .to.selectedTransmissionType,
-                                        //   label: (Transmission?
-                                        //           transmissionType) =>
-                                        //       transmissionType?.name,
-                                        // ),
-                                        SizedBox(
-                                          height: 12.sp,
-                                        ),
-                                        AppDatePickerFormField(
-                                          header: 'License validity date?',
-                                          placeHolder: "License validity date",
-                                          initialDate: DateTime.now().add(
-                                            const Duration(days: 28 * 6),
-                                          ),
-                                          startDate: DateTime.now().add(
-                                            const Duration(days: 28 * 6),
-                                          ),
-                                          lastDate: DateTime.now().add(
-                                            const Duration(days: 365 * 25),
-                                          ),
-                                          validator: (value) =>
-                                              Validators.isEmpty(value: value),
-                                          controller: RegistrationController
-                                              .to.controllerLicenseValidityDate,
-                                        ),
-                                        SizedBox(
-                                          height: 12.sp,
-                                        ),
-                                      ],
-                                    )
-                                  : const SizedBox(),
-                              // const TermsAndConditions(),
-                              // const PrivacyPolicy(),
-                              SizedBox(
-                                height: 25.sp,
-                              ),
-                              GetX<RegistrationController>(
-                                  builder: (controller) {
-                                return BlueButton(
-                                  text: "Continue",
-                                  isLoading:
-                                      controller.isRegisterButtonLoading.value,
-                                  onTap: () =>
-                                      RegistrationController.to.register(),
-                                );
-                              }),
-                              SizedBox(
-                                height: 45.sp,
-                              ),
+              : Form(
+                  key: RegistrationController.to.registrationFormKey,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 15.sp),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        // padding: EdgeInsets.symmetric(horizontal: 15.sp),
+                        children: [
+                          SizedBox(
+                            height: 20.sp,
+                          ),
+                          Text(
+                            "Welcome new Waiver partner! Drive forward",
+                            style: TextStyle(
+                                height: 1,
+                                fontSize: 24.sp,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          SizedBox(
+                            height: 12.sp,
+                          ),
+                          Text(
+                            "Please enter the partner details",
+                            style: TextStyle(
+                                fontSize: 16.sp,
+                                height: 1,
+                                fontWeight: FontWeight.w200),
+                          ),
+                          SizedBox(
+                            height: 30.sp,
+                          ),
+                          AppTextFormField(
+                            controller:
+                                RegistrationController.to.controllerFullName,
+                            header: 'Full Name',
+                            placeHolder: "e.g. Alex",
+                            restrictEmojis: true,
+                            // restrictSpecialCharacters: true,
+                            inputFormatters: [
+                              CustomCharacterFormatter(
+                                  allowedPattern: r'[^a-zA-Z\-.]')
+                            ],
+                            validator: (value) => Validators.isEmpty(
+                              value: value,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 12.sp,
+                          ),
+                          AppTextFormField(
+                            controller:
+                                RegistrationController.to.controllerEmail,
+                            header: 'Email Address',
+                            placeHolder: "e.g. alex@gmail.com",
+                            validator: (value) => Validators.isEMail(
+                              value: value,
+                            ),
+                            textInputType: TextInputType.emailAddress,
+                          ),
+                          SizedBox(
+                            height: 12.sp,
+                          ),
+                          AppDropDownFormField(
+                            header: 'Gender',
+                            placeHolder: 'Gender',
+                            itemList: RegistrationController.to.genderList,
+                            onChange: (GenderModel? gender) {
+                              RegistrationController.to.selectedGender = gender;
+                            },
+                            value: RegistrationController.to.selectedGender,
+                            label: (GenderModel gender) => gender.label,
+                          ),
+                          SizedBox(
+                            height: 12.sp,
+                          ),
+                          !RegistrationController.to.isFleet()
+                              ? Column(
+                                  children: [
+                                    AppDatePickerFormField(
+                                      header: 'Date of Birth as per Documents',
+                                      placeHolder: "Date of Birth",
+                                      initialDate: DateTime.now().subtract(
+                                          const Duration(days: 365 * 23)),
+                                      startDate: DateTime.now().subtract(
+                                          const Duration(days: 365 * 85)),
+                                      lastDate: DateTime.now().subtract(
+                                          const Duration(days: 365 * 23)),
+                                      validator: (value) =>
+                                          Validators.isEmpty(value: value),
+                                      controller: RegistrationController
+                                          .to.controllerDateOfBirth,
+                                    ),
+                                    SizedBox(
+                                      height: 12.sp,
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox(),
+                          AppTextFormField(
+                            controller: RegistrationController
+                                .to.controllerAlternativeNumber,
+                            header: 'Alternative Number',
+                            maxLength: 10,
+                            placeHolder: " e.g. xxxxxxxxxx",
+                            validator: (value) => Validators.isMobile(
+                              value: value,
+                            ),
+                            textInputType: TextInputType.phone,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
                             ],
                           ),
-                        ),
+                          SizedBox(
+                            height: 12.sp,
+                          ),
+                          AppTextFormField(
+                            controller: RegistrationController
+                                .to.controllerWhatsAppNumber,
+                            header: 'Whatsapp Number',
+                            maxLength: 10,
+                            placeHolder: " e.g. xxxxxxxxxx",
+                            validator: (value) => Validators.isMobile(
+                              value: value,
+                            ),
+                            textInputType: TextInputType.phone,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                          ),
+                          SizedBox(
+                            height: 12.sp,
+                          ),
+                          AppDropDownFormField(
+                            header: 'State',
+                            placeHolder: 'Select',
+                            itemList: RegistrationController.to.statesList,
+                            onChange: (StatesModel? state) {
+                              RegistrationController.to.selectedState = state;
+                              print(state?.id);
+                              RegistrationController.to.getAllDistricts();
+                            },
+                            value: RegistrationController.to.selectedState,
+                            label: (StatesModel state) => state.name,
+                          ),
+                          SizedBox(
+                            height: 12.sp,
+                          ),
+                          GetX<RegistrationController>(builder: (controller) {
+                            switch (controller.districtDropDownState.value) {
+                              case DropDownState.hidden:
+                                return const SizedBox();
+                              case DropDownState.loading:
+                                return LoadingAnimationDots(
+                                  height: 50.sp,
+                                );
+                              case DropDownState.loaded:
+                                return Column(
+                                  children: [
+                                    AppDropDownFormField(
+                                      header: 'District',
+                                      placeHolder: 'District',
+                                      itemList: RegistrationController
+                                          .to.districtsList,
+                                      onChange: (DistrictModel? district) {
+                                        RegistrationController
+                                            .to.selectedDistrict = district;
+                                      },
+                                      value: RegistrationController
+                                          .to.selectedDistrict,
+                                      label: (DistrictModel district) =>
+                                          district.name,
+                                    ),
+                                    SizedBox(
+                                      height: 12.sp,
+                                    ),
+                                  ],
+                                );
+                            }
+                          }),
+                          SizedBox(
+                            height: 12.sp,
+                          ),
+                          AppTextFormField(
+                            controller:
+                                RegistrationController.to.controllerAddress,
+                            header: 'Address as per Documents',
+                            placeHolder: "e.g. 221b baker street",
+                            restrictEmojis: true,
+                            validator: (value) => Validators.isEmpty(
+                              value: value,
+                            ),
+                            maxLInes: 5,
+                            minLines: 1,
+                          ),
+                          SizedBox(
+                            height: 12.sp,
+                          ),
+                          RegistrationController.to.userTypeCode !=
+                                  UserTypeCode.fleet
+                              ? Column(
+                                  children: [
+                                    AppDropDownFormField(
+                                      header: 'Experience in driving (Years)',
+                                      placeHolder: 'Driving Experience',
+                                      itemList: RegistrationController
+                                          .to.yearsOfDrivingExperience,
+                                      onChange: (WorkExperience?
+                                          yearsOfDrivingExperience) {
+                                        RegistrationController.to
+                                                .selectedYearsOfDrivingExperience =
+                                            yearsOfDrivingExperience;
+                                      },
+                                      value: RegistrationController
+                                          .to.selectedYearsOfDrivingExperience,
+                                      label: (WorkExperience
+                                              yearsOfDrivingExperience) =>
+                                          (yearsOfDrivingExperience
+                                                      .experience ??
+                                                  0)
+                                              .toString(),
+                                    ),
+                                    SizedBox(
+                                      height: 12.sp,
+                                    ),
+                                    AppDropDownFormField(
+                                      header: 'Where you wish to work with us',
+                                      placeHolder: 'Preferred location',
+                                      itemList: RegistrationController
+                                          .to.workingLocations,
+                                      onChange: (WorkLocation? workLocation) {
+                                        RegistrationController
+                                                .to.selectedWorkingLocation =
+                                            workLocation;
+                                      },
+                                      value: RegistrationController
+                                          .to.selectedWorkingLocation,
+                                      label: (WorkLocation workLocation) =>
+                                          workLocation.name,
+                                    ),
+                                    SizedBox(
+                                      height: 12.sp,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Vehicle Types",
+                                          textAlign: TextAlign.start,
+                                          style: TextStyle(
+                                              fontSize: 15.sp,
+                                              color: AppColors.black,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(
+                                      height: 7.sp,
+                                    ),
+                                    Theme(
+                                      data: ThemeData(
+                                          dividerColor: Colors.transparent),
+                                      child: ExpansionTile(
+                                        backgroundColor: AppColors.white,
+                                        collapsedBackgroundColor:
+                                            AppColors.white,
+                                        collapsedShape: RoundedRectangleBorder(
+                                          side: BorderSide(
+                                              color: AppColors.grey155),
+                                          borderRadius:
+                                              BorderRadius.circular(8.sp),
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          side: BorderSide(
+                                              color: AppColors.grey155),
+                                          borderRadius:
+                                              BorderRadius.circular(8.sp),
+                                        ),
+                                        childrenPadding: EdgeInsets.zero,
+                                        title: const Text("Vehicle Types"),
+                                        children: RegistrationController
+                                            .to.vehicleTypes
+                                            .map((vehicle) =>
+                                                SelectVehicleTypeListingItem(
+                                                  vehicle: vehicle,
+                                                ))
+                                            .toList(),
+                                      ),
+                                    ),
+                                    GetX<RegistrationController>(
+                                        builder: (controller) {
+                                      return controller
+                                              .showVehicleTypeError.value
+                                          ? Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                  height: 2.sp,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      "Please select at least one vehicle type",
+                                                      style: TextStyle(
+                                                          fontSize: 12.sp,
+                                                          color: Colors.red),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            )
+                                          : const SizedBox();
+                                    }),
+                                    SizedBox(
+                                      height: 12.sp,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Familiar transmission types?",
+                                          textAlign: TextAlign.start,
+                                          style: TextStyle(
+                                              fontSize: 15.sp,
+                                              color: AppColors.black,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                      ],
+                                    ),
+                                    Theme(
+                                      data: ThemeData(
+                                          dividerColor: Colors.transparent),
+                                      child: ExpansionTile(
+                                        backgroundColor: AppColors.white,
+                                        collapsedBackgroundColor:
+                                            AppColors.white,
+                                        collapsedShape: RoundedRectangleBorder(
+                                          side: BorderSide(
+                                              color: AppColors.grey155),
+                                          borderRadius:
+                                              BorderRadius.circular(8.sp),
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          side: BorderSide(
+                                              color: AppColors.grey155),
+                                          borderRadius:
+                                              BorderRadius.circular(8.sp),
+                                        ),
+                                        childrenPadding: EdgeInsets.zero,
+                                        title: const Text(
+                                            "Familiar transmission types"),
+                                        children: RegistrationController
+                                            .to.transmissionTypes
+                                            .map((transmission) =>
+                                                SelectTransmissionTypeListingItem(
+                                                  transmissionType:
+                                                      transmission,
+                                                ))
+                                            .toList(),
+                                      ),
+                                    ),
+                                    GetX<RegistrationController>(
+                                        builder: (controller) {
+                                      return controller
+                                              .showTransmissionTypeError.value
+                                          ? Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                SizedBox(
+                                                  height: 2.sp,
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      "Please select at least one familiar transmission type",
+                                                      style: TextStyle(
+                                                          fontSize: 12.sp,
+                                                          color: Colors.red),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ],
+                                            )
+                                          : const SizedBox();
+                                    }),
+                                    // AppDropDownFormField(
+                                    //   header:
+                                    //       'Familiar transmission types?',
+                                    //   placeHolder: 'Select',
+                                    //   itemList: RegistrationController
+                                    //       .to.transmissionTypes,
+                                    //   onChange:
+                                    //       (Transmission? transmissionType) {
+                                    //     RegistrationController.to
+                                    //             .selectedTransmissionType =
+                                    //         transmissionType;
+                                    //   },
+                                    //   value: RegistrationController
+                                    //       .to.selectedTransmissionType,
+                                    //   label: (Transmission?
+                                    //           transmissionType) =>
+                                    //       transmissionType?.name,
+                                    // ),
+                                    SizedBox(
+                                      height: 12.sp,
+                                    ),
+                                    AppDatePickerFormField(
+                                      header: 'License validity date?',
+                                      placeHolder: "License validity date",
+                                      initialDate: DateTime.now().add(
+                                        const Duration(days: 28 * 6),
+                                      ),
+                                      startDate: DateTime.now().add(
+                                        const Duration(days: 28 * 6),
+                                      ),
+                                      lastDate: DateTime.now().add(
+                                        const Duration(days: 365 * 25),
+                                      ),
+                                      validator: (value) =>
+                                          Validators.isEmpty(value: value),
+                                      controller: RegistrationController
+                                          .to.controllerLicenseValidityDate,
+                                    ),
+                                    SizedBox(
+                                      height: 12.sp,
+                                    ),
+                                  ],
+                                )
+                              : const SizedBox(),
+                          // const TermsAndConditions(),
+                          // const PrivacyPolicy(),
+                          SizedBox(
+                            height: 25.sp,
+                          ),
+                          GetX<RegistrationController>(builder: (controller) {
+                            return BlueButton(
+                              text: "Continue",
+                              isLoading:
+                                  controller.isRegisterButtonLoading.value,
+                              onTap: () => RegistrationController.to.register(),
+                            );
+                          }),
+                          SizedBox(
+                            height: 45.sp,
+                          ),
+                        ],
                       ),
-                    );
+                    ),
+                  ),
+                );
         },
       ),
     );

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/model/registration/registration_model.dart';
@@ -11,7 +13,6 @@ import 'package:waiver_driver/main.dart';
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/constants/enums/enums.dart';
 import '../../core/constants/get_storage_constants.dart';
-
 
 // class RegistrationControllerBinding extends Bindings {
 //   @override
@@ -43,22 +44,21 @@ class RegistrationController extends GetxController {
               getWorkLocation(),
               getTransmissionTypes(),
               getVehicleTypes(),
-              getAllDistricts(),
             ]
           : [
               getAllStates(),
             ]);
       isLoading.value = false;
-      isError.value = false;
+      // isError.value = false;
     } catch (error) {
-      isError.value = true;
+      // isError.value = true;
     } finally {
       isLoading.value = false;
     }
   }
 
   RxBool isLoading = false.obs;
-  RxBool isError = false.obs;
+  // RxBool isError = false.obs;
 
   GlobalKey<FormState> registrationFormKey = GlobalKey();
   TextEditingController controllerFullName = TextEditingController();
@@ -127,10 +127,10 @@ class RegistrationController extends GetxController {
   Rx<DropDownState> districtDropDownState = DropDownState.hidden.obs;
   Future<void> getAllDistricts() async {
     try {
-      districtDropDownState.value = DropDownState.loaded;
+      districtDropDownState.value = DropDownState.loading;
       selectedDistrict = null;
       GetAllDistrictsResponseModel response = await ApiServices.getAllDistricts(
-          queryParameter: {"state": (53).toString()});
+          queryParameter: {"state": (selectedState?.id ?? '').toString()});
       districtsList = response.data ?? [];
       if (districtsList.isEmpty) {
         districtDropDownState.value = DropDownState.hidden;
@@ -196,10 +196,10 @@ class RegistrationController extends GetxController {
           Map<String, dynamic> body = {
             "fullname": controllerFullName.text.trim(),
             "email": controllerEmail.text.trim(),
-            "gender": selectedGender!.code,
+            "gender": selectedGender?.code,
             "alternative_phone": controllerAlternativeNumber.text.trim(),
             "whatsapp_phone": controllerWhatsAppNumber.text.trim(),
-            "state": selectStatelist?.id,
+            "state": selectedState?.id,
             "district": selectedDistrict?.id.toString(),
             "address": controllerAddress.text.trim(),
             "work_location": selectedWorkingLocation?.id,
@@ -216,7 +216,7 @@ class RegistrationController extends GetxController {
           if (userTypeCode != UserTypeCode.fleet) {
             body.addAll({
               "dob": controllerDateOfBirth.text.changeDateFormat(),
-              "driving_experience": selectedYearsOfDrivingExperience!.id,
+              "driving_experience": selectedYearsOfDrivingExperience?.id,
               "license_validity":
                   controllerLicenseValidityDate.text.changeDateFormat(),
             });
@@ -255,8 +255,8 @@ class RegistrationController extends GetxController {
         // Get.toNamed(AppRoutes.chauffeurProof, arguments: controllerFullName.text);
         // }
       }
-    } catch (error) {
-      print(error);
+    } catch (error, s) {
+      log(error.toString(), stackTrace: s);
       Get.showSnackbar(
         const GetSnackBar(
           duration: Duration(seconds: 2),
