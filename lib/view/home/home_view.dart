@@ -230,6 +230,7 @@ class MakingPaymentBottomSheet extends StatelessWidget {
                   // HomeController.to.completeRide();
                   HomeController.to.confirmedPayment();
                   // HomeController.to.driverState.value = DriverState.idle;
+                  HomeController.to.isButtonLoading.value= false;
                 },
               ):SizedBox(),
               SizedBox(

@@ -43,7 +43,7 @@ class RegistrationController extends GetxController {
               getWorkLocation(),
               getTransmissionTypes(),
               getVehicleTypes(),
-              getAllDistricts(),
+              // getAllDistricts(),
             ]
           : [
               getAllStates(),

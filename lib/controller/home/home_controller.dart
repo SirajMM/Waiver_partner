@@ -81,6 +81,7 @@ class HomeController extends GetxController {
           .then(
         (value) => pickUpLocation1?.name.value = value ?? '',
       );
+      recenter();
 
       isError.value = false;
     } catch (error) {
@@ -585,10 +586,11 @@ class HomeController extends GetxController {
 
       driverState.value = DriverState.loading;
       player.stop();
+      isButtonLoading.value=true;
       ChangeRideStatusModel response = await ApiServices.changeRideStatus(
           body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
       if (response.status == 200) {
-        isButtonLoading.value=true;
+
         log(isButtonLoading.toString());
         if (driverState.value == DriverState.idle) {
           startLocationLongMarker = 0.0;
@@ -902,9 +904,14 @@ class HomeController extends GetxController {
       "ride_status": RideStatus.cancelled,
     });
     if (response.status == 200) {
+      driverState.value = DriverState.idle;
+      if (driverState.value == DriverState.idle) {
+        startLocationLongMarker = 0.0;
+        startLocationLatMarker = 0.0;
+        recenter();
+      }
       rideIsActive = false;
       box.remove(BoxKeys.rideId);
-      driverState.value = DriverState.idle;
       if (Get.isBottomSheetOpen ?? false) {
         Get.back();
       }

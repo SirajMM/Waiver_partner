@@ -77,6 +77,7 @@ class ReasonForCancelController extends GetxController {
       if (response.status == 200) {
         HomeController.to.startLocationLatMarker = 0.0;
         HomeController.to.startLocationLongMarker = 0.0;
+        HomeController.to.recenter();
         HomeController.to.driverState.value = DriverState.idle;
         Get.until((route) => route.settings.name == AppRoutes.home);
       }

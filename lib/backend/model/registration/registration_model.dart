@@ -247,7 +247,7 @@ class GetAllWorkExperienceResponseModel {
 
 class WorkExperience {
   int? id;
-  int? experience;
+  String? experience;
 
   WorkExperience({
     this.id,
