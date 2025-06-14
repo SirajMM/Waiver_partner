@@ -426,7 +426,7 @@ class District {
 
 class DrivingExperience {
   int? id;
-  int? experience;
+  String? experience;
 
   DrivingExperience({
     this.id,
