@@ -86,19 +86,19 @@ class LeftMenuFleet extends StatelessWidget {
             },
           ),
           const Divider().cPadSymmetric(v: 20.sp),
-          LeftMenuItem(
-            item: LeftMenuControllerFleet.to.switchToDiver,
-            onTap: () async {
-              try {
-                await ApiServices.logout(body: {});
-              } finally {
-                await box.erase();
-                await box.write(BoxKeys.userTypeCode, UserTypeCode.driver);
-                Get.put(ApiServices(appBaseUrl: ''));
-                Get.toNamed(AppRoutes1.signIn, arguments: UserType.driver);
-              }
-            },
-          ),
+          // LeftMenuItem(
+          //   item: LeftMenuControllerFleet.to.switchToDiver,
+          //   onTap: () async {
+          //     try {
+          //       await ApiServices.logout(body: {});
+          //     } finally {
+          //       await box.erase();
+          //       await box.write(BoxKeys.userTypeCode, UserTypeCode.driver);
+          //       Get.put(ApiServices(appBaseUrl: ''));
+          //       Get.toNamed(AppRoutes1.signIn, arguments: UserType.driver);
+          //     }
+          //   },
+          // ),
           SizedBox(
             height: 30.sp,
           ),

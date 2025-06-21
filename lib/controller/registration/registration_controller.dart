@@ -47,6 +47,7 @@ class RegistrationController extends GetxController {
             ]
           : [
               getAllStates(),
+              getWorkLocation(),
             ]);
       isLoading.value = false;
       // isError.value = false;

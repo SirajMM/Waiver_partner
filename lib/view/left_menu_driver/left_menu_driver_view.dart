@@ -171,7 +171,7 @@ class LeftMenuDriver extends StatelessWidget {
 }
 
 class LeftMenuProfileItem extends StatelessWidget {
-  const LeftMenuProfileItem({super.key});
+  const   LeftMenuProfileItem({super.key});
 
   @override
   Widget build(BuildContext context) {

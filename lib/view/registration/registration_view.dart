@@ -67,7 +67,7 @@ class RegistrationScreen extends StatelessWidget {
                             // restrictSpecialCharacters: true,
                             inputFormatters: [
                               CustomCharacterFormatter(
-                                  allowedPattern: r'[^a-zA-Z\-.]')
+                                  allowedPattern: r'[^a-zA-Z\-. ]')
                             ],
                             validator: (value) => Validators.isEmpty(
                               value: value,
@@ -102,8 +102,9 @@ class RegistrationScreen extends StatelessWidget {
                           SizedBox(
                             height: 12.sp,
                           ),
-                          !RegistrationController.to.isFleet()
-                              ? Column(
+                          // !RegistrationController.to.isFleet()
+                          //     ?
+                        Column(
                                   children: [
                                     AppDatePickerFormField(
                                       header: 'Date of Birth as per Documents',
@@ -123,8 +124,8 @@ class RegistrationScreen extends StatelessWidget {
                                       height: 12.sp,
                                     ),
                                   ],
-                                )
-                              : const SizedBox(),
+                                ),
+                              // : const SizedBox(),
                           AppTextFormField(
                             controller: RegistrationController
                                 .to.controllerAlternativeNumber,
@@ -224,6 +225,24 @@ class RegistrationScreen extends StatelessWidget {
                           SizedBox(
                             height: 12.sp,
                           ),
+                          AppDropDownFormField(
+                            header: 'Where you wish to work with us',
+                            placeHolder: 'Preferred location',
+                            itemList: RegistrationController
+                                .to.workingLocations,
+                            onChange: (WorkLocation? workLocation) {
+                              RegistrationController
+                                  .to.selectedWorkingLocation =
+                                  workLocation;
+                            },
+                            value: RegistrationController
+                                .to.selectedWorkingLocation,
+                            label: (WorkLocation workLocation) =>
+                            workLocation.name,
+                          ),
+                          SizedBox(
+                            height: 12.sp,
+                          ),
                           RegistrationController.to.userTypeCode !=
                                   UserTypeCode.fleet
                               ? Column(
@@ -251,21 +270,21 @@ class RegistrationScreen extends StatelessWidget {
                                     SizedBox(
                                       height: 12.sp,
                                     ),
-                                    AppDropDownFormField(
-                                      header: 'Where you wish to work with us',
-                                      placeHolder: 'Preferred location',
-                                      itemList: RegistrationController
-                                          .to.workingLocations,
-                                      onChange: (WorkLocation? workLocation) {
-                                        RegistrationController
-                                                .to.selectedWorkingLocation =
-                                            workLocation;
-                                      },
-                                      value: RegistrationController
-                                          .to.selectedWorkingLocation,
-                                      label: (WorkLocation workLocation) =>
-                                          workLocation.name,
-                                    ),
+                                    // AppDropDownFormField(
+                                    //   header: 'Where you wish to work with us',
+                                    //   placeHolder: 'Preferred location',
+                                    //   itemList: RegistrationController
+                                    //       .to.workingLocations,
+                                    //   onChange: (WorkLocation? workLocation) {
+                                    //     RegistrationController
+                                    //             .to.selectedWorkingLocation =
+                                    //         workLocation;
+                                    //   },
+                                    //   value: RegistrationController
+                                    //       .to.selectedWorkingLocation,
+                                    //   label: (WorkLocation workLocation) =>
+                                    //       workLocation.name,
+                                    // ),
                                     SizedBox(
                                       height: 12.sp,
                                     ),

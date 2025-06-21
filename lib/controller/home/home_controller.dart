@@ -583,10 +583,9 @@ class HomeController extends GetxController {
 
   Future<void> acceptOrder() async {
     try {
-
+      isButtonLoading.value=true;
       driverState.value = DriverState.loading;
       player.stop();
-      isButtonLoading.value=true;
       ChangeRideStatusModel response = await ApiServices.changeRideStatus(
           body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
       if (response.status == 200) {
@@ -612,6 +611,9 @@ class HomeController extends GetxController {
           ),
         ),
       );
+    }finally {
+      isButtonLoading.value = false;
+      recenter();
     }
   }
 

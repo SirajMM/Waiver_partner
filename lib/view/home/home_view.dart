@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -35,103 +37,133 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(HomeController(parser: Get.find()));
-    return GetX<HomeController>(builder: (controller) {
-      return controller.isLoading.value
-          ? LoadingBarsAnimation()
-          : Scaffold(
-              extendBodyBehindAppBar: true,
-              appBar: HomePageAppBar(),
-              drawer: const LeftMenuDriver(),
-              bottomSheet: GetX<HomeController>(builder: (controller) {
-                switch (controller.driverState.value) {
-                  case DriverState.idle:
-                    return const DashBoardData();
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        HomeController homeController = Get.find();
 
-                  case DriverState.goingToPickUp:
-                    return Going_To_Pick_screen();
+        print(homeController.driverState.value);
+        if (homeController.driverState.value == DriverState.idle) {
+          exit(0);
+        } else if(homeController.driverState.value == DriverState.paymentInitiated || homeController.driverState.value == DriverState.completed){
+          Get.defaultDialog(
+              middleText: "Confirm the payment !!!");
 
-                  case DriverState.arrivedAtPickUp:
-                    return EnterOtpBottomSheet(orderStatus: RideStatus.reachedPickUp);
-
-                  case DriverState.readyToGoToDestination:
-                    return ReadyToGoToDestinationWidget();
-
-                  case DriverState.goingToDestination:
-                    return GoingToDestinationWidget();
-
-                  case DriverState.reachedDestination:
-                    return EnterOtpBottomSheet(orderStatus: RideStatus.reachedDropOff);
-
-                  // case DriverState.paymentInitiated:
-                  //   return box.read(BoxKeys.paymentType) == "CSH"
-                  //       ? const PaymentConfirmationSheetCash()
-                  //       : const PaymentConfirmationSheetOnline();
-                  case DriverState.paymentInitiated:
-                  //   return box.read(BoxKeys.paymentType) == "CSH"
-                  //   return const PaymentConfirmationSheetOnline(titleText: "Payment",text: "Waiting for payment",);
-                      return const MakingPaymentBottomSheet(isPay: false,);
-                  // case DriverState.completed:
-                  //   return HomeController.to.rideIsActive
-                  //       ? const MakingPaymentBottomSheet()
-                  //       : const SizedBox();
-                case DriverState.completed:
-                  return HomeController.to.rideIsActive
-                      ? const MakingPaymentBottomSheet(isPay: true,)
-                      : const SizedBox();
-                  case DriverState.loading:
-                    return LoadingStateWidget();
-                }
-              }),
-              body: SizedBox(
-                width: Get.width,
-                height: Get.height,
-                child: GetX<HomeController>(builder: (controller) {
-                  return GoogleMap(
-                    mapType: MapType.normal,
-                    // myLocationEnabled: true,
-                    myLocationButtonEnabled: true,
-                    zoomControlsEnabled: false,
-                    markers: {
-                      Marker(
-                        markerId: const MarkerId("1"),
-                        icon: BitmapDescriptor.defaultMarker,
-                        position: LatLng(
-                          controller.currentPosition.value?.latitude ?? 0.0,
-                          controller.currentPosition.value?.longitude ?? 0.0,
-                        ),
-                      ),
-                      if (controller.startLocationLatMarker != null &&
-                          controller.startLocationLongMarker != null &&
-                          controller.startLocationLatMarker != 0.0 &&
-                          controller.startLocationLongMarker != 0.0)
+        }
+        else {
+          Get.defaultDialog(
+              middleText: " Your can't exit the app with active order, "
+                  "Are you sure you want to cancel this order ?",
+              confirm: BlueButton(
+                text: "Yes",
+                width: 100.sp,
+                onTap: () => Get.bottomSheet(CancelOrder()),
+              ),
+              cancel: WhiteButton(
+                width: 100.sp,
+                text: "No",
+                onTap: Get.back,
+              ));
+        }
+      },
+      child: GetX<HomeController>(builder: (controller) {
+        return controller.isLoading.value
+            ? LoadingBarsAnimation()
+            : Scaffold(
+                extendBodyBehindAppBar: true,
+                appBar: HomePageAppBar(),
+                drawer: const LeftMenuDriver(),
+                bottomSheet: GetX<HomeController>(builder: (controller) {
+                  switch (controller.driverState.value) {
+                    case DriverState.idle:
+                      return const DashBoardData();
+      
+                    case DriverState.goingToPickUp:
+                      return Going_To_Pick_screen();
+      
+                    case DriverState.arrivedAtPickUp:
+                      return EnterOtpBottomSheet(orderStatus: RideStatus.reachedPickUp);
+      
+                    case DriverState.readyToGoToDestination:
+                      return ReadyToGoToDestinationWidget();
+      
+                    case DriverState.goingToDestination:
+                      return GoingToDestinationWidget();
+      
+                    case DriverState.reachedDestination:
+                      return EnterOtpBottomSheet(orderStatus: RideStatus.reachedDropOff);
+      
+                    // case DriverState.paymentInitiated:
+                    //   return box.read(BoxKeys.paymentType) == "CSH"
+                    //       ? const PaymentConfirmationSheetCash()
+                    //       : const PaymentConfirmationSheetOnline();
+                    case DriverState.paymentInitiated:
+                    //   return box.read(BoxKeys.paymentType) == "CSH"
+                    //   return const PaymentConfirmationSheetOnline(titleText: "Payment",text: "Waiting for payment",);
+                        return const MakingPaymentBottomSheet(isPay: false,);
+                    // case DriverState.completed:
+                    //   return HomeController.to.rideIsActive
+                    //       ? const MakingPaymentBottomSheet()
+                    //       : const SizedBox();
+                  case DriverState.completed:
+                    return HomeController.to.rideIsActive
+                        ? const MakingPaymentBottomSheet(isPay: true,)
+                        : const SizedBox();
+                    case DriverState.loading:
+                      return LoadingStateWidget();
+                  }
+                }),
+                body: SizedBox(
+                  width: Get.width,
+                  height: Get.height,
+                  child: GetX<HomeController>(builder: (controller) {
+                    return GoogleMap(
+                      mapType: MapType.normal,
+                      // myLocationEnabled: true,
+                      myLocationButtonEnabled: true,
+                      zoomControlsEnabled: false,
+                      markers: {
                         Marker(
+                          markerId: const MarkerId("1"),
                           icon: BitmapDescriptor.defaultMarker,
-                          markerId: const MarkerId("User"),
                           position: LatLng(
-                            controller.startLocationLatMarker!.toDouble(),
-                            controller.startLocationLongMarker!.toDouble(),
+                            controller.currentPosition.value?.latitude ?? 0.0,
+                            controller.currentPosition.value?.longitude ?? 0.0,
                           ),
                         ),
-                    },
-                    onCameraIdle: () async => controller.pickUpLocation1?.name.value =
-                        await controller.getLocationDetails(
-                            controller.currentPosition.value?.latitude ?? 0,
-                            controller.currentPosition.value?.longitude ?? 0.0),
-                    initialCameraPosition: CameraPosition(
-                      target: LatLng(
-                        controller.currentPosition.value?.latitude ?? 0,
-                        controller.currentPosition.value?.longitude ?? 0,
+                        if (controller.startLocationLatMarker != null &&
+                            controller.startLocationLongMarker != null &&
+                            controller.startLocationLatMarker != 0.0 &&
+                            controller.startLocationLongMarker != 0.0)
+                          Marker(
+                            icon: BitmapDescriptor.defaultMarker,
+                            markerId: const MarkerId("User"),
+                            position: LatLng(
+                              controller.startLocationLatMarker!.toDouble(),
+                              controller.startLocationLongMarker!.toDouble(),
+                            ),
+                          ),
+                      },
+                      onCameraIdle: () async => controller.pickUpLocation1?.name.value =
+                          await controller.getLocationDetails(
+                              controller.currentPosition.value?.latitude ?? 0,
+                              controller.currentPosition.value?.longitude ?? 0.0),
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(
+                          controller.currentPosition.value?.latitude ?? 0,
+                          controller.currentPosition.value?.longitude ?? 0,
+                        ),
+                        zoom: 15,
                       ),
-                      zoom: 15,
-                    ),
-                    onMapCreated: (GoogleMapController googleMapController) async {
-                      controller.googleMapController = googleMapController;
-                      await controller.onMapCreate();
-                    },
-                  );
-                }),
-              ));
-    });
+                      onMapCreated: (GoogleMapController googleMapController) async {
+                        controller.googleMapController = googleMapController;
+                        await controller.onMapCreate();
+                      },
+                    );
+                  }),
+                ));
+      }),
+    );
   }
 }
 
@@ -230,7 +262,7 @@ class MakingPaymentBottomSheet extends StatelessWidget {
                   // HomeController.to.completeRide();
                   HomeController.to.confirmedPayment();
                   // HomeController.to.driverState.value = DriverState.idle;
-                  HomeController.to.isButtonLoading.value= false;
+                  // HomeController.to.isButtonLoading.value= false;
                 },
               ):SizedBox(),
               SizedBox(
