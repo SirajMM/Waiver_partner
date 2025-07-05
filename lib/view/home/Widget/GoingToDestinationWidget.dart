@@ -9,7 +9,6 @@ import '../../../core/widgets/app_buttons/app_buttons.dart';
 import '../../../core/widgets/circle_with_gradient/circle_with_gradient.dart';
 import '../../../view/home/home_view.dart';
 
-
 class GoingToDestinationWidget extends StatelessWidget {
   const GoingToDestinationWidget({
     super.key,
@@ -29,7 +28,8 @@ class GoingToDestinationWidget extends StatelessWidget {
                 spreadRadius: 5)
           ],
           borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
+              topLeft: Radius.circular(20.sp),
+              topRight: Radius.circular(20.sp))),
       child: ListView(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
@@ -103,8 +103,29 @@ class GoingToDestinationWidget extends StatelessWidget {
             height: 20.sp,
           ),
           BlueButton(
-              text: "Arrived at Destination",
-              onTap: () => HomeController.to.reachedDropOffLocation()),
+            text: "Arrived at Destination",
+            onTap: () {
+              Get.defaultDialog(
+                  backgroundColor: Colors.white,
+                  title: 'Confirm',
+                  middleText: 'Do you reached destination ?',
+                  confirm: BlueButton(
+                    text: "Yes",
+                    height: 40.h,
+                    width: 100.sp,
+                    onTap: () {
+                      Get.back();
+                      HomeController.to.reachedDropOffLocation();
+                    },
+                  ),
+                  cancel: WhiteButton(
+                    height: 40.h,
+                    width: 100.sp,
+                    text: "No",
+                    onTap: Get.back,
+                  ));
+            },
+          ),
         ],
       ),
     );

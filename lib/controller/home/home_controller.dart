@@ -69,8 +69,8 @@ class HomeController extends GetxController {
       sendLiveLocation();
       getVersionInfo();
       ProfileController.to.getProfile();
-      isAssinged.value =  await hasAssigned();
-  log("******************${isAssinged.value}@@@@@@@@@@@@@@@@@@@@@@@@@@");
+      isAssinged.value = await hasAssigned();
+      log("******************${isAssinged.value}@@@@@@@@@@@@@@@@@@@@@@@@@@");
       pickUpLocation1 = TripsLocations(
           latitude: Rx(currentPosition.value?.latitude),
           longitude: Rx(currentPosition.value?.longitude),
@@ -174,6 +174,9 @@ class HomeController extends GetxController {
 
   Future<void> changeDriverOnlineStatus() async {
     try {
+      if (isOnlineButtonLoading.value) return;
+      isOnlineButtonLoading.value = true;
+
       LogoutResponseModel response = await ApiServices.changeOnlineStatus(
         body: {
           "is_online": isOnline.value ? 0 : 1,
@@ -209,6 +212,8 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       debugPrint("Error in changeDriverOnlineStatus: $e");
+    } finally {
+      isOnlineButtonLoading.value = false;
     }
   }
 
@@ -327,7 +332,7 @@ class HomeController extends GetxController {
     Get.bottomSheet(
       enableDrag: false, isDismissible: false,
       // Your bottom sheet content
-        bottom,
+      bottom,
     ).then((_) {
       // Reset flag when bottom sheet is closed
       isBottomSheetOpen = false;
@@ -373,15 +378,14 @@ class HomeController extends GetxController {
     }
   }
 
-  Future <bool> hasAssigned()async{
+  Future<bool> hasAssigned() async {
     String userTypeCode = await box.read(BoxKeys.userTypeCode);
-    bool? istrue =  box.read(BoxKeys.isTaken);
-    if(userTypeCode=="DVR" && istrue==true){
+    bool? istrue = box.read(BoxKeys.isTaken);
+    if (userTypeCode == "DVR" && istrue == true) {
       return true;
-    }else{
+    } else {
       return false;
     }
-
   }
 
   Future<void> onMapCreate() async {
@@ -583,13 +587,12 @@ class HomeController extends GetxController {
 
   Future<void> acceptOrder() async {
     try {
-      isButtonLoading.value=true;
+      isButtonLoading.value = true;
       driverState.value = DriverState.loading;
       player.stop();
       ChangeRideStatusModel response = await ApiServices.changeRideStatus(
           body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
       if (response.status == 200) {
-
         log(isButtonLoading.toString());
         if (driverState.value == DriverState.idle) {
           startLocationLongMarker = 0.0;
@@ -611,7 +614,7 @@ class HomeController extends GetxController {
           ),
         ),
       );
-    }finally {
+    } finally {
       isButtonLoading.value = false;
       recenter();
     }
@@ -667,8 +670,15 @@ class HomeController extends GetxController {
   Future<void> reachedDropOffLocation() async {
     try {
       driverState.value = DriverState.loading;
-      ChangeRideStatusModel response = await ApiServices.changeRideStatus(
-          body: {"ride_id": rideId, "ride_status": RideStatus.reachedDropOff});
+      await getFinalDropLocation();
+      ChangeRideStatusModel response =
+          await ApiServices.changeRideStatus(body: {
+        "ride_id": rideId,
+        "ride_status": RideStatus.reachedDropOff,
+        "location": finalDropLocation,
+        "location_lat": currentPosition.value?.latitude.toString(),
+        "location_long": currentPosition.value?.longitude.toString(),
+      });
       if (response.status == 200) {
         driverState.value = DriverState.reachedDestination;
         isTracking = false;
@@ -857,9 +867,9 @@ class HomeController extends GetxController {
             //       "ride_id": rideId,
             //       "ride_status": RideStatus.paymentInitiated
             //     });
-           // confirmedPayment();
-            getFinalDropLocation();
-
+            // confirmedPayment();
+            // getFinalDropLocation();
+            await paymentInitiated();
           }
           code = " ";
         } else {
@@ -886,7 +896,7 @@ class HomeController extends GetxController {
       if (type == RideStatus.reachedPickUp) {
         driverState.value = DriverState.arrivedAtPickUp;
       } else {
-        driverState.value = DriverState.reachedDestination;
+        driverState.value = DriverState.paymentInitiated;
       }
     }
   }
@@ -896,30 +906,38 @@ class HomeController extends GetxController {
             currentPosition.value?.latitude ?? 0.0,
             currentPosition.value?.longitude ?? 0.0)) ??
         "";
-    paymentInitiated();
+    // paymentInitiated();
   }
 
   Future<void> orderTimeOut() async {
-    player.stop();
-    ChangeRideStatusModel response = await ApiServices.changeRideStatus(body: {
-      "ride_id": rideId,
-      "ride_status": RideStatus.cancelled,
-    });
-    if (response.status == 200) {
-      driverState.value = DriverState.idle;
-      if (driverState.value == DriverState.idle) {
-        startLocationLongMarker = 0.0;
-        startLocationLatMarker = 0.0;
-        recenter();
+    try {
+      player.stop();
+      ChangeRideStatusModel response =
+          await ApiServices.changeRideStatus(body: {
+        "ride_id": rideId,
+        "ride_status": RideStatus.cancelled,
+      });
+      if (response.status == 200) {
+        driverState.value = DriverState.idle;
+        if (driverState.value == DriverState.idle) {
+          startLocationLongMarker = 0.0;
+          startLocationLatMarker = 0.0;
+          recenter();
+        }
+        rideIsActive = false;
+        box.remove(BoxKeys.rideId);
+        if (Get.isBottomSheetOpen ?? false) {
+          Get.back();
+        }
+        Get.defaultDialog(
+            middleText:
+                "This order has expired and has been transferred to another driver");
       }
-      rideIsActive = false;
-      box.remove(BoxKeys.rideId);
+    } finally {
+      driverState.value = DriverState.idle;
       if (Get.isBottomSheetOpen ?? false) {
         Get.back();
       }
-      Get.defaultDialog(
-          middleText:
-              "This order has expired and has been transferred to another driver");
     }
   }
 

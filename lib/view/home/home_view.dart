@@ -26,7 +26,6 @@ import 'package:waiver_driver/view/home/Widget/ReadyToGoToDestinationWidget.dart
 import 'package:waiver_driver/view/home/Widget/goingToPickUpWidget.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
-
 import '../../controller/profile/profile_controller.dart';
 import '../../core/widgets/snackbar/snackbar.dart';
 import '../left_menu_driver/left_menu_driver_view.dart';
@@ -42,15 +41,13 @@ class HomeScreen extends StatelessWidget {
       onPopInvokedWithResult: (didPop, result) {
         HomeController homeController = Get.find();
 
-        print(homeController.driverState.value);
         if (homeController.driverState.value == DriverState.idle) {
           exit(0);
-        } else if(homeController.driverState.value == DriverState.paymentInitiated || homeController.driverState.value == DriverState.completed){
-          Get.defaultDialog(
-              middleText: "Confirm the payment !!!");
-
-        }
-        else {
+        } else if (homeController.driverState.value ==
+                DriverState.paymentInitiated ||
+            homeController.driverState.value == DriverState.completed) {
+          Get.defaultDialog(middleText: "Confirm the payment !!!");
+        } else {
           Get.defaultDialog(
               middleText: " Your can't exit the app with active order, "
                   "Are you sure you want to cancel this order ?",
@@ -77,38 +74,43 @@ class HomeScreen extends StatelessWidget {
                   switch (controller.driverState.value) {
                     case DriverState.idle:
                       return const DashBoardData();
-      
+
                     case DriverState.goingToPickUp:
                       return Going_To_Pick_screen();
-      
+
                     case DriverState.arrivedAtPickUp:
-                      return EnterOtpBottomSheet(orderStatus: RideStatus.reachedPickUp);
-      
+                      return EnterOtpBottomSheet(
+                          orderStatus: RideStatus.reachedPickUp);
+
                     case DriverState.readyToGoToDestination:
                       return ReadyToGoToDestinationWidget();
-      
+
                     case DriverState.goingToDestination:
                       return GoingToDestinationWidget();
-      
+
                     case DriverState.reachedDestination:
-                      return EnterOtpBottomSheet(orderStatus: RideStatus.reachedDropOff);
-      
-                    // case DriverState.paymentInitiated:
-                    //   return box.read(BoxKeys.paymentType) == "CSH"
-                    //       ? const PaymentConfirmationSheetCash()
-                    //       : const PaymentConfirmationSheetOnline();
+                      return EnterOtpBottomSheet(
+                          orderStatus: RideStatus.reachedDropOff);
+
                     case DriverState.paymentInitiated:
+                      return box.read(BoxKeys.paymentType) == "CSH"
+                          ? const PaymentConfirmationSheetCash()
+                          : const PaymentConfirmationSheetOnline(
+                              text: 'Wait user to complete payment',
+                              titleText: 'Online Payment',
+                            );
+                    /*      case DriverState.paymentInitiated:
                     //   return box.read(BoxKeys.paymentType) == "CSH"
                     //   return const PaymentConfirmationSheetOnline(titleText: "Payment",text: "Waiting for payment",);
-                        return const MakingPaymentBottomSheet(isPay: false,);
-                    // case DriverState.completed:
-                    //   return HomeController.to.rideIsActive
-                    //       ? const MakingPaymentBottomSheet()
-                    //       : const SizedBox();
-                  case DriverState.completed:
+                        return const MakingPaymentBottomSheet(isPay: false,);*/
+                    case DriverState.completed:
+                      return HomeController.to.rideIsActive
+                          ? const MakingPaymentBottomSheet(isPay: true)
+                          : const SizedBox();
+                    /*         case DriverState.completed:
                     return HomeController.to.rideIsActive
                         ? const MakingPaymentBottomSheet(isPay: true,)
-                        : const SizedBox();
+                        : const SizedBox();*/
                     case DriverState.loading:
                       return LoadingStateWidget();
                   }
@@ -144,10 +146,12 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                       },
-                      onCameraIdle: () async => controller.pickUpLocation1?.name.value =
+                      onCameraIdle: () async => controller
+                              .pickUpLocation1?.name.value =
                           await controller.getLocationDetails(
                               controller.currentPosition.value?.latitude ?? 0,
-                              controller.currentPosition.value?.longitude ?? 0.0),
+                              controller.currentPosition.value?.longitude ??
+                                  0.0),
                       initialCameraPosition: CameraPosition(
                         target: LatLng(
                           controller.currentPosition.value?.latitude ?? 0,
@@ -155,7 +159,8 @@ class HomeScreen extends StatelessWidget {
                         ),
                         zoom: 15,
                       ),
-                      onMapCreated: (GoogleMapController googleMapController) async {
+                      onMapCreated:
+                          (GoogleMapController googleMapController) async {
                         controller.googleMapController = googleMapController;
                         await controller.onMapCreate();
                       },
@@ -166,14 +171,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
 
 class MakingPaymentBottomSheet extends StatelessWidget {
   final bool isPay;
@@ -194,8 +191,9 @@ class MakingPaymentBottomSheet extends StatelessWidget {
                     blurRadius: 5,
                     spreadRadius: 5)
               ],
-              borderRadius:
-                  BorderRadius.only(topRight: Radius.circular(10.sp), topLeft: Radius.circular(10.sp))),
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(10.sp),
+                  topLeft: Radius.circular(10.sp))),
           width: Get.width,
           child: ListView(
             padding: EdgeInsets.all(20.sp),
@@ -212,7 +210,8 @@ class MakingPaymentBottomSheet extends StatelessWidget {
               Center(
                 child: Text(
                   HomeController.to.total ?? "",
-                  style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
+                  style:
+                      TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
                 ),
               ),
               SizedBox(
@@ -227,7 +226,8 @@ class MakingPaymentBottomSheet extends StatelessWidget {
                   children: [
                     Text(
                       "You've Earned",
-                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.sp),
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500, fontSize: 16.sp),
                     ),
                   ],
                 ),
@@ -256,15 +256,17 @@ class MakingPaymentBottomSheet extends StatelessWidget {
               SizedBox(
                 height: 15.sp,
               ),
-             isPay ? BlueButton(
-                text: "Confirm",
-                onTap: () {
-                  // HomeController.to.completeRide();
-                  HomeController.to.confirmedPayment();
-                  // HomeController.to.driverState.value = DriverState.idle;
-                  // HomeController.to.isButtonLoading.value= false;
-                },
-              ):SizedBox(),
+              isPay
+                  ? BlueButton(
+                      text: "Confirm",
+                      onTap: () {
+                        // HomeController.to.completeRide();
+                        HomeController.to.confirmedPayment();
+                        // HomeController.to.driverState.value = DriverState.idle;
+                        // HomeController.to.isButtonLoading.value= false;
+                      },
+                    )
+                  : SizedBox(),
               SizedBox(
                 height: 15.sp,
               )
@@ -310,17 +312,25 @@ class EnterOtpBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(24.sp),
-      decoration: BoxDecoration(boxShadow: [
-        BoxShadow(
-            color: AppColors.black.withOpacity(.1), offset: Offset(3, 3), blurRadius: 5, spreadRadius: 5)
-      ], color: Get.theme.primaryColor, borderRadius: BorderRadius.circular(8.sp)),
+      decoration: BoxDecoration(
+          boxShadow: [
+            BoxShadow(
+                color: AppColors.black.withOpacity(.1),
+                offset: Offset(3, 3),
+                blurRadius: 5,
+                spreadRadius: 5)
+          ],
+          color: Get.theme.primaryColor,
+          borderRadius: BorderRadius.circular(8.sp)),
       child: ListView(
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         children: [
           Row(
             children: [
-              IconButton(onPressed: () => Get.bottomSheet(CancelOrder()), icon: Icon(Icons.close))
+              IconButton(
+                  onPressed: () => Get.bottomSheet(CancelOrder()),
+                  icon: Icon(Icons.close))
             ],
           ),
           Text(
@@ -368,7 +378,7 @@ class EnterOtpBottomSheet extends StatelessWidget {
                 HomeController.to.code = code;
               },
               onCodeChanged: (code) {
-                HomeController.to.code = code ?? "";
+                HomeController.to.code = code;
                 HomeController.to.showIsOtpValid.value = false;
               },
               codeLength: 4,
@@ -388,7 +398,8 @@ class EnterOtpBottomSheet extends StatelessWidget {
                           margin: EdgeInsets.symmetric(horizontal: 55.sp),
                           child: Text(
                             "Please enter full Otp",
-                            style: TextStyle(fontSize: 14.sp, color: AppColors.red),
+                            style: TextStyle(
+                                fontSize: 14.sp, color: AppColors.red),
                           ),
                         ),
                       ],
@@ -503,7 +514,8 @@ class OrderCompletedBottomSheet extends StatelessWidget {
                           children: [
                             Text(
                               "Collect Cash",
-                              style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontSize: 24.sp, fontWeight: FontWeight.w600),
                             ),
                             SizedBox(
                               height: 20.sp,
@@ -541,7 +553,8 @@ class OrderCompletedBottomSheet extends StatelessWidget {
                           children: [
                             Text(
                               "Online Payment",
-                              style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
+                              style: TextStyle(
+                                  fontSize: 24.sp, fontWeight: FontWeight.w600),
                             ),
                             SizedBox(
                               height: 20.sp,
@@ -590,8 +603,9 @@ class PaymentConfirmationSheetCash extends StatelessWidget {
                 blurRadius: 5,
                 spreadRadius: 5)
           ],
-          borderRadius:
-              BorderRadius.only(topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.sp),
+              topRight: Radius.circular(20.sp))),
       child: ListView(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
@@ -628,7 +642,9 @@ class PaymentConfirmationSheetCash extends StatelessWidget {
           SizedBox(
             height: 20.sp,
           ),
-          BlueButton(text: "Confirm Payment", onTap: () => HomeController.to.confirmedPayment()),
+          BlueButton(
+              text: "Confirm Payment",
+              onTap: () => HomeController.to.confirmedPayment()),
         ],
       ),
     );
@@ -638,7 +654,8 @@ class PaymentConfirmationSheetCash extends StatelessWidget {
 class PaymentConfirmationSheetOnline extends StatelessWidget {
   final String titleText;
   final String text;
-   const PaymentConfirmationSheetOnline({super.key, required this.text, required this.titleText});
+  const PaymentConfirmationSheetOnline(
+      {super.key, required this.text, required this.titleText});
 
   @override
   Widget build(BuildContext context) {
@@ -653,8 +670,9 @@ class PaymentConfirmationSheetOnline extends StatelessWidget {
                 blurRadius: 5,
                 spreadRadius: 5)
           ],
-          borderRadius:
-              BorderRadius.only(topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20.sp),
+              topRight: Radius.circular(20.sp))),
       child: ListView(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
@@ -709,8 +727,9 @@ class CancelTripBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(24.sp),
-      decoration:
-          BoxDecoration(color: Get.theme.primaryColor, borderRadius: BorderRadius.circular(8.sp)),
+      decoration: BoxDecoration(
+          color: Get.theme.primaryColor,
+          borderRadius: BorderRadius.circular(8.sp)),
       child: ListView(
         shrinkWrap: true,
         children: [
@@ -724,7 +743,8 @@ class CancelTripBottomSheet extends StatelessWidget {
           ),
           RedButton(
             text: "Cancel",
-            onTap: () => Get.bottomSheet(const CancelReasonsBottomSheet(), isScrollControlled: true),
+            onTap: () => Get.bottomSheet(const CancelReasonsBottomSheet(),
+                isScrollControlled: true),
           ),
           SizedBox(
             height: 15.sp,
@@ -746,8 +766,9 @@ class CancelReasonsBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 10.sp),
-      decoration:
-          BoxDecoration(color: Get.theme.primaryColor, borderRadius: BorderRadius.circular(8.sp)),
+      decoration: BoxDecoration(
+          color: Get.theme.primaryColor,
+          borderRadius: BorderRadius.circular(8.sp)),
       child: ListView(
         shrinkWrap: true,
         children: [
@@ -827,7 +848,8 @@ class BottomSheetWhileDrivingItem extends StatelessWidget {
   final String text;
   final void Function()? onTap;
 
-  const BottomSheetWhileDrivingItem({super.key, required this.icon, required this.text, this.onTap});
+  const BottomSheetWhileDrivingItem(
+      {super.key, required this.icon, required this.text, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -865,11 +887,14 @@ class TextInsideBox extends StatelessWidget {
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(vertical: 12.sp),
       decoration: BoxDecoration(
-          border: Border.all(color: AppColors.grey155), borderRadius: BorderRadius.circular(8.sp)),
+          border: Border.all(color: AppColors.grey155),
+          borderRadius: BorderRadius.circular(8.sp)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(padding: EdgeInsets.symmetric(horizontal: 5.sp), child: Icon(icon)),
+          Container(
+              padding: EdgeInsets.symmetric(horizontal: 5.sp),
+              child: Icon(icon)),
           Text(
             text,
             style: TextStyle(
@@ -920,8 +945,11 @@ class DashBoardData extends StatelessWidget {
                   children: [
                     GetX<HomeController>(builder: (controller) {
                       return Text(
-                        controller.isOnline.value ? "You’re online" : "You’re offline",
-                        style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w500),
+                        controller.isOnline.value
+                            ? "You’re online"
+                            : "You’re offline",
+                        style: TextStyle(
+                            fontSize: 18.sp, fontWeight: FontWeight.w500),
                         textAlign: TextAlign.center,
                       );
                     }),
@@ -967,12 +995,14 @@ class ChangeOnlineStatusButton extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         GestureDetector(
-          onTap: () async{
-           await ProfileController.to.getProfile();
-            HomeController.to.isAssinged.value =  await HomeController.to.hasAssigned();
+          onTap: () async {
+            await ProfileController.to.getProfile();
+            HomeController.to.isAssinged.value =
+                await HomeController.to.hasAssigned();
             Future.delayed(Duration(milliseconds: 500));
-            String useTypeCode =  await box.read(BoxKeys.userTypeCode) ?? "";
-            if(HomeController.to.isAssinged.value == false && useTypeCode == UserTypeCode.driver ){
+            String useTypeCode = await box.read(BoxKeys.userTypeCode) ?? "";
+            if (HomeController.to.isAssinged.value == false &&
+                useTypeCode == UserTypeCode.driver) {
               Get.showSnackbar(
                 const GetSnackBar(
                   duration: Duration(seconds: 3),
@@ -983,12 +1013,11 @@ class ChangeOnlineStatusButton extends StatelessWidget {
                   ),
                 ),
               );
-            }else{
+            } else {
               HomeController.to.changeDriverOnlineStatus();
               // WakelockPlus.toggle(enable: enable);
               enable = !enable;
             }
-
           },
           child: GetX<HomeController>(builder: (controller) {
             return Container(
@@ -1001,30 +1030,38 @@ class ChangeOnlineStatusButton extends StatelessWidget {
                         blurRadius: 5,
                         spreadRadius: 5)
                   ],
-                  color: controller.isOnline.value ? Get.theme.primaryColor : AppColors.blue),
+                  color: controller.isOnline.value
+                      ? Get.theme.primaryColor
+                      : AppColors.blue),
               child: Container(
                 padding: EdgeInsets.all(15.sp),
                 margin: EdgeInsets.all(5.sp),
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: controller.isOnline.value ? AppColors.red : Get.theme.primaryColor,
+                      color: controller.isOnline.value
+                          ? AppColors.red
+                          : Get.theme.primaryColor,
                     ),
                     color: Colors.transparent),
                 child: controller.isOnlineButtonLoading.value
                     ? SizedBox(
-                        height: 20.sp,
-                        width: 20.sp,
+                        height: 25.sp,
+                        width: 25.sp,
                         child: CircularProgressIndicator(
-                          color: controller.isOnline.value ? AppColors.red : Get.theme.primaryColor,
+                          color: controller.isOnline.value
+                              ? AppColors.red
+                              : Get.theme.primaryColor,
                         ),
                       )
-                    :  Text(
+                    : Text(
                         controller.isOnline.value ? "Stop" : "GO",
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 18.sp,
-                          color: controller.isOnline.value ? AppColors.red : Get.theme.primaryColor,
+                          color: controller.isOnline.value
+                              ? AppColors.red
+                              : Get.theme.primaryColor,
                         ),
                       ),
               ),
@@ -1195,30 +1232,26 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       centerTitle: true,
       title: Container(
-        width: 185.sp, // Increased width to accommodate the refresh icon
-        decoration:
-            BoxDecoration(color: AppConstants.getColor(), borderRadius: BorderRadius.circular(50.sp)),
+        decoration: BoxDecoration(
+            color: AppConstants.getColor(),
+            borderRadius: BorderRadius.circular(50.sp)),
         padding: EdgeInsets.symmetric(vertical: 8.sp, horizontal: 30.sp),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
               AppIcons.wallet,
               color: Get.theme.primaryColor,
               height: 18.sp,
             ),
-            SizedBox(
-              width: 1.sp,
-            ),
+            SizedBox(width: 2.w),
             Obx(() {
               return Text(
                 " ₹ ${HomeController.to.walletBalance.value ?? 0.0}",
                 style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w600),
               );
             }),
-            SizedBox(
-              width: 1.sp,
-            ),
+            SizedBox(width: 2.w),
             Obx(() => GestureDetector(
                   onTap: () {
                     if (!HomeController.to.isRefreshingWallet.value) {
@@ -1226,7 +1259,8 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
                     }
                   },
                   child: AnimatedRotation(
-                    turns: HomeController.to.isRefreshingWallet.value ? 1.0 : 0.0,
+                    turns:
+                        HomeController.to.isRefreshingWallet.value ? 1.0 : 0.0,
                     duration: const Duration(milliseconds: 1000),
                     curve: Curves.linear,
                     child: Icon(
@@ -1286,12 +1320,13 @@ class IncomingOrderBottomSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextInsideBox(text: "${((data?.duration ?? 0) / 3600).toStringAsFixed(1)} hr"),
+              TextInsideBox(
+                  text:
+                      "${((data?.duration ?? 0) / 3600).toStringAsFixed(1)} hr"),
               TextInsideBox(text: "${data?.distance} Km"),
               TextInsideBox(
-                text: (data?.customerRating ?? 4.0).toString(),
-                icon: Icons.star
-              ),
+                  text: (data?.customerRating ?? 4.0).toString(),
+                  icon: Icons.star),
             ],
           ),
           SizedBox(
@@ -1397,15 +1432,19 @@ class AcceptButton extends StatelessWidget {
                 child: TweenAnimationBuilder(
                     onEnd: onEnd,
                     tween: Tween(
-                        begin:
-                            DateTime.now().add(const Duration(seconds: 15)).difference(DateTime.now()),
+                        begin: DateTime.now()
+                            .add(const Duration(seconds: 15))
+                            .difference(DateTime.now()),
                         end: Duration.zero),
-                    duration: DateTime.now().add(const Duration(seconds: 15)).difference(DateTime.now()),
+                    duration: DateTime.now()
+                        .add(const Duration(seconds: 15))
+                        .difference(DateTime.now()),
                     builder: (context, Duration date, child) {
                       return Text(
                         "${date.inSeconds}",
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: AppColors.white, fontSize: 15.sp),
+                        style:
+                            TextStyle(color: AppColors.white, fontSize: 15.sp),
                       );
                     }))
           ],
@@ -1474,7 +1513,10 @@ class AddStopBottomSheet extends StatelessWidget {
         children: [
           Text(
             "Add Stop ?",
-            style: TextStyle(color: AppColors.black, fontWeight: FontWeight.w600, fontSize: 20.sp),
+            style: TextStyle(
+                color: AppColors.black,
+                fontWeight: FontWeight.w600,
+                fontSize: 20.sp),
             textAlign: TextAlign.center,
           ),
           SizedBox(
@@ -1517,7 +1559,9 @@ class Recenter extends StatelessWidget {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            controller.recenterLoading.value ? TooltipContainer() : SizedBox.shrink(),
+            controller.recenterLoading.value
+                ? TooltipContainer()
+                : SizedBox.shrink(),
             GestureDetector(
               onTap: controller.recenter,
               child: Container(
