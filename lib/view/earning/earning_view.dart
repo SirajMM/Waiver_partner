@@ -16,7 +16,7 @@ import 'package:waiver_driver/helper/validator/app_extensions/app_extensions.dar
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
 class EarningScreen extends StatelessWidget {
-  const EarningScreen({Key? key}) : super(key: key);
+  const EarningScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -440,12 +440,11 @@ class DateForGraphWeekly extends StatelessWidget {
 }
 
 class EarningSummaryWeekly extends StatelessWidget {
-  final EarningController controller = Get.find();
-
-  bool? isWeekly;
-  EarningSummaryWeekly({super.key, this.isWeekly});
+  final bool? isWeekly;
+  const EarningSummaryWeekly({super.key, this.isWeekly});
   @override
   Widget build(BuildContext context) {
+    final EarningController controller = Get.find();
     return Container(
       padding: EdgeInsets.all(15.sp),
       decoration: BoxDecoration(
@@ -591,7 +590,7 @@ class EarningSummaryWeekly extends StatelessWidget {
 class EarningItem extends StatelessWidget {
   final EarningItemModel item;
 
-  EarningItem({
+  const EarningItem({
     super.key,
     required this.item,
   });
@@ -613,7 +612,7 @@ class EarningItem extends StatelessWidget {
           ),
           // This is the main issue - using Obx and accessing value.value correctly
           Obx(() => Text(
-                "${item.value.value ?? 0}",
+                "${item.value.value}",
                 style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
@@ -830,7 +829,7 @@ class DetailsItemView extends StatelessWidget {
   final String text;
   final String value;
 
-  DetailsItemView({super.key, required this.text, required this.value});
+  const DetailsItemView({super.key, required this.text, required this.value});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -839,7 +838,7 @@ class DetailsItemView extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            text ?? "",
+            text,
             style: TextStyle(
               fontSize: 14.sp,
             ),
@@ -876,7 +875,7 @@ class TodayOrWeekSelection extends StatelessWidget {
 
 class TodayOrWeekSelectionItem extends StatelessWidget {
   final String header;
-  TodayOrWeekSelectionItem({super.key, required this.header});
+  const TodayOrWeekSelectionItem({super.key, required this.header});
   @override
   Widget build(BuildContext context) {
     return Container(

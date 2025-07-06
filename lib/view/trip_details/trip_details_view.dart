@@ -93,7 +93,7 @@ class TripDetailsView extends StatelessWidget {
                           Text(
                               "You rated ${TripDetailsController.to.passengerName} "),
                           StarBuilder(
-                              count: TripDetailsController.to.rating ?? 0)
+                              rating: TripDetailsController.to.rating ?? 0)
                         ],
                       ),
                       SizedBox(
@@ -180,7 +180,8 @@ class TripDetailsView extends StatelessWidget {
 class TripDetailsItemView extends StatelessWidget {
   final String text;
   final String value;
-  const TripDetailsItemView({super.key, required this.text, required this.value});
+  const TripDetailsItemView(
+      {super.key, required this.text, required this.value});
   @override
   Widget build(BuildContext context) {
     return Row(

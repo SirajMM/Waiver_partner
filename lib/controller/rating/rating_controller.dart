@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/model/home/home_model.dart';
@@ -26,8 +28,9 @@ class RatingController extends GetxController {
       isLoading.value = true;
       await Future.wait([getReviews(), getReviewsStatus()]);
       isError.value = false;
-    } catch (error) {
-      isError.value = false;
+    } catch (error, s) {
+      log(error.toString(), error: error, stackTrace: s);
+      isError.value = true;
     } finally {
       isLoading.value = false;
     }

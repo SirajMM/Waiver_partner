@@ -1,8 +1,6 @@
 import 'package:get/get.dart';
 import 'package:waiver_driver/backend/model/trip_details/trip_details_model.dart';
 
-
-
 import '../../backend/api/api_services/api_services.dart';
 
 class TripDetailsControllerBinding extends Bindings {
@@ -44,7 +42,7 @@ class TripDetailsController extends GetxController {
     service = response.data?.rideType;
     distance = response.data?.distance;
 
-    rating = response.data?.review?.rating;
+    rating = double.tryParse(response.data?.review?.rating.toString() ?? '0.0');
     tripFare = response.data?.payment?.fare;
     promo = response.data?.payment?.promo;
     tax = response.data?.payment?.tax;
@@ -60,7 +58,7 @@ class TripDetailsController extends GetxController {
   String? service;
   String? distance;
   String? passengerName;
-  int? rating;
+  double? rating;
   String? tripFare;
   String? promo;
   String? tax;

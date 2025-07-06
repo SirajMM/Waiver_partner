@@ -8,7 +8,7 @@ class EmptyPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-        child: Text("No Data found",
+        child: Text(text ?? "No Data found",
             style: TextStyle(fontSize: 25.sp, fontWeight: FontWeight.bold)));
   }
 }

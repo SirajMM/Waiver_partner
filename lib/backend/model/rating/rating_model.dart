@@ -142,7 +142,7 @@ class ReviewItemData {
 class ReviewModel {
   String? id;
   String? review;
-  int? rating;
+  double? rating;
   DateTime? createdAt;
   DateTime? updatedAt;
   String? driver;
@@ -163,7 +163,7 @@ class ReviewModel {
   factory ReviewModel.fromJson(Map<String, dynamic> json) => ReviewModel(
         id: json["id"],
         review: json["review"],
-        rating: json["rating"],
+        rating: double.tryParse(json["rating"].toString()),
         createdAt: json["created_at"] == null
             ? null
             : DateTime.parse(json["created_at"]),
