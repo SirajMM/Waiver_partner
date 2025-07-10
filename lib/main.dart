@@ -3,8 +3,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
-
-
+import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +26,7 @@ import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:uuid/uuid.dart';
 import 'backend/model/home/home_model.dart';
 import 'backend/notificaton_services/notification_service/notification_service.dart';
+import 'core/constants/enums/enums.dart';
 
 @pragma('vm:entry-point')
 ReceivePort? _receivePort;
@@ -34,7 +34,8 @@ ReceivePort? _receivePort;
 void startReceivePort() {
   IsolateNameServer.removePortNameMapping('main_send_port');
   _receivePort ??= ReceivePort();
-  IsolateNameServer.registerPortWithName(_receivePort!.sendPort, 'main_send_port');
+  IsolateNameServer.registerPortWithName(
+      _receivePort!.sendPort, 'main_send_port');
 
   _receivePort!.listen((message) async {
     if (message is Map<String, dynamic>) {
@@ -69,26 +70,52 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   OrderDetailsModel data = OrderDetailsModel.fromJson(message.data);
   // await MainBinding().dependencies();
   // await NotificationService.onInit();
-  if (data.rideStatus == "RED"|| data.rideStatus == "FRED") {
+  if (data.rideStatus == "RED" || data.rideStatus == "FRED") {
     CallFunctionality.onInit();
     final CallFunctionality callFunctionality = CallFunctionality();
     callFunctionality.listenCallEvents();
     callFunctionality.showCallkitIncoming(const Uuid().v4(), message);
     // await player.play(AssetSource(AppAudio.notification));
-  }else{
+  } else {
     await NotificationService.showNotification(data: data);
+    switch (data.rideStatus) {
+      // case "RED" || "FRED":
+      //   await HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
+      //   break;
+
+      case "CAD":
+      case "FCAD":
+        final player = AudioPlayer();
+        player.stop();
+        HomeController.to.resetDistance();
+        HomeController.to.isTracking = false;
+        HomeController.to.rideIsActive = false;
+        HomeController.to.driverState.value = DriverState.idle;
+        // Get.bottomSheet(OrderCompletedBottomSheet());
+        break;
+
+      case "PID":
+        HomeController.to.isTracking = false;
+        HomeController.to.rideIsActive = true;
+        HomeController.to.driverState.value = DriverState.paymentInitiated;
+        break;
+
+      case "COD":
+        HomeController.to.isTracking = false;
+        HomeController.to.rideIsActive = true;
+        await HomeController.to.getRidePayment();
+        HomeController.to.driverState.value = DriverState.completed;
+        break;
+
+      default:
+        HomeController.to.driverState.value = DriverState.idle;
+        break;
+    }
   }
-
-
-
 
   // Use a single player instance to avoid multiple instances
 
-
-
   // await NotificationService.showNotification(data: data);
-
-
 }
 
 void main() async {
@@ -98,7 +125,8 @@ void main() async {
 
   await MainBinding().dependencies();
 
-  await Firebase.initializeApp(name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+      name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
 
   await requestPermissions();
 
@@ -108,10 +136,11 @@ void main() async {
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-  FirebaseMessaging.onMessage.listen((message) => NotificationService.onMessage(notification: message));
+  FirebaseMessaging.onMessage.listen(
+      (message) => NotificationService.onMessage(notification: message));
 
-  FirebaseMessaging.onMessageOpenedApp
-      .listen((message) => NotificationService.onMessageOpenedApp(notification: message));
+  FirebaseMessaging.onMessageOpenedApp.listen((message) =>
+      NotificationService.onMessageOpenedApp(notification: message));
   startReceivePort();
   // Initialize dependencies
   HttpOverrides.global = MyHttpOverrides();
@@ -176,6 +205,7 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

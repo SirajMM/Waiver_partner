@@ -13,8 +13,6 @@ import 'package:waiver_driver/helper/init/init.dart';
 
 import 'package:waiver_driver/main.dart';
 
-
-
 class NotificationService {
   static Future<void> onInit() async {
     // Get.find<HomeController>();
@@ -25,7 +23,8 @@ class NotificationService {
           NotificationChannel(
             channelKey: "basic_notification_channel",
             channelName: "Waiver Driver notification channel",
-            channelDescription: "Notification channel for Waiver Driver man app",
+            channelDescription:
+                "Notification channel for Waiver Driver man app",
             importance: NotificationImportance.Max,
             channelShowBadge: true,
             onlyAlertOnce: true,
@@ -53,15 +52,19 @@ class NotificationService {
 
   static Future<void> onActionReceivedMethod(ReceivedAction action) async {}
 
-  static Future<void> onDismissActionReceivedMethod(ReceivedNotification notification) async {}
+  static Future<void> onDismissActionReceivedMethod(
+      ReceivedNotification notification) async {}
 
-  static Future<void> onNotificationCreatedMethod(ReceivedNotification notification) async {}
+  static Future<void> onNotificationCreatedMethod(
+      ReceivedNotification notification) async {}
 
-  static Future<void> onNotificationDisplayedMethod(ReceivedNotification notification) async {}
+  static Future<void> onNotificationDisplayedMethod(
+      ReceivedNotification notification) async {}
 
-  static handleNotificationOnBackGround({required RemoteMessage notification}) {}
+  static handleNotificationOnBackGround(
+      {required RemoteMessage notification}) {}
 
-  static onMessage({required RemoteMessage notification}) async {
+  static Future<void> onMessage({required RemoteMessage notification}) async {
     OrderDetailsModel data = OrderDetailsModel.fromJson(notification.data);
     await showNotification(data: data);
     print(notification.notification);
@@ -131,17 +134,18 @@ class NotificationService {
     // }
   }
 
-  static onMessageOpenedApp({required RemoteMessage notification}) async {
+  static Future<void> onMessageOpenedApp(
+      {required RemoteMessage notification}) async {
     OrderDetailsModel data = OrderDetailsModel.fromJson(notification.data);
     showNotification(data: data);
-    print("############################notification.data#################################");
+    print(
+        "############################notification.data#################################");
     print(notification.data);
     print(notification.notification);
 
     switch (data.rideStatus) {
-      case "RED":
-      case "FRED":
-       await HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
+      case "RED" || "FRED":
+        await HomeController.to.getAndShowOrderDetails(id: data.rideId ?? "");
         break;
 
       case "CAD":
@@ -196,7 +200,8 @@ class NotificationService {
     // }
   }
 
-  static Future<void> showNotification({required OrderDetailsModel data}) async {
+  static Future<void> showNotification(
+      {required OrderDetailsModel data}) async {
     AwesomeNotifications().cancelAll();
     AwesomeNotifications().createNotification(
       content: NotificationContent(

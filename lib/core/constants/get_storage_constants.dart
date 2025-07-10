@@ -22,9 +22,9 @@ class BoxKeys {
   static String darkMode = "0";
   static String paymentType = "paymentType";
   static String lastLocation = "lastLocation";
-  static String  buildNumber = "buildNumber";
-  static String  version = "version";
-  static String  isTaken = "isAssinged";
+  static String buildNumber = "buildNumber";
+  static String version = "version";
+  static String isTaken = "isAssinged";
 }
 
 class UserType {
@@ -85,7 +85,7 @@ class RideStatus {
   static String completed = "COD";
   static String paused = "PSD";
   static String resumed = "RSD";
-  static String  reachedPickUp = "RDP";
+  static String reachedPickUp = "RDP";
   static String reachedDropOff = "RDF";
   static String paymentInitiated = "PID";
   static String paymentCompleted = "PCD";
@@ -120,5 +120,13 @@ class AppConstants {
     } else {
       return AppColors.white;
     }
+  }
+
+  static String formatSecondsToHrAndMin(int totalSeconds) {
+    int hours = totalSeconds ~/ 3600;
+    int minutes = (totalSeconds % 3600) ~/ 60;
+    // int seconds = totalSeconds % 60;
+
+    return '${hours}h ${minutes}m';
   }
 }

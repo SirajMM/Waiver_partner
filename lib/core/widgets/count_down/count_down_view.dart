@@ -14,7 +14,7 @@ class AppCountDown extends StatelessWidget {
         onEnd: onEnd,
         tween: Tween(
           begin: endDate.difference(DateTime.now()),
-          end: Duration.zero,
+          end: Duration(seconds: 1),
         ),
         duration: endDate.difference(DateTime.now()),
         builder: (context, Duration date, child) {

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:waiver_driver/controller/home/home_controller.dart';
 import 'package:waiver_driver/core/colors/app_colors.dart';
+import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_gradient.dart';
 import 'package:waiver_driver/view/home/home_view.dart';
 
@@ -28,7 +29,8 @@ class Going_To_Pick_screen extends StatelessWidget {
                 spreadRadius: 5)
           ],
           borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
+              topLeft: Radius.circular(20.sp),
+              topRight: Radius.circular(20.sp))),
       child: ListView(
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
@@ -43,7 +45,8 @@ class Going_To_Pick_screen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "${(HomeController.to.timeToDropOffLocation ?? 0) > 3600 ? Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inHours.toStringAsFixed(2) : Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inMinutes.toStringAsFixed(2)} mins",
+                    AppConstants.formatSecondsToHrAndMin(
+                        HomeController.to.timeToDropOffLocation ?? 0),
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 20.sp,

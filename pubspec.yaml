@@ -15,7 +15,7 @@ dependencies:
   flutter_svg: ^2.0.16
   google_fonts: ^6.2.1
   google_maps_flutter: ^2.12.1
-  geolocator: ^13.0.4
+  geolocator: ^14.0.1
   sms_autofill: ^2.4.1
   flutter_screenutil: ^5.9.3
   intl: ^0.20.0
@@ -31,10 +31,10 @@ dependencies:
   flutter_callkit_incoming:
     path: lib/core/packages/flutter_callkit_incoming-master
 
-#  workmanager: ^0.5.2
+#  workmanager: ^0.5.2``````````
 
 
-  share_plus: ^10.1.2
+  share_plus: ^11.0.0
   firebase_core: ^3.13.0
   firebase_messaging: ^15.2.5
   awesome_notifications: ^0.10.1
@@ -52,14 +52,15 @@ dependencies:
   upgrader: ^11.3.1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  firebase_database: ^11.3.5
+  firebase_database: ^11.3.7
+  razorpay_flutter: ^1.4.0
 #  flutter_background: ^1.3.0+1
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
   flutter_launcher_icons:
   change_app_package_name: ^1.1.0
   build_runner:

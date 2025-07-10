@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 
 import '../../../controller/home/home_controller.dart';
 import '../../../core/colors/app_colors.dart';
@@ -38,7 +39,8 @@ class GoingToDestinationWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "${(HomeController.to.timeToDropOffLocation ?? 0) > 3600 ? Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inHours.toStringAsFixed(2) : Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inMinutes.toStringAsFixed(2)} mins",
+                AppConstants.formatSecondsToHrAndMin(
+                    HomeController.to.timeToDropOffLocation ?? 0),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20.sp,

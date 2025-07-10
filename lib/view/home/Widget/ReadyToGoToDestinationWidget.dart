@@ -5,9 +5,9 @@ import 'package:get/get.dart';
 import '../../../controller/home/home_controller.dart';
 import '../../../core/colors/app_colors.dart';
 import '../../../core/constants/enums/enums.dart';
+import '../../../core/constants/get_storage_constants.dart';
 import '../../../core/themes/assets/icons.dart';
 import '../../../core/widgets/app_buttons/app_buttons.dart';
-
 
 class ReadyToGoToDestinationWidget extends StatelessWidget {
   const ReadyToGoToDestinationWidget({
@@ -28,7 +28,8 @@ class ReadyToGoToDestinationWidget extends StatelessWidget {
                 spreadRadius: 5)
           ],
           borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
+              topLeft: Radius.circular(20.sp),
+              topRight: Radius.circular(20.sp))),
       child: ListView(
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
@@ -37,7 +38,9 @@ class ReadyToGoToDestinationWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "${(HomeController.to.timeToDropOffLocation ?? 0) > 3600 ? Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inHours.toStringAsFixed(2) : Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inMinutes.toStringAsFixed(2)} mins",
+                AppConstants.formatSecondsToHrAndMin(
+                    HomeController.to.timeToDropOffLocation ?? 0),
+                // "${(HomeController.to.timeToDropOffLocation ?? 0) > 3600 ? Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inHours.toStringAsFixed(2) : Duration(seconds: HomeController.to.timeToDropOffLocation ?? 0).inMinutes.toStringAsFixed(2)} mins",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 20.sp,
@@ -107,7 +110,8 @@ class ReadyToGoToDestinationWidget extends StatelessWidget {
           BlueButton(
               text: "Start Trip",
               onTap: () {
-                HomeController.to.driverState.value = DriverState.goingToDestination;
+                HomeController.to.driverState.value =
+                    DriverState.goingToDestination;
                 HomeController.to.openMap(
                     latitude: HomeController.to.endLocationLat,
                     longitude: HomeController.to.endLocationLong);

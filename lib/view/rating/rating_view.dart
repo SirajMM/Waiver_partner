@@ -55,7 +55,7 @@ class RatingScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 18),
               ),
               SizedBox(height: 10.sp),
-              ...controller.ratingsList
+              ...controller.ratingsList.reversed
                   .map((rating) => RatingContainer(review: rating)),
               if (controller.isListCompeted.value)
                 LoadingBarsAnimation(height: 200.sp)

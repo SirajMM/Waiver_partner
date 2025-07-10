@@ -8,6 +8,7 @@ import 'package:waiver_driver/core/colors/app_colors.dart';
 import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 import 'package:waiver_driver/core/themes/assets/icons.dart';
 import 'package:waiver_driver/core/widgets/app_bar/app_bar.dart';
+import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_gradient.dart';
 import 'package:waiver_driver/core/widgets/empty_page/empty_page.dart';
 import 'package:waiver_driver/core/widgets/error_page/error_page.dart';
@@ -349,23 +350,35 @@ class BalanceAmount extends StatelessWidget {
       decoration: BoxDecoration(
           color: Get.theme.indicatorColor.withOpacity(.05),
           borderRadius: BorderRadius.circular(8.sp)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            "Balance Amount",
-            style: TextStyle(
-              fontSize: 14.sp,
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Balance Amount",
+                style: TextStyle(
+                  fontSize: 14.sp,
+                ),
+              ),
+              Text(
+                "₹ ${controller.todayBalanceAmount.value ?? "0"}",
+                style: TextStyle(fontSize: 23.sp, fontWeight: FontWeight.w600),
+              ),
+              Text(
+                "Payout scheduled: ${DateFormat("dd MMMM").format(controller.payOutDate.value)}",
+                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+              ),
+            ],
           ),
-          Text(
-            "₹ ${controller.todayBalanceAmount.value ?? "0"}",
-            style: TextStyle(fontSize: 23.sp, fontWeight: FontWeight.w600),
-          ),
-          Text(
-            "Payout scheduled: ${DateFormat("dd MMMM").format(controller.payOutDate.value)}",
-            style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
-          ),
+          BlueButton(
+            width: 100.w,
+            height: 40.h,
+            text: 'Pay Now',
+            onTap: () => controller
+                .checkOut(controller.todayBalanceAmount.value.toString()),
+          )
         ],
       ),
     );

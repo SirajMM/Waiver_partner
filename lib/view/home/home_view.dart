@@ -8,6 +8,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sms_autofill/sms_autofill.dart';
+
 // import 'package:upgrader/upgrader.dart';
 import 'package:waiver_driver/backend/model/home/home_model.dart';
 import 'package:waiver_driver/controller/home/home_controller.dart';
@@ -174,6 +175,7 @@ class HomeScreen extends StatelessWidget {
 
 class MakingPaymentBottomSheet extends StatelessWidget {
   final bool isPay;
+
   const MakingPaymentBottomSheet({super.key, required this.isPay});
 
   @override
@@ -654,6 +656,7 @@ class PaymentConfirmationSheetCash extends StatelessWidget {
 class PaymentConfirmationSheetOnline extends StatelessWidget {
   final String titleText;
   final String text;
+
   const PaymentConfirmationSheetOnline(
       {super.key, required this.text, required this.titleText});
 
@@ -990,84 +993,85 @@ class ChangeOnlineStatusButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool enable = true;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        GestureDetector(
-          onTap: () async {
-            await ProfileController.to.getProfile();
-            HomeController.to.isAssinged.value =
-                await HomeController.to.hasAssigned();
-            Future.delayed(Duration(milliseconds: 500));
-            String useTypeCode = await box.read(BoxKeys.userTypeCode) ?? "";
-            if (HomeController.to.isAssinged.value == false &&
-                useTypeCode == UserTypeCode.driver) {
-              Get.showSnackbar(
-                const GetSnackBar(
-                  duration: Duration(seconds: 3),
-                  backgroundColor: Colors.transparent,
-                  padding: EdgeInsets.zero,
-                  messageText: AppSnackBar(
-                    text: "Your have no assinged vehicles",
-                  ),
-                ),
-              );
-            } else {
-              HomeController.to.changeDriverOnlineStatus();
-              // WakelockPlus.toggle(enable: enable);
-              enable = !enable;
-            }
-          },
-          child: GetX<HomeController>(builder: (controller) {
-            return Container(
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                        color: AppColors.black.withOpacity(.1),
-                        offset: Offset(3, 3),
-                        blurRadius: 5,
-                        spreadRadius: 5)
-                  ],
-                  color: controller.isOnline.value
-                      ? Get.theme.primaryColor
-                      : AppColors.blue),
-              child: Container(
-                padding: EdgeInsets.all(15.sp),
-                margin: EdgeInsets.all(5.sp),
+        GetBuilder<HomeController>(builder: (controller) {
+          return GestureDetector(
+            onTap: controller.isOnlineButtonLoading.value
+                ? null
+                : () async {
+                    await ProfileController.to.getProfile();
+                    controller.isAssinged.value =
+                        await controller.hasAssigned();
+
+                    String useTypeCode = box.read(BoxKeys.userTypeCode) ?? "";
+                    if (controller.isAssinged.value == false &&
+                        useTypeCode == UserTypeCode.driver) {
+                      Get.showSnackbar(
+                        const GetSnackBar(
+                          duration: Duration(seconds: 3),
+                          backgroundColor: Colors.transparent,
+                          padding: EdgeInsets.zero,
+                          messageText: AppSnackBar(
+                            text: "Your have no assinged vehicles",
+                          ),
+                        ),
+                      );
+                    } else {
+                      await controller.changeDriverOnlineStatus();
+                    }
+                  },
+            child: GetX<HomeController>(builder: (controller) {
+              return Container(
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(
-                      color: controller.isOnline.value
-                          ? AppColors.red
-                          : Get.theme.primaryColor,
-                    ),
-                    color: Colors.transparent),
-                child: controller.isOnlineButtonLoading.value
-                    ? SizedBox(
-                        height: 25.sp,
-                        width: 25.sp,
-                        child: CircularProgressIndicator(
-                          color: controller.isOnline.value
-                              ? AppColors.red
-                              : Get.theme.primaryColor,
-                        ),
-                      )
-                    : Text(
-                        controller.isOnline.value ? "Stop" : "GO",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18.sp,
-                          color: controller.isOnline.value
-                              ? AppColors.red
-                              : Get.theme.primaryColor,
-                        ),
+                    boxShadow: [
+                      BoxShadow(
+                          color: AppColors.black.withOpacity(.1),
+                          offset: Offset(3, 3),
+                          blurRadius: 5,
+                          spreadRadius: 5)
+                    ],
+                    color: controller.isOnline.value
+                        ? Get.theme.primaryColor
+                        : AppColors.blue),
+                child: Container(
+                  padding: EdgeInsets.all(15.sp),
+                  margin: EdgeInsets.all(5.sp),
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: controller.isOnline.value
+                            ? AppColors.red
+                            : Get.theme.primaryColor,
                       ),
-              ),
-            );
-          }),
-        ),
+                      color: Colors.transparent),
+                  child: controller.isOnlineButtonLoading.value
+                      ? SizedBox(
+                          height: 25.sp,
+                          width: 25.sp,
+                          child: CircularProgressIndicator(
+                            color: controller.isOnline.value
+                                ? AppColors.red
+                                : Get.theme.primaryColor,
+                          ),
+                        )
+                      : Text(
+                          controller.isOnline.value ? "Stop" : "GO",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18.sp,
+                            color: controller.isOnline.value
+                                ? AppColors.red
+                                : Get.theme.primaryColor,
+                          ),
+                        ),
+                ),
+              );
+            }),
+          );
+        }),
       ],
     );
   }
@@ -1321,11 +1325,11 @@ class IncomingOrderBottomSheet extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               TextInsideBox(
-                  text:
-                      "${((data?.duration ?? 0) / 3600).toStringAsFixed(1)} hr"),
+                  text: AppConstants.formatSecondsToHrAndMin(
+                      data?.duration ?? 0)),
               TextInsideBox(text: "${data?.distance} Km"),
               TextInsideBox(
-                  text: (data?.customerRating ?? 4.0).toString(),
+                  text: (data?.customerRating ?? 0.0).toString(),
                   icon: Icons.star),
             ],
           ),

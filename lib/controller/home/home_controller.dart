@@ -912,11 +912,17 @@ class HomeController extends GetxController {
   Future<void> orderTimeOut() async {
     try {
       player.stop();
+      rideIsActive = false;
+      box.remove(BoxKeys.rideId);
+      if (Get.isBottomSheetOpen ?? false) {
+        Get.back();
+      }
       ChangeRideStatusModel response =
           await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.cancelled,
       });
+
       if (response.status == 200) {
         driverState.value = DriverState.idle;
         if (driverState.value == DriverState.idle) {
@@ -924,11 +930,7 @@ class HomeController extends GetxController {
           startLocationLatMarker = 0.0;
           recenter();
         }
-        rideIsActive = false;
-        box.remove(BoxKeys.rideId);
-        if (Get.isBottomSheetOpen ?? false) {
-          Get.back();
-        }
+
         Get.defaultDialog(
             middleText:
                 "This order has expired and has been transferred to another driver");

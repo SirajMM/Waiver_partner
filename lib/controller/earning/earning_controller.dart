@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import 'package:waiver_driver/backend/model/earning/earning_model.dart';
 import 'package:waiver_driver/backend/parser/Earning/earningscreen_parser.dart';
@@ -27,10 +28,14 @@ class EarningController extends GetxController
   EarningController({required this.parser});
 
   // static EarningController get to => Get.find();
-
+  late Razorpay razorpay;
   @override
   void onInit() async {
     super.onInit();
+    razorpay = Razorpay();
+    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccess);
+    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentError);
+    razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handlePaymentExternalWallet);
     Get.put(AppRoutes1.getEraningScreenInRoute());
 
     try {
@@ -269,4 +274,52 @@ class EarningController extends GetxController
       ),
       value: 0.0.obs,
       text: 'Distance');
+
+  Future<void> handlePaymentSuccess(PaymentSuccessResponse response) async {
+    // print(response.data);
+    // razorpayPaymentId = response.paymentId ?? "";
+    // razorpaySignature = response.signature ?? "";
+    // Get.dialog(PaymentDialog(
+    //   isSuccess: true,
+    //   message: response.paymentId ?? '',
+    // ));
+    //
+    // await paymentSuccessful();
+  }
+
+  void handlePaymentError(PaymentFailureResponse response) {
+    // getRidePayment(rideID.value);
+    // print(response.message);
+    // Get.dialog(PaymentDialog(
+    //   isSuccess: false,
+    //   message: response.message ?? '',
+    // ));
+  }
+
+  void handlePaymentExternalWallet(ExternalWalletResponse response) {
+    // print(response);
+    // Get.dialog(PaymentDialog(
+    //   isSuccess: true,
+    //   message: response.walletName ?? '',
+    // ));
+  }
+  void checkOut(String amount) {
+    Map<String, dynamic> options = {
+      'key': 'rzp_live_AGIJ73c4q0mVTI',
+      'order_id': '',
+      'amount': amount,
+      'name': 'waiver',
+      'prefill': {'contact': '123245', 'email': 'jho@gmail.com'},
+      'external': {
+        'wallets': ['paytm']
+      }
+    };
+    try {
+      razorpay.open(options);
+    } catch (e, stackTrace) {
+      debugPrint('Error: $e');
+      debugPrint('Stack Trace: $stackTrace');
+      print(options);
+    }
+  }
 }
