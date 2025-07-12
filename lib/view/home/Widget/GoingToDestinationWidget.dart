@@ -110,7 +110,7 @@ class GoingToDestinationWidget extends StatelessWidget {
               Get.defaultDialog(
                   backgroundColor: Colors.white,
                   title: 'Confirm',
-                  middleText: 'Do you reached destination ?',
+                  middleText: 'Did you reached destination ?',
                   confirm: BlueButton(
                     text: "Yes",
                     height: 40.h,

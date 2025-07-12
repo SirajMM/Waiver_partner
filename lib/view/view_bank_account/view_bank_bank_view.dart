@@ -48,6 +48,12 @@ class ViewBankAccountScreen extends StatelessWidget {
                           height: 12.sp,
                         ),
                         AppTextFormField(
+                          restrictEmojis: true,
+                          inputFormatters: [
+                              CustomCharacterFormatter(
+                                  allowedPattern: r'[^a-zA-Z\-. ]')
+                            ],
+                          
                           controller: ViewBankAccountController
                               .to.controllerAccountHolderName,
                           header: 'Account Holder name',
@@ -61,6 +67,7 @@ class ViewBankAccountScreen extends StatelessWidget {
                           height: 12.sp,
                         ),
                         AppTextFormField(
+                          restrictEmojis: true,
                           controller: ViewBankAccountController
                               .to.controllerBankAccountNumber,
                           header: 'Account Number',
@@ -78,6 +85,10 @@ class ViewBankAccountScreen extends StatelessWidget {
                           height: 12.sp,
                         ),
                         AppTextFormField(
+                          restrictEmojis: true,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                           controller: ViewBankAccountController
                               .to.controllerBankIFSCNumber,
                           header: 'IFSC',

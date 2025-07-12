@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_getx_widget.dart';
 import 'package:sms_autofill/sms_autofill.dart';
@@ -46,6 +47,9 @@ class OtpScreen extends StatelessWidget {
             height: 38.sp,
           ),
           TextFieldPinAutoFill(
+              inputFormatters: [
+               FilteringTextInputFormatter.digitsOnly
+              ],
             decoration: InputDecoration(
               border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8.sp),

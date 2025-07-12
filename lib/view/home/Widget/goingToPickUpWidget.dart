@@ -121,8 +121,29 @@ class Going_To_Pick_screen extends StatelessWidget {
             height: 20.sp,
           ),
           BlueButton(
-              text: "Arrived at Pick Up",
-              onTap: () => HomeController.to.reachedPickUpLocation()),
+            text: "Arrived at Pick Up",
+            onTap: () {
+              Get.defaultDialog(
+                  backgroundColor: Colors.white,
+                  title: 'Confirm',
+                  middleText: 'Did you reached PickUp Location ?',
+                  confirm: BlueButton(
+                    text: "Yes",
+                    height: 40.h,
+                    width: 100.sp,
+                    onTap: () {
+                      Get.back();
+                      HomeController.to.reachedPickUpLocation();
+                    },
+                  ),
+                  cancel: WhiteButton(
+                    height: 40.h,
+                    width: 100.sp,
+                    text: "No",
+                    onTap: Get.back,
+                  ));
+            },
+          )
         ],
       ),
     );

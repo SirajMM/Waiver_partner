@@ -1382,21 +1382,26 @@ class IncomingOrderBottomSheet extends StatelessWidget {
           const SizedBox(
             height: 15,
           ),
-          BlueButton(
-            isLoading: HomeController.to.isButtonLoading.value,
-            text: "Accept",
-            onTap: () => HomeController.to.acceptOrder(),
-            suffixIcon: CircleWithIcon(
-              padding: const EdgeInsets.all(5),
-              height: 30.sp,
-              color: Get.theme.primaryColor.withOpacity(.2),
-              child: AppCountDown(
-                style: TextStyle(color: AppColors.white),
-                onEnd: () => HomeController.to.orderTimeOut(),
-                endDate: DateTime.now().add(const Duration(seconds: 14)),
-              ),
-            ),
-          )
+          Obx(() => BlueButton(
+                isLoading: HomeController.to.isButtonLoading.value,
+                text: "Accept",
+                onTap: () {
+                  // Check if already loading before calling acceptOrder
+                  if (!HomeController.to.isButtonLoading.value) {
+                    HomeController.to.acceptOrder();
+                  }
+                },
+                suffixIcon: CircleWithIcon(
+                  padding: const EdgeInsets.all(5),
+                  height: 30.sp,
+                  color: Get.theme.primaryColor.withOpacity(.2),
+                  child: AppCountDown(
+                    style: TextStyle(color: AppColors.white),
+                    onEnd: () => HomeController.to.orderTimeOut(),
+                    endDate: DateTime.now().add(const Duration(seconds: 14)),
+                  ),
+                ),
+              ))
         ],
       ),
     );

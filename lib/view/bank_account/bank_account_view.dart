@@ -69,11 +69,15 @@ class BankAccountScreen extends StatelessWidget {
                           height: 12.sp,
                         ),
                         AppTextFormField(
+                          restrictEmojis: true,
+                          inputFormatters: [
+                              CustomCharacterFormatter(
+                                  allowedPattern: r'[^a-zA-Z\-. ]')
+                            ],
                           controller: BankAccountController
                               .to.controllerAccountHolderName,
                           header: 'Account Holder name',
                           placeHolder: "e.g john smith",
-                            restrictEmojis: true,
                           validator: (value) => Validators.isEmpty(
                             value: value,
                           ),
@@ -83,6 +87,8 @@ class BankAccountScreen extends StatelessWidget {
                           height: 12.sp,
                         ),
                         AppTextFormField(
+                          restrictEmojis: true,
+
                           controller: BankAccountController
                               .to.controllerBankAccountNumber,
                           obscureText: true,
@@ -101,6 +107,7 @@ class BankAccountScreen extends StatelessWidget {
                           height: 12.sp,
                         ),
                         AppTextFormField(
+                           restrictEmojis: true,
                           controller: BankAccountController
                               .to.controllerConfirmAccountNumber,
                           header: 'Confirm Account Number',

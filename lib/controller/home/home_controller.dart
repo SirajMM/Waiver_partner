@@ -585,40 +585,79 @@ class HomeController extends GetxController {
     distanceBox?.put('totalDistance', 0.0);
   }
 
+  // Future<void> acceptOrder() async {
+  //   try {
+  //     isButtonLoading.value = true;
+  //     driverState.value = DriverState.loading;
+  //     player.stop();
+  //     ChangeRideStatusModel response = await ApiServices.changeRideStatus(
+  //         body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
+  //     if (response.status == 200) {
+  //       log(isButtonLoading.toString());
+  //       if (driverState.value == DriverState.idle) {
+  //         startLocationLongMarker = 0.0;
+  //         startLocationLatMarker = 0.0;
+  //       }
+  //       rideIsActive = true;
+  //       Get.back();
+  //       driverState.value = DriverState.goingToPickUp;
+  //     }
+  //   } catch (error) {
+  //     Get.back();
+  //     Get.showSnackbar(
+  //       const GetSnackBar(
+  //         duration: Duration(seconds: 5),
+  //         backgroundColor: Colors.transparent,
+  //         padding: EdgeInsets.zero,
+  //         messageText: AppSnackBar(
+  //           text: "OOPS Something went wrong",
+  //         ),
+  //       ),
+  //     );
+  //   } finally {
+  //     isButtonLoading.value = false;
+  //     recenter();
+  //   }
+  // }
   Future<void> acceptOrder() async {
-    try {
-      isButtonLoading.value = true;
-      driverState.value = DriverState.loading;
-      player.stop();
-      ChangeRideStatusModel response = await ApiServices.changeRideStatus(
-          body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
-      if (response.status == 200) {
-        log(isButtonLoading.toString());
-        if (driverState.value == DriverState.idle) {
-          startLocationLongMarker = 0.0;
-          startLocationLatMarker = 0.0;
-        }
-        rideIsActive = true;
-        Get.back();
-        driverState.value = DriverState.goingToPickUp;
+  // Prevent multiple clicks
+  if (isButtonLoading.value) return;
+  
+  try {
+    isButtonLoading.value = true;
+    driverState.value = DriverState.loading;
+    player.stop();
+    
+    ChangeRideStatusModel response = await ApiServices.changeRideStatus(
+        body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
+        
+    if (response.status == 200) {
+      log(isButtonLoading.toString());
+      if (driverState.value == DriverState.idle) {
+        startLocationLongMarker = 0.0;
+        startLocationLatMarker = 0.0;
       }
-    } catch (error) {
+      rideIsActive = true;
       Get.back();
-      Get.showSnackbar(
-        const GetSnackBar(
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: AppSnackBar(
-            text: "OOPS Something went wrong",
-          ),
-        ),
-      );
-    } finally {
-      isButtonLoading.value = false;
-      recenter();
+      driverState.value = DriverState.goingToPickUp;
     }
+  } catch (error) {
+    Get.back();
+    Get.showSnackbar(
+      const GetSnackBar(
+        duration: Duration(seconds: 5),
+        backgroundColor: Colors.transparent,
+        padding: EdgeInsets.zero,
+        messageText: AppSnackBar(
+          text: "OOPS Something went wrong",
+        ),
+      ),
+    );
+  } finally {
+    isButtonLoading.value = false;
+    recenter();
   }
+}
 
   Future<void> reachedPickUpLocation() async {
     try {

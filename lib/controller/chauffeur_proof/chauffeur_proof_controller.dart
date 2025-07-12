@@ -232,7 +232,7 @@ class ChauffeurProofController extends GetxController {
         // Get.toNamed(AppRoutes.home);
         Get.showSnackbar(
           const GetSnackBar(
-            duration: Duration(seconds: 5),
+            duration: Duration(seconds: 2),
             backgroundColor: Colors.transparent,
             padding: EdgeInsets.zero,
             messageText: AppSnackBar(

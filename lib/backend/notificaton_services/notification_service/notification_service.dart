@@ -90,6 +90,9 @@ class NotificationService {
         HomeController.to.isTracking = false;
         HomeController.to.rideIsActive = false;
         HomeController.to.driverState.value = DriverState.idle;
+        HomeController.to.startLocationLongMarker = 0.0;
+        HomeController.to.startLocationLatMarker = 0.0;
+        HomeController.to.recenter();
         // Get.bottomSheet(OrderCompletedBottomSheet());
         break;
 
