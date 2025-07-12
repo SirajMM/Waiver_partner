@@ -47,6 +47,10 @@ class AddDriverScreen extends StatelessWidget {
                                         TextCapitalization.characters,
                                     validator: (value) =>
                                         Validators.isEmpty(value: value),
+                                    inputFormatters: [
+                                      CustomCharacterFormatter(
+                                          allowedPattern: r'[^a-zA-Z\-.]')
+                                    ],
                                   ),
                                   SizedBox(
                                     height: 15.sp,
@@ -54,6 +58,10 @@ class AddDriverScreen extends StatelessWidget {
                                   AppTextFormField(
                                     controller: AddDriverController
                                         .to.controllerDriverId,
+                                    inputFormatters: [
+                                      CustomCharacterFormatter(
+                                          allowedPattern: r'[^a-zA-Z0-9]')
+                                    ],
                                     header: "Driver ID",
                                     placeHolder: "e.g. #25254565",
                                     validator: (value) =>

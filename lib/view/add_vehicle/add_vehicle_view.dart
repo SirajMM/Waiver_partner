@@ -40,6 +40,8 @@ class AddVehicleScreen extends StatelessWidget {
                                 mask: "XX-XX-XXXXXX",
                                 separator: "-",
                               ),
+                              CustomCharacterFormatter(
+                                  allowedPattern: r'[^a-zA-Z\-.0-9 ]')
                             ],
                             validator: (value) => Validators.vehicleNumber(
                                 value: (value ?? "").replaceAll("-", "")),
@@ -54,6 +56,10 @@ class AddVehicleScreen extends StatelessWidget {
                             placeHolder: "e.g. Toyota",
                             validator: (value) =>
                                 Validators.isEmpty(value: value),
+                            inputFormatters: [
+                              CustomCharacterFormatter(
+                                  allowedPattern: r'[^a-zA-Z\-.0-9 ]')
+                            ],
                           ),
                           SizedBox(
                             height: 15.sp,
@@ -65,6 +71,10 @@ class AddVehicleScreen extends StatelessWidget {
                             placeHolder: "e.g. Swift",
                             validator: (value) =>
                                 Validators.isEmpty(value: value),
+                            inputFormatters: [
+                              CustomCharacterFormatter(
+                                  allowedPattern: r'[^a-zA-Z\-.0-9 ]')
+                            ],
                           ),
                           SizedBox(
                             height: 15.sp,

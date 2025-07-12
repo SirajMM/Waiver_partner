@@ -157,35 +157,26 @@ class DriverProfileScreen extends StatelessWidget {
                         SizedBox(
                           height: 12.sp,
                         ),
-
                         Theme(
-                          data: ThemeData(
-                              dividerColor: Colors.transparent),
+                          data: ThemeData(dividerColor: Colors.transparent),
                           child: ExpansionTile(
                             backgroundColor: AppColors.white,
-                            collapsedBackgroundColor:
-                            AppColors.white,
-                            collapsedShape:
-                            RoundedRectangleBorder(
-                              side: BorderSide(
-                                  color: AppColors.grey155),
-                              borderRadius:
-                              BorderRadius.circular(8.sp),
+                            collapsedBackgroundColor: AppColors.white,
+                            collapsedShape: RoundedRectangleBorder(
+                              side: BorderSide(color: AppColors.grey155),
+                              borderRadius: BorderRadius.circular(8.sp),
                             ),
                             shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                  color: AppColors.grey155),
-                              borderRadius:
-                              BorderRadius.circular(8.sp),
+                              side: BorderSide(color: AppColors.grey155),
+                              borderRadius: BorderRadius.circular(8.sp),
                             ),
                             childrenPadding: EdgeInsets.zero,
                             title: const Text("Vehicle Types"),
-                            children: DriverProfileController
-                                .to.vehicleTypes
+                            children: DriverProfileController.to.vehicleTypes
                                 .map((vehicle) =>
-                                SelectVehicleTypeListingItemProfile(
-                                  vehicle: vehicle,
-                                ))
+                                    SelectVehicleTypeListingItemProfile(
+                                      vehicle: vehicle,
+                                    ))
                                 .toList(),
                           ),
                         ),
@@ -193,38 +184,29 @@ class DriverProfileScreen extends StatelessWidget {
                           height: 12.sp,
                         ),
                         Theme(
-                          data: ThemeData(
-                              dividerColor: Colors.transparent),
+                          data: ThemeData(dividerColor: Colors.transparent),
                           child: ExpansionTile(
                             backgroundColor: AppColors.white,
-                            collapsedBackgroundColor:
-                            AppColors.white,
-                            collapsedShape:
-                            RoundedRectangleBorder(
-                              side: BorderSide(
-                                  color: AppColors.grey155),
-                              borderRadius:
-                              BorderRadius.circular(8.sp),
+                            collapsedBackgroundColor: AppColors.white,
+                            collapsedShape: RoundedRectangleBorder(
+                              side: BorderSide(color: AppColors.grey155),
+                              borderRadius: BorderRadius.circular(8.sp),
                             ),
                             shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                  color: AppColors.grey155),
-                              borderRadius:
-                              BorderRadius.circular(8.sp),
+                              side: BorderSide(color: AppColors.grey155),
+                              borderRadius: BorderRadius.circular(8.sp),
                             ),
                             childrenPadding: EdgeInsets.zero,
-                            title:
-                            const Text("Transmission Types"),
+                            title: const Text("Transmission Types"),
                             children: DriverProfileController
                                 .to.transmissionType!
                                 .map((transmission) =>
-                                SelectTransmissionTypeListingItemProfile(
-                                  transmission: transmission,
-                                ))
+                                    SelectTransmissionTypeListingItemProfile(
+                                      transmission: transmission,
+                                    ))
                                 .toList(),
                           ),
                         ),
-
                         SizedBox(
                           height: 12.sp,
                         ),
@@ -279,6 +261,7 @@ class ProfilePhotoDriverProfile extends StatelessWidget {
     );
   }
 }
+
 class SelectVehicleTypeListingItemProfile extends StatelessWidget {
   Statemodel vehicle;
   SelectVehicleTypeListingItemProfile({super.key, required this.vehicle});

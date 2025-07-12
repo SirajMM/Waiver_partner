@@ -134,7 +134,8 @@ class FleetRegistrationListingItem extends StatelessWidget {
                       text: fleet.proof?.isEmpty ?? false
                           ? "Add  Vehicle details"
                           : " View Vehicle details",
-                      onTap: () => Get.toNamed(AppRoutes1.addProofVehicle,
+                      onTap: () => Get.toNamed(
+                          AppRoutes1.getAddVehicleProofInRoute(),
                           arguments: fleet),
                     ),
                     Container(
@@ -152,8 +153,9 @@ class FleetRegistrationListingItem extends StatelessWidget {
                 : (fleet.driver?.driverId ?? "") == ""
                     ? FleetRegistrationItem(
                         text: "Add Driver",
-                        onTap: () =>
-                            Get.toNamed(AppRoutes1.addDriver, arguments: fleet),
+                        onTap: () => Get.toNamed(
+                            AppRoutes1.getAddDriverInRoute(),
+                            arguments: fleet),
                       )
                     : GestureDetector(
                         onTap: () => Get.toNamed(AppRoutes1.driverProfile,

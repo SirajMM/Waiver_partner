@@ -915,7 +915,7 @@ class ChangeWhatAppNumberBottomSheet extends StatelessWidget {
           Form(
             key: ProfileController.to.changeWhatsAppNumber,
             child: AppTextFormField(
-              controller: ProfileController.to.controllerAlternativeNumber,
+              controller: ProfileController.to.controllerWhatsAppNumber,
               header: '',
               maxLength: 10,
               placeHolder: " e.g. xxxxxxxxxx",

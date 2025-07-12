@@ -38,6 +38,7 @@ import '../../../controller/add_driver_fleet/add_driver_controller.dart';
 import '../../../controller/add_vehicle/add_vehicle_controller.dart';
 import '../../../controller/add_vehicle_proof/add_vehicle_proof_controller.dart';
 import '../../../controller/driver_profile/driver_profile_controller.dart';
+import '../../../controller/vehicle_proof/vehicle_proof_controller.dart';
 import '../../../view/Location/location_screen.dart';
 import '../../../view/aadhar_card/aadhar_card_view.dart';
 import '../../../view/add_driver_fleet/add_driver_view.dart';
@@ -52,6 +53,7 @@ import '../../../view/profile/profile_view.dart';
 import '../../../view/rating/rating_view.dart';
 import '../../../view/reason_for_cancel/reason_for_cancel_view.dart';
 import '../../../view/setting/setting_view.dart';
+import '../../../view/vehicle_proof/vehicle_proof_view.dart';
 import '../../../view/view_bank_account/view_bank_bank_view.dart';
 import '../../../view/waiting_for_authorization/waiting_for_authorization_view.dart';
 
@@ -125,6 +127,8 @@ class AppRoutes1 {
   static String getPreferencesInRoute() => preferences;
   static String getreasonForCancelInRoute() => reasonForCancel;
   static String getgetLocationInRoute() => getLocation;
+  static String getAddVehicleProofInRoute() => addProofVehicle;
+  static String getAddDriverInRoute() => addDriver;
 
   static List<GetPage> appPages1 = <GetPage>[
     GetPage(
@@ -316,11 +320,11 @@ class AppRoutes1 {
       page: () => const AddDriverScreen(),
       binding: AddDriverControllerBinding(),
     ),
-    // GetPage(
-    //   name: AppRoutes.vehicleProof,
-    //   page: () => const VehicleProofScreen(),
-    //   binding: VehicleProofControllerBinding(),
-    // ),
+    GetPage(
+      name: AppRoutes1.vehicleProof,
+      page: () => const VehicleProofScreen(),
+      binding: VehicleProofControllerBinding(),
+    ),
     // // OMS: 2024-06-09 18:53:02 working here
     GetPage(
       name: AppRoutes1.addProofVehicle,
