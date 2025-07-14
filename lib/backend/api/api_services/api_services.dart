@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:get/get.dart';
 import 'package:http/http.dart' as https;
@@ -25,6 +26,7 @@ import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 import 'package:waiver_driver/main.dart';
 
 import '../../../core/colors/app_colors.dart';
+import '../../../helper/logger.dart';
 import '../../model/aadhar_card/aadhar_card_model.dart';
 import '../../model/add_driver_fleet/add_driver_model.dart';
 import '../../model/chauffeur_proof/chauffeur_proof_model.dart';
@@ -46,7 +48,7 @@ class ApiServices {
   static Future<SendPhoneOtpResponseModel> sendPhoneOtp({
     required Map<String, String> body,
   }) async {
-    https.Response response = await https.post(
+    https.Response response = await Interceptor().post(
       Uri.https(AppUrls.base, AppUrls.sendPhoneOtp),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
@@ -57,8 +59,8 @@ class ApiServices {
     if (response.statusCode == 200) {
       return sendPhoneOtpResponseModelFromJson(response.body);
     } else {
-      log(Exception(response.body).toString());
-      throw Exception(sendPhoneOtpResponseModelFromJson(response.body)
+      log(HttpException(response.body).toString());
+      throw HttpException(sendPhoneOtpResponseModelFromJson(response.body)
           .error!
           .nonFieldErrors![0]);
     }
@@ -78,7 +80,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return verifyOtpResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -100,7 +102,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return createDriverProfileResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -117,7 +119,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getAllStatesResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -137,7 +139,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getAllDistrictsResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -154,7 +156,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getAllWorkLocationsResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -171,7 +173,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getAllWorkExperienceResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -188,7 +190,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getVehicleTypeResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -206,7 +208,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getTransmissionTypeResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -225,7 +227,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getDocumentsResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -246,7 +248,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return uploadDocumentResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -267,7 +269,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return uploadDocumentResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -290,7 +292,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return AddDriverResponseModel.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -313,7 +315,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return AddDriverResponseModel.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -332,7 +334,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return uploadDocumentResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -358,7 +360,7 @@ class ApiServices {
       return uploadFileResponseModelFromJson(responseString);
     } else {
       showErrorMessageBox(" file is not uploaded yet. Facing some errors");
-      throw Exception(await response.stream.bytesToString());
+      throw HttpException(await response.stream.bytesToString());
     }
   }
 
@@ -389,7 +391,7 @@ class ApiServices {
       log("${Uri.https(AppUrls.base, AppUrls.profileImage)}===============>$responseString");
       return uploadProfilePhotoResponseModelFromJson(responseString);
     } else {
-      throw Exception(await response.stream.bytesToString());
+      throw HttpException(await response.stream.bytesToString());
     }
   }
 
@@ -409,7 +411,7 @@ class ApiServices {
     if (response.statusCode == 400) {
       return getProfilePhotoResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -426,7 +428,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getBankAccountResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -445,7 +447,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return updateBanksResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -462,7 +464,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getBanksResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -479,7 +481,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getProfileResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -498,7 +500,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return updateProfileResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -516,7 +518,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return addBankAccountResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -533,7 +535,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getEarningStatusResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -550,7 +552,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getReviewStatusResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -567,7 +569,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getReviewResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -586,12 +588,12 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getReviewResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
   static Future<GetRidesResponseModel> getRides() async {
-    https.Response response = await https.get(
+    https.Response response = await Interceptor().get(
       Uri.https(AppUrls.base, AppUrls.rides),
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -603,7 +605,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getRidesResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -621,7 +623,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getRidesDetailsResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -638,7 +640,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getNotificationsResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -655,7 +657,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getHelpCategoriesResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -674,7 +676,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return faqResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -693,7 +695,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getEarningListResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -716,7 +718,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return updatePreferenceResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -736,7 +738,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return updatePreferenceResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -757,7 +759,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return logoutResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -778,7 +780,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return logoutResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -799,7 +801,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return logoutResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -819,7 +821,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getVehicleListResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -837,7 +839,7 @@ class ApiServices {
       return "";
       // return getVehicleListResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -857,7 +859,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return logoutResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -879,7 +881,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return addVehicleResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -901,7 +903,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return logoutResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -924,7 +926,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return logoutResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -945,7 +947,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getOnlineStatusResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -960,7 +962,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getRideDetailsResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -974,7 +976,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return ReasonForCancelModel.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -995,7 +997,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return changeRideStatusFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -1012,7 +1014,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getRideDetailsResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -1031,7 +1033,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return getDriverProfileResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -1050,7 +1052,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return profileImageModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -1070,7 +1072,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return paymentSuccessModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -1088,7 +1090,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return ridePaymentResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -1108,7 +1110,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return addStopResponseModelFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -1123,7 +1125,7 @@ class ApiServices {
     if (response.statusCode == 200) {
       return googleLocationResponseFromJson(response.body);
     } else {
-      throw Exception(response.body);
+      throw HttpException(response.body);
     }
   }
 
@@ -1146,10 +1148,10 @@ class ApiServices {
         return WalletResponse.fromJson(jsonData);
       } else {
         log("Partner wallet error: ${response.body}");
-        throw Exception(response.body);
+        throw HttpException(response.body);
       }
     } catch (e, s) {
-      log("Partner wallet exception: $e", stackTrace: s);
+      log("Partner wallet HttpException: $e", stackTrace: s);
       rethrow;
     }
   }

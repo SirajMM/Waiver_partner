@@ -6,13 +6,8 @@ import 'package:waiver_driver/backend/model/setting/setting_model.dart';
 import 'package:waiver_driver/backend/parser/FleetHomePage/fleet_home_page_parser.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
-
-
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/constants/get_storage_constants.dart';
-
-
-
 
 // class FleetHomePageControllerBinding extends Bindings {
 
@@ -23,8 +18,7 @@ import '../../core/constants/get_storage_constants.dart';
 // }
 
 class FleetHomePageController extends GetxController {
-
-      final FleetHomePageParser parser;
+  final FleetHomePageParser parser;
   FleetHomePageController({required this.parser});
   static FleetHomePageController get to => Get.find();
   RxList<FleetVehicle> fleet = <FleetVehicle>[].obs;
@@ -51,9 +45,24 @@ class FleetHomePageController extends GetxController {
     ));
   }
 
+  // Future<void> getVehicles() async {
+  //   cLog('fleet vehicles list');
+  //   GetVehicleListResponseModel response = await ApiServices.getVehicles();
+  //   fleet.value = response.data ?? [];
+  // }
+
   Future<void> getVehicles() async {
-    cLog('fleet vehicles list');
-    GetVehicleListResponseModel response = await ApiServices.getVehicles();
-    fleet.value = response.data ?? [];
+    try {
+      cLog('fleet vehicles list');
+      GetVehicleListResponseModel response = await ApiServices.getVehicles();
+      fleet.value = response.data ?? [];
+    } catch (error, s) {
+      AppConstants.handleError(error, s: s);
+      cLog('Error fetching vehicles: $error');
+      // Set empty list or maintain previous state
+      fleet.value = [];
+    } finally {
+      cLog('getVehicles operation completed');
+    }
   }
 }

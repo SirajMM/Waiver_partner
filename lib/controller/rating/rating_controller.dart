@@ -8,6 +8,7 @@ import 'package:waiver_driver/backend/parser/Rating/ratingscreen_parser.dart';
 
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/colors/app_colors.dart';
+import '../../core/constants/get_storage_constants.dart';
 
 // class RatingControllerBinding extends Bindings {
 //   @override
@@ -49,17 +50,33 @@ class RatingController extends GetxController {
   RxBool isListCompeted = false.obs;
   ScrollController scrollController = ScrollController();
   Future<void> getReviews() async {
-    var response = await ApiServices.getReviews();
-    ratingsList.addAll(response.data?.results ?? []);
-    isListCompeted.value = response.data?.next ?? false;
+    try {
+      var response = await ApiServices.getReviews();
+      ratingsList.addAll(response.data?.results ?? []);
+      isListCompeted.value = response.data?.next ?? false;
+    } catch (error, s) {
+      AppConstants.handleError(error, s: s);
+      print('Error fetching reviews: $error');
+    } finally {}
   }
 
   Future<void> getReviewsStatus() async {
-    GetReviewStatusResponseModel response =
-        await ApiServices.getReviewsStatus();
-    acceptance.value = "${response.data?.acceptance ?? 0.0} %";
-    rating.value = "${response.data?.rating ?? 0.0} ";
-    cancellation.value = "${response.data?.cancellation ?? 0.0} %";
+    try {
+      GetReviewStatusResponseModel response =
+          await ApiServices.getReviewsStatus();
+      acceptance.value = "${response.data?.acceptance ?? 0.0} %";
+      rating.value = "${response.data?.rating ?? 0.0} ";
+      cancellation.value = "${response.data?.cancellation ?? 0.0} %";
+    } catch (error, s) {
+      // Handle error appropriately
+      print('Error fetching review status: $error');
+      // Set default values or error state
+      acceptance.value = "0.0 %";
+      rating.value = "0.0 ";
+      cancellation.value = "0.0 %";
+      // errorMessage.value = 'Failed to load review status';
+      AppConstants.handleError(error, s: s);
+    } finally {}
   }
 
   static RatingController get to => Get.find();

@@ -12,10 +12,12 @@ class WaitingForAuthorizationScreen extends StatefulWidget {
   const WaitingForAuthorizationScreen({super.key});
 
   @override
-  State<WaitingForAuthorizationScreen> createState() => _WaitingForAuthorizationScreenState();
+  State<WaitingForAuthorizationScreen> createState() =>
+      _WaitingForAuthorizationScreenState();
 }
 
-class _WaitingForAuthorizationScreenState extends State<WaitingForAuthorizationScreen> {
+class _WaitingForAuthorizationScreenState
+    extends State<WaitingForAuthorizationScreen> {
   // Flag to prevent multiple navigation attempts
   bool _isNavigating = false;
 
@@ -27,7 +29,7 @@ class _WaitingForAuthorizationScreenState extends State<WaitingForAuthorizationS
     try {
       box.erase();
       // Use Future.delayed to ensure we're not in the middle of a frame
-      Future.delayed(Duration.zero, () {
+      Future.delayed(Duration(seconds: 1), () {
         Get.offAllNamed(AppRoutes1.getDriverTypeSelectionRoute());
       });
     } finally {
@@ -74,7 +76,8 @@ class _WaitingForAuthorizationScreenState extends State<WaitingForAuthorizationS
             ),
             BlueButton(
               text: "Back to login",
-              onTap: _navigateToDriverSelection, // Use the same navigation function
+              onTap:
+                  _navigateToDriverSelection, // Use the same navigation function
             )
           ],
         ),

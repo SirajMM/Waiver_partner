@@ -66,14 +66,14 @@ class LeftMenuFleet extends StatelessWidget {
           ),
           LeftMenuItem(
             item: LeftMenuControllerFleet.to.notification,
-            onTap: () => Get.toNamed(AppRoutes.notification),
+            onTap: () => Get.toNamed(AppRoutes1.notification),
           ),
           SizedBox(
             height: 30.sp,
           ),
           LeftMenuItem(
             item: LeftMenuControllerFleet.to.setting,
-            onTap: () => Get.toNamed(AppRoutes.setting),
+            onTap: () => Get.toNamed(AppRoutes1.setting),
           ),
           SizedBox(
             height: 30.sp,

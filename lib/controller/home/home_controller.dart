@@ -210,8 +210,9 @@ class HomeController extends GetxController {
         //   await FlutterBackground.disableBackgroundExecution();
         // }
       }
-    } catch (e) {
-      debugPrint("Error in changeDriverOnlineStatus: $e");
+    } catch (error, s) {
+      debugPrint("Error in changeDriverOnlineStatus: $error");
+      AppConstants.handleError(error, s: s);
     } finally {
       isOnlineButtonLoading.value = false;
     }
@@ -452,8 +453,9 @@ class HomeController extends GetxController {
       } else {
         isRefreshingWallet.value = false;
       }
-    } catch (e) {
+    } catch (error, s) {
       isRefreshingWallet.value = false;
+      AppConstants.handleError(error, s: s);
     }
   }
 
@@ -463,28 +465,20 @@ class HomeController extends GetxController {
     try {
       // Call your wallet API
       await fetchWalletBalance();
-      Get.showSnackbar(
-        const GetSnackBar(
-          duration: Duration(seconds: 2),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: AppSnackBar(
-            text: "Updated wallet balance",
-          ),
-        ),
-      );
-    } catch (e) {
+      // Get.showSnackbar(
+      //   const GetSnackBar(
+      //     duration: Duration(seconds: 2),
+      //     backgroundColor: Colors.transparent,
+      //     padding: EdgeInsets.zero,
+      //     messageText: AppSnackBar(
+      //       text: "Updated wallet balance",
+      //     ),
+      //   ),
+      // );
+      AppConstants.handleError("Updated wallet balance");
+    } catch (error, s) {
       // Handle error
-      Get.showSnackbar(
-        const GetSnackBar(
-          duration: Duration(seconds: 3),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: AppSnackBar(
-            text: "Something wnet wrong",
-          ),
-        ),
-      );
+      AppConstants.handleError(error, s: s);
     } finally {}
   }
 
@@ -620,44 +614,44 @@ class HomeController extends GetxController {
   //   }
   // }
   Future<void> acceptOrder() async {
-  // Prevent multiple clicks
-  if (isButtonLoading.value) return;
-  
-  try {
-    isButtonLoading.value = true;
-    driverState.value = DriverState.loading;
-    player.stop();
-    
-    ChangeRideStatusModel response = await ApiServices.changeRideStatus(
-        body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
-        
-    if (response.status == 200) {
-      log(isButtonLoading.toString());
-      if (driverState.value == DriverState.idle) {
-        startLocationLongMarker = 0.0;
-        startLocationLatMarker = 0.0;
+    // Prevent multiple clicks
+    if (isButtonLoading.value) return;
+
+    try {
+      isButtonLoading.value = true;
+      driverState.value = DriverState.loading;
+      player.stop();
+
+      ChangeRideStatusModel response = await ApiServices.changeRideStatus(
+          body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
+
+      if (response.status == 200) {
+        log(isButtonLoading.toString());
+        if (driverState.value == DriverState.idle) {
+          startLocationLongMarker = 0.0;
+          startLocationLatMarker = 0.0;
+        }
+        rideIsActive = true;
+        Get.back();
+        driverState.value = DriverState.goingToPickUp;
       }
-      rideIsActive = true;
+    } catch (error) {
       Get.back();
-      driverState.value = DriverState.goingToPickUp;
-    }
-  } catch (error) {
-    Get.back();
-    Get.showSnackbar(
-      const GetSnackBar(
-        duration: Duration(seconds: 5),
-        backgroundColor: Colors.transparent,
-        padding: EdgeInsets.zero,
-        messageText: AppSnackBar(
-          text: "OOPS Something went wrong",
+      Get.showSnackbar(
+        const GetSnackBar(
+          duration: Duration(seconds: 5),
+          backgroundColor: Colors.transparent,
+          padding: EdgeInsets.zero,
+          messageText: AppSnackBar(
+            text: "OOPS Something went wrong",
+          ),
         ),
-      ),
-    );
-  } finally {
-    isButtonLoading.value = false;
-    recenter();
+      );
+    } finally {
+      isButtonLoading.value = false;
+      recenter();
+    }
   }
-}
 
   Future<void> reachedPickUpLocation() async {
     try {
@@ -912,25 +906,13 @@ class HomeController extends GetxController {
           }
           code = " ";
         } else {
-          Get.showSnackbar(const GetSnackBar(
-              duration: Duration(seconds: 5),
-              backgroundColor: Colors.transparent,
-              padding: EdgeInsets.zero,
-              messageText: AppSnackBar(text: "Wrong otp")));
+          AppConstants.handleError(response.message ?? "Wrong otp");
         }
       } else {
-        Get.showSnackbar(const GetSnackBar(
-            duration: Duration(seconds: 5),
-            backgroundColor: Colors.transparent,
-            padding: EdgeInsets.zero,
-            messageText: AppSnackBar(text: "Wrong otp")));
+        AppConstants.handleError(response.message ?? "Wrong otp");
       }
-    } catch (error) {
-      Get.showSnackbar(const GetSnackBar(
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: AppSnackBar(text: "OOPS Something went wrong")));
+    } catch (error, s) {
+      AppConstants.handleError(error, s: s);
     } finally {
       if (type == RideStatus.reachedPickUp) {
         driverState.value = DriverState.arrivedAtPickUp;

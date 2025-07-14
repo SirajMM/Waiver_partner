@@ -8,6 +8,7 @@ import 'package:waiver_driver/core/constants/enums/enums.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
 import '../../backend/model/view_bank_account/view_bank_model.dart';
+import '../../core/constants/get_storage_constants.dart' show AppConstants;
 
 // class BankAccountControllerBinding extends Bindings {
 //   @override
@@ -38,25 +39,48 @@ class BankAccountController extends GetxController {
     }
   }
 
-  getBanks() async {
-    GetBanksResponseModel response = await ApiServices.getBanks();
-    banks = response.data ?? [];
+  Future<void> getBanks() async {
+    try {
+      GetBanksResponseModel response = await ApiServices.getBanks();
+      banks = response.data ?? [];
+    } catch (error, s) {
+      AppConstants.handleError(error, s: s);
+      print('Error fetching banks: $error');
+
+      banks = [];
+    } finally {
+      // Code that always executes (cleanup, loading states, etc.)
+      // isBanksLoading.value = false;
+      print('Banks API call completed');
+    }
   }
 
   RxBool isLoading = false.obs;
   RxBool isButtonLoading = false.obs;
   RxBool isError = false.obs;
   GlobalKey<FormState> bankAccountDetailsFormKey = GlobalKey();
-  getBankAccount() async {
-    var response = await ApiServices.getBankAccount();
+  Future<void> getBankAccount() async {
+    try {
+      var response = await ApiServices.getBankAccount();
 
-    selectedBank = banks.firstWhereOrNull(
-      (element) => element.id == response.data?.bank?.id,
-    );
+      selectedBank = banks.firstWhereOrNull(
+        (element) => element.id == response.data?.bank?.id,
+      );
 
-    controllerAccountHolderName.text = response.data?.holderName ?? "";
-    controllerBankAccountNumber.text = response.data?.accountNumber ?? "";
-    controllerBankIFSCNumber.text = response.data?.ifsc ?? "";
+      controllerAccountHolderName.text = response.data?.holderName ?? "";
+      controllerBankAccountNumber.text = response.data?.accountNumber ?? "";
+      controllerBankIFSCNumber.text = response.data?.ifsc ?? "";
+    } catch (error, s) {
+      AppConstants.handleError(error, s: s);
+      print('Error fetching bank account: $error');
+
+      selectedBank = null;
+      controllerAccountHolderName.text = "";
+      controllerBankAccountNumber.text = "";
+      controllerBankIFSCNumber.text = "";
+    } finally {
+      print('Bank account API call completed');
+    }
   }
 
   List<Banks> banks = [];
@@ -93,18 +117,9 @@ class BankAccountController extends GetxController {
           ),
         );
       }
-    } catch (error) {
+    } catch (error, s) {
       print(error);
-      Get.showSnackbar(
-        const GetSnackBar(
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: AppSnackBar(
-            text: "OOPS Something went wrong",
-          ),
-        ),
-      );
+      AppConstants.handleError(error, s: s);
     } finally {
       isButtonLoading.value = false;
     }

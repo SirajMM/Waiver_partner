@@ -278,9 +278,28 @@ class DeleteAccountBottomSheet extends StatelessWidget {
             height: 20.sp,
           ),
           RedButton(
-            text: "Delete Account",
-            onTap: () => SettingController.to.deleteAccount(),
-          ),
+              text: "Delete Account",
+              onTap: () {
+                Get.defaultDialog(
+                    backgroundColor: Colors.white,
+                    title: 'Confirm',
+                    middleText: 'Did you reached destination ?',
+                    confirm: RedButton(
+                      text: "Yes",
+                      height: 40.h,
+                      width: 100.sp,
+                      onTap: () {
+                        Get.back();
+                        SettingController.to.deleteUser();
+                      },
+                    ),
+                    cancel: WhiteButton(
+                      height: 40.h,
+                      width: 100.sp,
+                      text: "No",
+                      onTap: Get.back,
+                    ));
+              }),
           SizedBox(
             height: 20.sp,
           ),

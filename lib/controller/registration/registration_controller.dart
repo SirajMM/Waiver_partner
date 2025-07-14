@@ -149,18 +149,9 @@ class RegistrationController extends GetxController {
       } else {
         districtDropDownState.value = DropDownState.loaded;
       }
-    } catch (error) {
+    } catch (error,s) {
       print(error);
-      Get.showSnackbar(
-        const GetSnackBar(
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: AppSnackBar(
-            text: "OOPS Something went wrong",
-          ),
-        ),
-      );
+       AppConstants.handleError(error, s: s);
       districtDropDownState.value = DropDownState.hidden;
     }
   }
@@ -258,16 +249,7 @@ class RegistrationController extends GetxController {
       }
     } catch (error, s) {
       log(error.toString(), stackTrace: s);
-      Get.showSnackbar(
-        const GetSnackBar(
-          duration: Duration(seconds: 2),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: AppSnackBar(
-            text: "OOPS something went wrong",
-          ),
-        ),
-      );
+      AppConstants.handleError(error, s: s);
     } finally {
       isRegisterButtonLoading.value = false;
     }

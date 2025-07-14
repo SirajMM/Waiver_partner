@@ -66,27 +66,9 @@ class OtpController extends GetxController {
       SendPhoneOtpResponseModel response =
           await ApiServices.sendPhoneOtp(body: body);
       OtpController.to.showTimer.value = ShowTimerState.timer;
-      Get.showSnackbar(
-        GetSnackBar(
-          duration: const Duration(seconds: 5),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: AppSnackBar(
-            text: response.message ?? "",
-          ),
-        ),
-      );
-    } catch (error) {
-      Get.showSnackbar(
-        const GetSnackBar(
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: AppSnackBar(
-            text: "OOPS Something went Wrong",
-          ),
-        ),
-      );
+      AppConstants.handleError(response.message ?? "");
+    } catch (error, s) {
+      AppConstants.handleError(error, s: s);
     }
   }
 
@@ -144,11 +126,7 @@ class OtpController extends GetxController {
       }
     } catch (error, s) {
       log(error.toString(), stackTrace: s);
-      Get.showSnackbar(const GetSnackBar(
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: AppSnackBar(text: "OOPS Something went wrong")));
+      AppConstants.handleError(error, s: s);
     } finally {
       isButtonLoading.value = false;
     }

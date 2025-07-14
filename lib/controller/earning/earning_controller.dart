@@ -12,6 +12,7 @@ import 'package:waiver_driver/helper/validator/app_extensions/app_extensions.dar
 
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/colors/app_colors.dart';
+import '../../core/constants/get_storage_constants.dart';
 import '../../core/widgets/circle_with_gradient/circle_with_gradient.dart';
 import '../../helper/router/app_routes/route.dart';
 
@@ -73,60 +74,139 @@ class EarningController extends GetxController
   RxBool isTodayEarningsIsListCompleted = false.obs;
   RxBool isWeeklyEarningsIsListCompleted = false.obs;
   Future<void> getEarnings() async {
-    var response = await ApiServices.getEarnings(queryParameter: {
-      "start_date": DateTime.now().changeDateFormat(),
-      "end_date": DateTime.now().changeDateFormat(),
-    });
-    todayEarningList.addAll(response.data?.results ?? []);
-    // isTodayEarningsIsListCompleted.value = response.data?.next ?? false;
-    // isTodayEarningsIsListCompleted.value = false;
+    try {
+      var response = await ApiServices.getEarnings(queryParameter: {
+        "start_date": DateTime.now().changeDateFormat(),
+        "end_date": DateTime.now().changeDateFormat(),
+      });
+
+      todayEarningList.addAll(response.data?.results ?? []);
+      // isTodayEarningsIsListCompleted.value = response.data?.next ?? false;
+      // isTodayEarningsIsListCompleted.value = false;
+    } catch (error, s) {
+      AppConstants.handleError(error, s: s);
+      print('Error fetching earnings: $error');
+    } finally {
+      print('API call completed');
+    }
   }
 
   Future<void> getEarningsWeekly() async {
-    var response = await ApiServices.getEarnings(queryParameter: {
-      "start_date": weeklyDateEnd.value
-          .subtract(const Duration(days: 7))
-          .changeDateFormat(),
-      "end_date": weeklyDateEnd.value.changeDateFormat()
-    });
+    try {
+      var response = await ApiServices.getEarnings(queryParameter: {
+        "start_date": weeklyDateEnd.value
+            .subtract(const Duration(days: 7))
+            .changeDateFormat(),
+        "end_date": weeklyDateEnd.value.changeDateFormat()
+      });
 
-    weeklyEarningList.addAll(response.data?.results ?? []);
-    // isWeeklyEarningsIsListCompleted.value = response.data?.next ?? false;
-    // isWeeklyEarningsIsListCompleted.value = false;
+      weeklyEarningList.addAll(response.data?.results ?? []);
+      // isWeeklyEarningsIsListCompleted.value = response.data?.next ?? false;
+      // isWeeklyEarningsIsListCompleted.value = false;
+    } catch (error, s) {
+      print('Error fetching weekly earnings: $error');
+      AppConstants.handleError(error, s: s);
+    } finally {
+      // Code that always executes (cleanup, loading states, etc.)
+      // isWeeklyLoading.value = false;
+      print('Weekly earnings API call completed');
+    }
   }
 
   RxBool isLoading = false.obs;
   RxBool isError = false.obs;
 
-  Future<void> getEarningStatusWeekly() async {
-    GetEarningStatusResponseModel response =
-        await ApiServices.getEarningStatus(queryParameter: {
-      "start_date": weeklyDateEnd.value
-          .subtract(const Duration(days: 7))
-          .changeDateFormat(),
-      "end_date": weeklyDateEnd.value.changeDateFormat()
-    });
-    startAnimation(amount: response.data?.earnings?.total ?? 0);
-    weeklyEarning.value = (response.data?.earnings?.total ?? 0);
+  // Future<void> getEarningStatusWeekly() async {
+  //   GetEarningStatusResponseModel response =
+  //       await ApiServices.getEarningStatus(queryParameter: {
+  //     "start_date": weeklyDateEnd.value
+  //         .subtract(const Duration(days: 7))
+  //         .changeDateFormat(),
+  //     "end_date": weeklyDateEnd.value.changeDateFormat()
+  //   });
+  //   startAnimation(amount: response.data?.earnings?.total ?? 0);
+  //   weeklyEarning.value = (response.data?.earnings?.total ?? 0);
 
-    graphValues.value = response.data?.earnings?.earningsByDay ?? [];
-    noDataForGraph.value = (graphValues.isEmpty);
-    if (graphValues.length >= 2) {
-      maxValue.value = graphValues
-              .reduce((a, b) => (a?.total ?? 0) > (b?.total ?? 0) ? a : b)
-              ?.total ??
-          1;
+  //   graphValues.value = response.data?.earnings?.earningsByDay ?? [];
+  //   noDataForGraph.value = (graphValues.isEmpty);
+  //   if (graphValues.length >= 2) {
+  //     maxValue.value = graphValues
+  //             .reduce((a, b) => (a?.total ?? 0) > (b?.total ?? 0) ? a : b)
+  //             ?.total ??
+  //         1;
+  //   }
+  //   weeklyTrips.value.value = (response.data?.rides?.totalRides ?? 0);
+  //   weeklyDistance.value.value = (response.data?.rides?.totalDistance ?? 0);
+  //   weeklyOnlineHours.value.value = (response.data?.rides?.totalDuration ?? 0);
+  //   weeklyTripFare = response.data?.earnings?.rideFare ?? 0;
+  //   weeklyWaiverCharge = response.data?.earnings?.waiverCharge ?? 0;
+  //   weeklyTax = response.data?.earnings?.tax ?? 0;
+  //   weeklyIncentives = response.data?.earnings?.incentives ?? 0;
+  //   weeklyReferEarnings = response.data?.earnings?.referrals ?? 0;
+  //   weeklyPayment.value = response.data?.earnings?.total ?? 0;
+  //   print(weeklyTripFare);
+  // }
+
+  Future<void> getEarningStatusWeekly() async {
+    try {
+      GetEarningStatusResponseModel response =
+          await ApiServices.getEarningStatus(queryParameter: {
+        "start_date": weeklyDateEnd.value
+            .subtract(const Duration(days: 7))
+            .changeDateFormat(),
+        "end_date": weeklyDateEnd.value.changeDateFormat()
+      });
+
+      startAnimation(amount: response.data?.earnings?.total ?? 0);
+      weeklyEarning.value = (response.data?.earnings?.total ?? 0);
+
+      graphValues.value = response.data?.earnings?.earningsByDay ?? [];
+      noDataForGraph.value = (graphValues.isEmpty);
+
+      if (graphValues.length >= 2) {
+        maxValue.value = graphValues
+                .reduce((a, b) => (a?.total ?? 0) > (b?.total ?? 0) ? a : b)
+                ?.total ??
+            1;
+      }
+
+      weeklyTrips.value.value = (response.data?.rides?.totalRides ?? 0);
+      weeklyDistance.value.value = (response.data?.rides?.totalDistance ?? 0);
+      weeklyOnlineHours.value.value =
+          (response.data?.rides?.totalDuration ?? 0);
+      weeklyTripFare = response.data?.earnings?.rideFare ?? 0;
+      weeklyWaiverCharge = response.data?.earnings?.waiverCharge ?? 0;
+      weeklyTax = response.data?.earnings?.tax ?? 0;
+      weeklyIncentives = response.data?.earnings?.incentives ?? 0;
+      weeklyReferEarnings = response.data?.earnings?.referrals ?? 0;
+      weeklyPayment.value = response.data?.earnings?.total ?? 0;
+      print(weeklyTripFare);
+    } catch (error, s) {
+      AppConstants.handleError(error, s: s);
+      print('Error fetching weekly earning status: $error');
+
+      // Set default values on error to prevent UI issues
+      weeklyEarning.value = 0;
+      graphValues.value = [];
+      noDataForGraph.value = true;
+      maxValue.value = 1;
+      weeklyTrips.value.value = 0;
+      weeklyDistance.value.value = 0;
+      weeklyOnlineHours.value.value = 0;
+      weeklyTripFare = 0;
+      weeklyWaiverCharge = 0;
+      weeklyTax = 0;
+      weeklyIncentives = 0;
+      weeklyReferEarnings = 0;
+      weeklyPayment.value = 0;
+
+      // Optional: Set error state or show error message
+      // errorMessage.value = 'Failed to load weekly earning status';
+    } finally {
+      // Code that always executes (cleanup, loading states, etc.)
+      // isWeeklyStatusLoading.value = false;
+      print('Weekly earning status API call completed');
     }
-    weeklyTrips.value.value = (response.data?.rides?.totalRides ?? 0);
-    weeklyDistance.value.value = (response.data?.rides?.totalDistance ?? 0);
-    weeklyOnlineHours.value.value = (response.data?.rides?.totalDuration ?? 0);
-    weeklyTripFare = response.data?.earnings?.rideFare ?? 0;
-    weeklyWaiverCharge = response.data?.earnings?.waiverCharge ?? 0;
-    weeklyTax = response.data?.earnings?.tax ?? 0;
-    weeklyIncentives = response.data?.earnings?.incentives ?? 0;
-    weeklyReferEarnings = response.data?.earnings?.referrals ?? 0;
-    weeklyPayment.value = response.data?.earnings?.total ?? 0;
-    print(weeklyTripFare);
   }
 
   RxBool noDataForGraph = false.obs;
@@ -155,22 +235,66 @@ class EarningController extends GetxController
 
   RxBool isGraphLoading = false.obs;
 
+  // Future<void> getEarningStatusToday() async {
+  //   var response = await ApiServices.getEarningStatus(queryParameter: {
+  //     "start_date": DateTime.now().changeDateFormat(),
+  //     "end_date": DateTime.now().changeDateFormat(),
+  //   });
+  //   todayEarning.value = response.data?.earnings?.total ?? 0;
+  //   todayTrips.value.value = (response.data?.rides?.totalRides ?? 0);
+  //   todayDistance.value.value = (response.data?.rides?.totalDistance ?? 0);
+  //   todayOnlineHours.value.value = (response.data?.rides?.totalDuration ?? 0);
+  //   todayTripFare.value = response.data?.earnings?.rideFare ?? 0;
+  //   todayWaiverCharge.value = response.data?.earnings?.waiverCharge ?? 0;
+  //   todayTax.value = response.data?.earnings?.tax ?? 0;
+  //   todayIncentives.value = response.data?.earnings?.incentives ?? 0;
+  //   todayReferEarnings.value = response.data?.earnings?.referrals ?? 0;
+  //   todayPayment.value = response.data?.earnings?.total ?? 0;
+  //   todayBalanceAmount.value = response.data?.earnings?.total ?? 0;
+  // }
+
   Future<void> getEarningStatusToday() async {
-    var response = await ApiServices.getEarningStatus(queryParameter: {
-      "start_date": DateTime.now().changeDateFormat(),
-      "end_date": DateTime.now().changeDateFormat(),
-    });
-    todayEarning.value = response.data?.earnings?.total ?? 0;
-    todayTrips.value.value = (response.data?.rides?.totalRides ?? 0);
-    todayDistance.value.value = (response.data?.rides?.totalDistance ?? 0);
-    todayOnlineHours.value.value = (response.data?.rides?.totalDuration ?? 0);
-    todayTripFare.value = response.data?.earnings?.rideFare ?? 0;
-    todayWaiverCharge.value = response.data?.earnings?.waiverCharge ?? 0;
-    todayTax.value = response.data?.earnings?.tax ?? 0;
-    todayIncentives.value = response.data?.earnings?.incentives ?? 0;
-    todayReferEarnings.value = response.data?.earnings?.referrals ?? 0;
-    todayPayment.value = response.data?.earnings?.total ?? 0;
-    todayBalanceAmount.value = response.data?.earnings?.total ?? 0;
+    try {
+      var response = await ApiServices.getEarningStatus(queryParameter: {
+        "start_date": DateTime.now().changeDateFormat(),
+        "end_date": DateTime.now().changeDateFormat(),
+      });
+
+      todayEarning.value = response.data?.earnings?.total ?? 0;
+      todayTrips.value.value = (response.data?.rides?.totalRides ?? 0);
+      todayDistance.value.value = (response.data?.rides?.totalDistance ?? 0);
+      todayOnlineHours.value.value = (response.data?.rides?.totalDuration ?? 0);
+      todayTripFare.value = response.data?.earnings?.rideFare ?? 0;
+      todayWaiverCharge.value = response.data?.earnings?.waiverCharge ?? 0;
+      todayTax.value = response.data?.earnings?.tax ?? 0;
+      todayIncentives.value = response.data?.earnings?.incentives ?? 0;
+      todayReferEarnings.value = response.data?.earnings?.referrals ?? 0;
+      todayPayment.value = response.data?.earnings?.total ?? 0;
+      todayBalanceAmount.value = response.data?.earnings?.total ?? 0;
+    } catch (error, s) {
+      print('Error fetching today\'s earning status: $error');
+
+      AppConstants.handleError(error, s: s);
+      // Set default values on error to prevent UI issues
+      todayEarning.value = 0;
+      todayTrips.value.value = 0;
+      todayDistance.value.value = 0;
+      todayOnlineHours.value.value = 0;
+      todayTripFare.value = 0;
+      todayWaiverCharge.value = 0;
+      todayTax.value = 0;
+      todayIncentives.value = 0;
+      todayReferEarnings.value = 0;
+      todayPayment.value = 0;
+      todayBalanceAmount.value = 0;
+
+      // Optional: Set error state or show error message
+      // errorMessage.value = 'Failed to load today\'s earning status';
+    } finally {
+      // Code that always executes (cleanup, loading states, etc.)
+      // isTodayStatusLoading.value = false;
+      print('Today\'s earning status API call completed');
+    }
   }
 
   String tt = "";

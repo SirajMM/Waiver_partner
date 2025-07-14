@@ -1,8 +1,18 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
+import 'dart:io';
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart';
 import 'package:location/location.dart';
+import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart'
+    show AppSnackBar;
 
+import '../../helper/router/app_routes/route.dart';
 import '../../main.dart';
 import '../colors/app_colors.dart';
 
@@ -128,5 +138,63 @@ class AppConstants {
     // int seconds = totalSeconds % 60;
 
     return '${hours}h ${minutes}m';
+  }
+
+  static void handleError(Object e, {StackTrace? s}) {
+    log('Error: $e eee', error: e, stackTrace: s);
+    String errorMessage;
+    if (e is SocketException) {
+      errorMessage = 'Network error: ${e.message}';
+    } else if (e is HttpException) {
+      try {
+        final error = jsonDecode(e.message);
+        if (error['code'] == "authentication_failed") {
+          Get.offAllNamed(AppRoutes1.getLoginRoute());
+          box.erase();
+
+          Get.showSnackbar(GetSnackBar(
+              duration: Duration(seconds: 5),
+              backgroundColor: Colors.transparent,
+              padding: EdgeInsets.zero,
+              messageText: AppSnackBar(
+                  text: 'You\'r session has expired. Please Re-login')));
+          return;
+        }
+        errorMessage = error['message'] ??
+            (error['messages'] is List && error['messages'].isNotEmpty
+                ? error['messages'][0]['message']
+                : null) ??
+            'Something went wrong';
+      } catch (_) {
+        errorMessage = 'Something went wrong';
+      }
+    } else if (e is TimeoutException) {
+      errorMessage = 'Request timed out. Please try again.';
+    } else if (e is ClientException) {
+      errorMessage = 'Connection failed: ${e.message}';
+    } else if (e is FormatException) {
+      errorMessage = e.message;
+    } else if (e is Exception) {
+      String fullError = e.toString();
+      errorMessage = fullError.startsWith('Exception: ')
+          ? fullError.substring('Exception: '.length)
+          : fullError;
+    } else if (e is Error) {
+      errorMessage = e.toString();
+    } else {
+      errorMessage = e.toString();
+    }
+
+    if (errorMessage.isEmpty ||
+        errorMessage == 'Exception' ||
+        errorMessage == e.runtimeType.toString()) {
+      errorMessage = 'An unexpected error occurred. Please try again.';
+    }
+
+    Get.showSnackbar(GetSnackBar(
+        duration: Duration(seconds: 5),
+        backgroundColor: Colors.transparent,
+        padding: EdgeInsets.zero,
+        messageText: AppSnackBar(text: errorMessage)));
   }
 }

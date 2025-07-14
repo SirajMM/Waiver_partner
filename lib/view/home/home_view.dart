@@ -105,7 +105,7 @@ class HomeScreen extends StatelessWidget {
                     //   return const PaymentConfirmationSheetOnline(titleText: "Payment",text: "Waiting for payment",);
                         return const MakingPaymentBottomSheet(isPay: false,);*/
                     case DriverState.completed:
-                      return HomeController.to.rideIsActive
+                      return HomeController.to.rideIsActive || box.read(BoxKeys.paymentType) == "CSH"
                           ? const MakingPaymentBottomSheet(isPay: true)
                           : const SizedBox();
                     /*         case DriverState.completed:

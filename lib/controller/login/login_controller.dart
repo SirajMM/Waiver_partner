@@ -13,7 +13,6 @@ import 'package:waiver_driver/main.dart';
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/constants/get_storage_constants.dart';
 
-
 // class LoginControllerBinding extends Bindings {
 //   @override
 //   void dependencies() {
@@ -66,17 +65,9 @@ class LoginController extends GetxController {
             response.error!.nonFieldErrors!.isNotEmpty) {
           displayMessage = response.error!.nonFieldErrors![0];
 
-          Get.showSnackbar(
-            GetSnackBar(
-              duration: Duration(seconds: 5),
-              backgroundColor: Colors.transparent,
-              padding: EdgeInsets.zero,
-              messageText: AppSnackBar(
-                  text: displayMessage ?? "OOPS Something went Wrong"),
-            ),
-          );
+          AppConstants.handleError(
+              displayMessage ?? "OOPS Something went Wrong");
         }
-
         if (response.status == 200) {
           Get.toNamed(
             AppRoutes1.getOtpInRoute(),
@@ -87,27 +78,13 @@ class LoginController extends GetxController {
             ),
           );
         }
-        Get.showSnackbar(
-          GetSnackBar(
-            duration: const Duration(seconds: 5),
-            backgroundColor: Colors.transparent,
-            padding: EdgeInsets.zero,
-            messageText: AppSnackBar(text: response.message ?? ""),
-          ),
-        );
-      } catch (error) {
+
+        AppConstants.handleError(response.message ?? "");
+      } catch (error, s) {
         if (kDebugMode) {
           print(error);
         }
-        Get.showSnackbar(
-          GetSnackBar(
-            duration: Duration(seconds: 5),
-            backgroundColor: Colors.transparent,
-            padding: EdgeInsets.zero,
-            messageText: AppSnackBar(
-                text: error.toString() ?? "OOPS Something went Wrong"),
-          ),
-        );
+        AppConstants.handleError(error, s: s);
       } finally {
         isButtonLoading.value = false;
       }

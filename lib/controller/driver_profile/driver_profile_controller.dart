@@ -10,7 +10,6 @@ import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 import 'package:waiver_driver/main.dart';
 import '../../backend/api/api_services/api_services.dart';
 
-
 class DriverProfileControllerBinding extends Bindings {
   @override
   void dependencies() {
@@ -87,45 +86,94 @@ class DriverProfileController extends GetxController {
         selectedDistrict = districtsList
             .firstWhereOrNull((element) => element.id == districtsID);
       }
-    } catch (error) {
+    } catch (error, s) {
       print(error);
-      Get.showSnackbar(const GetSnackBar(
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: AppSnackBar(text: "OOPS Something went wrong")));
+      AppConstants.handleError(error, s: s);
     }
   }
+
+  // Future<void> getDriverProfile() async {
+  //   GetDriverProfileResponseModel response = await ApiServices.driverProfile(
+  //       queryParameter: {"driver_id": driver?.driverId});
+  //   profileImage = response.data?.profileImage ?? "";
+  //   controllerFullName.text = response.data?.fullname ?? "";
+  //   controllerEmail.text = response.data?.email ?? "";
+  //   selectedGender = genderList.firstWhereOrNull(
+  //       (element) => (element.code) == (response.data?.gender));
+  //   controllerEmail.text = response.data?.email ?? "";
+  //   controllerDateOfBirth.text = (response.data?.dob ?? "");
+  //   controllerAlternativeNumber.text = response.data?.alternativePhone ?? "";
+  //   controllerWhatsAppNumber.text = response.data?.whatsappPhone ?? "";
+  //   selectedState = statesList.firstWhereOrNull(
+  //       (element) => (element.id) == (response.data?.state?.id));
+  //   await getAllDistricts(districtsID: response.data?.district?.id);
+  //   transmissionType = response.data?.transmissionType ?? [];
+  //   vehicleTypes = response.data?.vehicleType ?? [];
+  //   controllerAddress.text = response.data?.address ?? "";
+  //   has_Vehicle_Assigned = response.data?.hasVehicleAssigned;
+  //   vehicleDetails = response.data?.vehicleDetails;
+  // }
 
   Future<void> getDriverProfile() async {
-    GetDriverProfileResponseModel response = await ApiServices.driverProfile(
-        queryParameter: {"driver_id": driver?.driverId});
-    profileImage = response.data?.profileImage ?? "";
-    controllerFullName.text = response.data?.fullname ?? "";
-    controllerEmail.text = response.data?.email ?? "";
-    selectedGender = genderList.firstWhereOrNull(
-        (element) => (element.code) == (response.data?.gender));
-    controllerEmail.text = response.data?.email ?? "";
-    controllerDateOfBirth.text = (response.data?.dob ?? "");
-    controllerAlternativeNumber.text = response.data?.alternativePhone ?? "";
-    controllerWhatsAppNumber.text = response.data?.whatsappPhone ?? "";
-    selectedState = statesList.firstWhereOrNull(
-        (element) => (element.id) == (response.data?.state?.id));
-    await getAllDistricts(districtsID: response.data?.district?.id);
-    transmissionType = response.data?.transmissionType ?? [];
-    vehicleTypes = response.data?.vehicleType ?? [];
-    controllerAddress.text = response.data?.address ?? "";
-    has_Vehicle_Assigned = response.data?.hasVehicleAssigned;
-    vehicleDetails = response.data?.vehicleDetails;
+    try {
+      GetDriverProfileResponseModel response = await ApiServices.driverProfile(
+          queryParameter: {"driver_id": driver?.driverId});
+
+      // Update profile data
+      profileImage = response.data?.profileImage ?? "";
+      controllerFullName.text = response.data?.fullname ?? "";
+      controllerEmail.text = response.data?.email ?? "";
+      selectedGender = genderList.firstWhereOrNull(
+          (element) => (element.code) == (response.data?.gender));
+      controllerDateOfBirth.text = (response.data?.dob ?? "");
+      controllerAlternativeNumber.text = response.data?.alternativePhone ?? "";
+      controllerWhatsAppNumber.text = response.data?.whatsappPhone ?? "";
+      selectedState = statesList.firstWhereOrNull(
+          (element) => (element.id) == (response.data?.state?.id));
+
+      // Get districts - this is also async and might throw
+      await getAllDistricts(districtsID: response.data?.district?.id);
+
+      transmissionType = response.data?.transmissionType ?? [];
+      vehicleTypes = response.data?.vehicleType ?? [];
+      controllerAddress.text = response.data?.address ?? "";
+      has_Vehicle_Assigned = response.data?.hasVehicleAssigned;
+      vehicleDetails = response.data?.vehicleDetails;
+    } catch (error, s) {
+      // Handle error appropriately
+      print('Error fetching driver profile: $error');
+      AppConstants.handleError(error, s: s);
+      // Set default values or maintain previous state
+      profileImage = "";
+      controllerFullName.clear();
+      controllerEmail.clear();
+      selectedGender = null;
+      controllerDateOfBirth.clear();
+      controllerAlternativeNumber.clear();
+      controllerWhatsAppNumber.clear();
+      selectedState = null;
+      transmissionType = [];
+      vehicleTypes = [];
+      controllerAddress.clear();
+      has_Vehicle_Assigned = null;
+      vehicleDetails = null;
+
+      // You might want to show a user-friendly error message
+      // errorMessage.value = 'Failed to load driver profile';
+    } finally {
+      // Code that runs regardless of success or failure
+      // For example, hide loading indicator
+      // isLoading.value = false;
+      print('getDriverProfile operation completed');
+    }
   }
-  Future <bool> hasAssigned()async{
+
+  Future<bool> hasAssigned() async {
     String userTypeCode = await box.read(BoxKeys.userTypeCode);
-    if(userTypeCode==UserTypeCode.driver && has_Vehicle_Assigned==true){
+    if (userTypeCode == UserTypeCode.driver && has_Vehicle_Assigned == true) {
       return true;
-    }else{
+    } else {
       return false;
     }
-
   }
-
 }

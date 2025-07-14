@@ -125,7 +125,8 @@ class GoingToDestinationWidget extends StatelessWidget {
                     width: 100.sp,
                     text: "No",
                     onTap: Get.back,
-                  ));
+                  )
+                  );
             },
           ),
         ],

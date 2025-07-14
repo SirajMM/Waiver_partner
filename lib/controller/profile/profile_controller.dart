@@ -58,7 +58,7 @@ class ProfileController extends GetxController {
         fromFormat: "yyyy-MM-dd", toFormat: "dd / MMM / yyyy");
     controllerAlternativeNumber.text = response.data?.alternativePhone ?? "";
     controllerWhatsAppNumber.text = response.data?.whatsappPhone ?? "";
-    regPhoneNumber = response.data?.phone??"";
+    regPhoneNumber = response.data?.phone ?? "";
     state = response.data?.state?.name ?? "";
     district = response.data?.district?.name ?? "";
     workingLocation = response.data?.workLocation?.name ?? "";
@@ -212,16 +212,11 @@ class ProfileController extends GetxController {
             backgroundColor: Colors.transparent,
             padding: EdgeInsets.zero,
             messageText: AppSnackBar(text: response.message ?? "")));
-      } catch (error) {
-        Get.showSnackbar(const GetSnackBar(
-            duration: Duration(seconds: 5),
-            backgroundColor: Colors.transparent,
-            padding: EdgeInsets.zero,
-            messageText: AppSnackBar(text: "OOPS1 Somethin1g went wrong")));
+      } catch (error, s) {
+        AppConstants.handleError(error, s: s);
       } finally {
         isSaveChangeButtonLoading.value = false;
       }
-
       Get.back();
     }
   }
@@ -238,12 +233,8 @@ class ProfileController extends GetxController {
             backgroundColor: Colors.transparent,
             padding: EdgeInsets.zero,
             messageText: AppSnackBar(text: response.message ?? "")));
-      } catch (error) {
-        Get.showSnackbar(const GetSnackBar(
-            duration: Duration(seconds: 5),
-            backgroundColor: Colors.transparent,
-            padding: EdgeInsets.zero,
-            messageText: AppSnackBar(text: "OOPS2 Something went wrong")));
+      } catch (error, s) {
+        AppConstants.handleError(error, s: s);
       } finally {
         isSaveChangeButtonLoading.value = false;
       }
@@ -264,12 +255,8 @@ class ProfileController extends GetxController {
             backgroundColor: Colors.transparent,
             padding: EdgeInsets.zero,
             messageText: AppSnackBar(text: response.message ?? "")));
-      } catch (error) {
-        Get.showSnackbar(const GetSnackBar(
-            duration: Duration(seconds: 5),
-            backgroundColor: Colors.transparent,
-            padding: EdgeInsets.zero,
-            messageText: AppSnackBar(text: "OOPS3 Something went wrong")));
+      } catch (error, s) {
+        AppConstants.handleError(error, s: s);
       } finally {
         isSaveChangeButtonLoading.value = false;
       }
@@ -292,12 +279,8 @@ class ProfileController extends GetxController {
             backgroundColor: Colors.transparent,
             padding: EdgeInsets.zero,
             messageText: AppSnackBar(text: response.message ?? "")));
-      } catch (error) {
-        Get.showSnackbar(const GetSnackBar(
-            duration: Duration(seconds: 5),
-            backgroundColor: Colors.transparent,
-            padding: EdgeInsets.zero,
-            messageText: AppSnackBar(text: "OOPS4 Something went wrong")));
+      } catch (error, s) {
+        AppConstants.handleError(error, s: s);
       } finally {
         isSaveChangeButtonLoading.value = false;
       }

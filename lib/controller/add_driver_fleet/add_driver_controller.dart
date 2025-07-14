@@ -6,12 +6,9 @@ import 'package:waiver_driver/backend/model/fleet_home_page/fleet_home_page_mode
 import 'package:waiver_driver/controller/fleet_home_page/fleet_home_page_controller.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
-
 import '../../backend/api/api_services/api_services.dart';
+import '../../core/constants/get_storage_constants.dart';
 import '../../helper/router/app_routes/route.dart';
-
-
-
 
 class AddDriverControllerBinding extends Bindings {
   @override
@@ -55,7 +52,7 @@ class AddDriverController extends GetxController {
           "driver_id": controllerDriverId.text,
         });
         Get.offAllNamed(AppRoutes1.getFleetHomePageInRoute());
-    // Get.back();
+        // Get.back();
         Get.showSnackbar(
           GetSnackBar(
             duration: const Duration(seconds: 3),
@@ -67,17 +64,8 @@ class AddDriverController extends GetxController {
           ),
         );
       }
-    } catch (e) {
-      Get.showSnackbar(
-        GetSnackBar(
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: const AppSnackBar(
-            text: "Try again later",
-          ),
-        ),
-      );
+    } catch (error, s) {
+      AppConstants.handleError(error, s: s);
     } finally {
       isButtonLoading.value = false;
       isLoading.value = false;
@@ -108,17 +96,8 @@ class AddDriverController extends GetxController {
           ),
         );
       }
-    } catch (e) {
-      Get.showSnackbar(
-        GetSnackBar(
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: const AppSnackBar(
-            text: "Try again later",
-          ),
-        ),
-      );
+    } catch (error,s) {
+      AppConstants.handleError(error, s: s);
     } finally {
       isButtonLoading.value = false;
       isLoading.value = false;

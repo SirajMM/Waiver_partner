@@ -1,7 +1,7 @@
 name: waiver_driver
 description: "Waiver Driver App"
 publish_to: 'none'
-version: 3.0.7+38
+version: 3.0.8+39
 
 environment:
   sdk: ^3.6.0
@@ -25,7 +25,7 @@ dependencies:
   audioplayers: ^6.4.0
   cached_network_image: ^3.4.1
   package_info_plus: ^8.3.0
-
+ 
   connectivity_plus: ^6.1.4
   internet_connection_checker: ^3.0.1
   flutter_callkit_incoming:
@@ -50,6 +50,7 @@ dependencies:
 #  carp_background_location: ^4.0.0
   external_app_launcher: ^4.0.3
   upgrader: ^11.3.1
+  logger: ^2.5.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   firebase_database: ^11.3.7
