@@ -283,7 +283,7 @@ class DeleteAccountBottomSheet extends StatelessWidget {
                 Get.defaultDialog(
                     backgroundColor: Colors.white,
                     title: 'Confirm',
-                    middleText: 'Did you reached destination ?',
+                    middleText: 'Did you Want to delete this account ?',
                     confirm: RedButton(
                       text: "Yes",
                       height: 40.h,

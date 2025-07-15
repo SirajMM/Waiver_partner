@@ -77,9 +77,9 @@ class HomeController extends GetxController {
           name: "".obs);
 
       getLocationDetails(
-              currentPosition.value!.latitude, currentPosition.value!.longitude)
+          currentPosition.value!.latitude, currentPosition.value!.longitude)
           .then(
-        (value) => pickUpLocation1?.name.value = value ?? '',
+            (value) => pickUpLocation1?.name.value = value ?? '',
       );
       recenter();
 
@@ -135,7 +135,7 @@ class HomeController extends GetxController {
 
   @override
   void dispose() {
-    changeDriverOnlineStatus();
+    // changeDriverOnlineStatus();
     super.dispose();
   }
 
@@ -148,7 +148,7 @@ class HomeController extends GetxController {
   String? finalDropLocation;
   bool isTracking = false;
   double currentDistance =
-      0; // Current distance in meters before it exceeds 100m
+  0; // Current distance in meters before it exceeds 100m
   double totalDistance = 0; // Total distance saved in Hive (in meters)x
   List<Map<String, double>> latLongList = [];
   Box? distanceBox;
@@ -210,7 +210,7 @@ class HomeController extends GetxController {
         //   await FlutterBackground.disableBackgroundExecution();
         // }
       }
-    } catch (error, s) {
+    } catch (error,s) {
       debugPrint("Error in changeDriverOnlineStatus: $error");
       AppConstants.handleError(error, s: s);
     } finally {
@@ -256,7 +256,7 @@ class HomeController extends GetxController {
   Future<void> latestActiveRide() async {
     try {
       GetRideDetailsResponseModel response =
-          await ApiServices.latestActiveRide();
+      await ApiServices.latestActiveRide();
       if ((response.data?.id ?? "").isNotEmpty) {
         rideIsActive = true;
         getOrderDetails(response: response);
@@ -311,13 +311,13 @@ class HomeController extends GetxController {
   String? dropOffLocation;
   String? passengerName;
   TripsLocations? pickUpLocation1 =
-      TripsLocations(name: "".obs, latitude: 0.0.obs, longitude: 0.0.obs);
+  TripsLocations(name: "".obs, latitude: 0.0.obs, longitude: 0.0.obs);
 
   Future<void> getAndShowOrderDetails(
       {required String id, bool? fromBackGroundCall}) async {
     player.play(AssetSource(AppAudio.notification));
     GetRideDetailsResponseModel response =
-        await ApiServices.rideOrderDetails(queryParameters: {"ride_id": id});
+    await ApiServices.rideOrderDetails(queryParameters: {"ride_id": id});
     getOrderDetails(response: response);
     // Get.bottomSheet(IncomingOrderBottomSheet(data: response.data),
     //     enableDrag: false, isDismissible: false
@@ -453,9 +453,8 @@ class HomeController extends GetxController {
       } else {
         isRefreshingWallet.value = false;
       }
-    } catch (error, s) {
+    } catch (e) {
       isRefreshingWallet.value = false;
-      AppConstants.handleError(error, s: s);
     }
   }
 
@@ -465,20 +464,28 @@ class HomeController extends GetxController {
     try {
       // Call your wallet API
       await fetchWalletBalance();
-      // Get.showSnackbar(
-      //   const GetSnackBar(
-      //     duration: Duration(seconds: 2),
-      //     backgroundColor: Colors.transparent,
-      //     padding: EdgeInsets.zero,
-      //     messageText: AppSnackBar(
-      //       text: "Updated wallet balance",
-      //     ),
-      //   ),
-      // );
-      AppConstants.handleError("Updated wallet balance");
-    } catch (error, s) {
+      Get.showSnackbar(
+        const GetSnackBar(
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.transparent,
+          padding: EdgeInsets.zero,
+          messageText: AppSnackBar(
+            text: "Updated wallet balance",
+          ),
+        ),
+      );
+    } catch (e) {
       // Handle error
-      AppConstants.handleError(error, s: s);
+      Get.showSnackbar(
+        const GetSnackBar(
+          duration: Duration(seconds: 3),
+          backgroundColor: Colors.transparent,
+          padding: EdgeInsets.zero,
+          messageText: AppSnackBar(
+            text: "Something wnet wrong",
+          ),
+        ),
+      );
     } finally {}
   }
 
@@ -579,52 +586,13 @@ class HomeController extends GetxController {
     distanceBox?.put('totalDistance', 0.0);
   }
 
-  // Future<void> acceptOrder() async {
-  //   try {
-  //     isButtonLoading.value = true;
-  //     driverState.value = DriverState.loading;
-  //     player.stop();
-  //     ChangeRideStatusModel response = await ApiServices.changeRideStatus(
-  //         body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
-  //     if (response.status == 200) {
-  //       log(isButtonLoading.toString());
-  //       if (driverState.value == DriverState.idle) {
-  //         startLocationLongMarker = 0.0;
-  //         startLocationLatMarker = 0.0;
-  //       }
-  //       rideIsActive = true;
-  //       Get.back();
-  //       driverState.value = DriverState.goingToPickUp;
-  //     }
-  //   } catch (error) {
-  //     Get.back();
-  //     Get.showSnackbar(
-  //       const GetSnackBar(
-  //         duration: Duration(seconds: 5),
-  //         backgroundColor: Colors.transparent,
-  //         padding: EdgeInsets.zero,
-  //         messageText: AppSnackBar(
-  //           text: "OOPS Something went wrong",
-  //         ),
-  //       ),
-  //     );
-  //   } finally {
-  //     isButtonLoading.value = false;
-  //     recenter();
-  //   }
-  // }
   Future<void> acceptOrder() async {
-    // Prevent multiple clicks
-    if (isButtonLoading.value) return;
-
     try {
       isButtonLoading.value = true;
       driverState.value = DriverState.loading;
       player.stop();
-
       ChangeRideStatusModel response = await ApiServices.changeRideStatus(
           body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
-
       if (response.status == 200) {
         log(isButtonLoading.toString());
         if (driverState.value == DriverState.idle) {
@@ -705,7 +673,7 @@ class HomeController extends GetxController {
       driverState.value = DriverState.loading;
       await getFinalDropLocation();
       ChangeRideStatusModel response =
-          await ApiServices.changeRideStatus(body: {
+      await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.reachedDropOff,
         "location": finalDropLocation,
@@ -723,7 +691,7 @@ class HomeController extends GetxController {
 
   Future<String?> getLocationDetails(double latitude, double longitude) async {
     GoogleLocationResponse response =
-        await ApiServices.getCurrentLocation(latitude, longitude);
+    await ApiServices.getCurrentLocation(latitude, longitude);
 
     for (var result in response.results ?? []) {
       for (var addressComponent in result.addressComponents ?? []) {
@@ -741,7 +709,7 @@ class HomeController extends GetxController {
     if (!recenterLoading.value) {
       recenterLoading.value = true;
       loc.Location().getLocation().then(
-        (newLoc) {
+            (newLoc) {
           recenterLoading.value = false;
           saveLocationData(newLoc);
           googleMapController?.animateCamera(CameraUpdate.newCameraPosition(
@@ -806,7 +774,7 @@ class HomeController extends GetxController {
     log("${mobilityContext?.stops}");
     try {
       ChangeRideStatusModel response =
-          await ApiServices.changeRideStatus(body: {
+      await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.paymentInitiated,
         "stops": mobilityContext?.stops,
@@ -819,7 +787,10 @@ class HomeController extends GetxController {
         resetDistance();
         // getRidePayment();
       }
-    } finally {
+    }catch(error,s){
+      AppConstants.handleError(error, s: s);
+    }
+    finally {
       driverState.value = DriverState.paymentInitiated;
     }
   }
@@ -834,7 +805,7 @@ class HomeController extends GetxController {
   String? total;
   Future<void> getRidePayment() async {
     RidePaymentResponseModel response =
-        await ApiServices.getRidePayment(queryParameter: {"ride_id": rideId});
+    await ApiServices.getRidePayment(queryParameter: {"ride_id": rideId});
     if (response.status == 200) {
       fare = response.data?.fare;
       tax = response.data?.tax;
@@ -906,13 +877,25 @@ class HomeController extends GetxController {
           }
           code = " ";
         } else {
-          AppConstants.handleError(response.message ?? "Wrong otp");
+          Get.showSnackbar(const GetSnackBar(
+              duration: Duration(seconds: 5),
+              backgroundColor: Colors.transparent,
+              padding: EdgeInsets.zero,
+              messageText: AppSnackBar(text: "Wrong otp")));
         }
       } else {
-        AppConstants.handleError(response.message ?? "Wrong otp");
+        Get.showSnackbar(const GetSnackBar(
+            duration: Duration(seconds: 5),
+            backgroundColor: Colors.transparent,
+            padding: EdgeInsets.zero,
+            messageText: AppSnackBar(text: "Wrong otp")));
       }
-    } catch (error, s) {
-      AppConstants.handleError(error, s: s);
+    } catch (error) {
+      Get.showSnackbar(const GetSnackBar(
+          duration: Duration(seconds: 5),
+          backgroundColor: Colors.transparent,
+          padding: EdgeInsets.zero,
+          messageText: AppSnackBar(text: "OOPS Something went wrong")));
     } finally {
       if (type == RideStatus.reachedPickUp) {
         driverState.value = DriverState.arrivedAtPickUp;
@@ -924,8 +907,8 @@ class HomeController extends GetxController {
 
   Future<void> getFinalDropLocation() async {
     finalDropLocation = (await getLocationDetails(
-            currentPosition.value?.latitude ?? 0.0,
-            currentPosition.value?.longitude ?? 0.0)) ??
+        currentPosition.value?.latitude ?? 0.0,
+        currentPosition.value?.longitude ?? 0.0)) ??
         "";
     // paymentInitiated();
   }
@@ -939,7 +922,7 @@ class HomeController extends GetxController {
         Get.back();
       }
       ChangeRideStatusModel response =
-          await ApiServices.changeRideStatus(body: {
+      await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.cancelled,
       });
@@ -954,7 +937,7 @@ class HomeController extends GetxController {
 
         Get.defaultDialog(
             middleText:
-                "This order has expired and has been transferred to another driver");
+            "This order has expired and has been transferred to another driver");
       }
     } finally {
       driverState.value = DriverState.idle;
@@ -1014,22 +997,22 @@ class HomeController extends GetxController {
     });
   }
 
-  // void recenter() {
-  //   if (!recenterLoading.value) {
-  //     recenterLoading.value = true;
-  //     loc.Location().getLocation().then(
-  //           (newLoc) {
-  //         recenterLoading.value = false;
-  //         saveLocationData(newLoc);
-  //         googleMapController?.animateCamera(CameraUpdate.newCameraPosition(
-  //           CameraPosition(
-  //             zoom: cameraZoom.value,
-  //             target: LatLng(newLoc.latitude ?? 0.0, newLoc.longitude ?? 0.0),
-  //           ),
-  //         ));
-  //       },
-  //     );
-  //     cameraZoom.value = 14.0;
-  //   }
-  // }
+// void recenter() {
+//   if (!recenterLoading.value) {
+//     recenterLoading.value = true;
+//     loc.Location().getLocation().then(
+//           (newLoc) {
+//         recenterLoading.value = false;
+//         saveLocationData(newLoc);
+//         googleMapController?.animateCamera(CameraUpdate.newCameraPosition(
+//           CameraPosition(
+//             zoom: cameraZoom.value,
+//             target: LatLng(newLoc.latitude ?? 0.0, newLoc.longitude ?? 0.0),
+//           ),
+//         ));
+//       },
+//     );
+//     cameraZoom.value = 14.0;
+//   }
+// }
 }

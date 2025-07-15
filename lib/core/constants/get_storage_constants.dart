@@ -141,7 +141,7 @@ class AppConstants {
   }
 
   static void handleError(Object e, {StackTrace? s}) {
-    log('Error: $e eee', error: e, stackTrace: s);
+    log('Error: $e ', error: e, stackTrace: s);
     String errorMessage;
     if (e is SocketException) {
       errorMessage = 'Network error: ${e.message}';

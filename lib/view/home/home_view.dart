@@ -105,7 +105,7 @@ class HomeScreen extends StatelessWidget {
                     //   return const PaymentConfirmationSheetOnline(titleText: "Payment",text: "Waiting for payment",);
                         return const MakingPaymentBottomSheet(isPay: false,);*/
                     case DriverState.completed:
-                      return HomeController.to.rideIsActive || box.read(BoxKeys.paymentType) == "CSH"
+                      return HomeController.to.rideIsActive
                           ? const MakingPaymentBottomSheet(isPay: true)
                           : const SizedBox();
                     /*         case DriverState.completed:
@@ -262,9 +262,14 @@ class MakingPaymentBottomSheet extends StatelessWidget {
                   ? BlueButton(
                       text: "Confirm",
                       onTap: () {
+                        Get.back();
                         // HomeController.to.completeRide();
-                        HomeController.to.confirmedPayment();
-                        // HomeController.to.driverState.value = DriverState.idle;
+                        box.read(BoxKeys.paymentType) == "CSH"
+                            ? HomeController.to.confirmedPayment()
+                            : {
+                          HomeController.to.driverState.value = DriverState.idle,
+                          HomeController.to.fetchWalletBalance()
+                        };
                         // HomeController.to.isButtonLoading.value= false;
                       },
                     )
@@ -1108,7 +1113,7 @@ class DashBoardItem extends StatelessWidget {
             height: 10.sp,
           ),
           Text(
-            item.value,
+            "${(double.tryParse(item.value?.toString() ?? '0') ?? 0.0).toStringAsFixed(1)}",
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.w500,

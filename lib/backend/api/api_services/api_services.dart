@@ -48,7 +48,7 @@ class ApiServices {
   static Future<SendPhoneOtpResponseModel> sendPhoneOtp({
     required Map<String, String> body,
   }) async {
-    https.Response response = await Interceptor().post(
+    https.Response response = await https.post(
       Uri.https(AppUrls.base, AppUrls.sendPhoneOtp),
       headers: {'Content-Type': 'application/x-www-form-urlencoded'},
       body: body,
