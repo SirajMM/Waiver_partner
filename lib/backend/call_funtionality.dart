@@ -162,14 +162,13 @@ class CallFunctionality {
       handle: data?.body ?? "Incoming Call",
       type: 0, // Audio call
       duration: 15000,
-      textAccept: 'Open the app',
-      textDecline: 'Ignore',
-      // missedCallNotification: const NotificationParams(
-      //   showNotification: true,
-      //   isShowCallback: false,
-      //   subtitle: 'Missed a ride',
-      //   // callbackText: 'Call back',
-      // ),
+      textAccept: 'Accept',
+      textDecline: 'Decline',
+       missedCallNotification: const NotificationParams(
+         showNotification: false,
+         isShowCallback: false,
+         subtitle: 'Missed a ride',
+       callbackText: 'Call back',),
       extra: <String, dynamic>{
         'userId': '1a2b3c4d',
         'rideStatus': data?.rideStatus,
@@ -181,12 +180,12 @@ class CallFunctionality {
         isCustomNotification: true,
         isShowLogo: false,
         ringtonePath: AppAudio.notification,
-        backgroundColor: '#fbfafa', // Changed to a dark green color
+        backgroundColor: '#3685e0', // Changed to a dark green color
         backgroundUrl: AppIcons
             .appIcon, // Changed to a car icon (replace with your actual icon)
-        actionColor: '#2d64f5', // Changed accept button to blue
+        actionColor: '#ffffff', // Changed accept button to blue
         // incomingCallNotificationColor: '#E53935',  // Changed decline button to red
-        textColor: '#ffffff',
+        textColor: '#000000',
       ),
       ios: const IOSParams(
         iconName: 'Waiver',

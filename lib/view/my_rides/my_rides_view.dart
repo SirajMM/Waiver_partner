@@ -22,37 +22,39 @@ class MyRidesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: appBar(title: "My Rides"),
-        body: GetX<MyRidesController>(builder: (controller) {
-          return controller.isLoading.value
-              ? const LoadingBarsAnimation()
-              : controller.isError.value
-                  ? const ErrorPage()
-                  : controller.myRides.isEmpty
-                      ? EmptyPage(text: "No Rides Found")
-                      : ListView(
-                          controller: MyRidesController.to.scrollController,
-                          padding: EdgeInsets.symmetric(
-                              vertical: 30.sp, horizontal: 15.sp),
-                          children: [
-                            GetX<MyRidesController>(builder: (controller) {
-                              return Column(
-                                children: MyRidesController.to.myRides
-                                    .map((ride) =>
-                                        MyRidesListingItem(ride: ride))
-                                    .toList(),
-                              );
-                            }),
-                            GetX<MyRidesController>(builder: (controller) {
-                              return controller.isListCompeted.value
-                                  ? LoadingBarsAnimation(
-                                      height: 200.sp,
-                                    )
-                                  : const SizedBox();
-                            })
-                          ],
-                        );
-        }));
+    appBar: appBar(title: "My Rides"),
+    body: GetX<MyRidesController>(builder: (controller) {
+      if (controller.isLoading.value) {
+        return const LoadingBarsAnimation();
+      }
+
+      if (controller.isError.value) {
+        return const ErrorPage();
+      }
+
+
+      return ListView.builder(
+        controller: controller.scrollController,
+        padding: EdgeInsets.symmetric(vertical: 30.sp, horizontal: 15.sp),
+        itemCount: controller.myRides.length + 1, // +1 for the loader or SizedBox
+        itemBuilder: (context, index) {
+
+
+
+          if (index < controller.myRides.length) {
+            final ride = controller.myRides[index];
+            return MyRidesListingItem(ride: ride);
+          } else {
+            return controller.isListCompeted.value
+                ? LoadingBarsAnimation(height: 200.sp)
+                : const SizedBox();
+          }
+        },
+      );
+
+    }),
+    );
+
   }
 }
 
@@ -91,15 +93,15 @@ class MyRidesListingItem extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    CircleAvatar(
+                    /*CircleAvatar(
                       backgroundColor: AppColors.grey249,
                       child: AppNetworkImage(
                         imageUrl: ride.passenger_profile_image ?? "",
                         height: imageSize,
                         radius: 50,
                       ),
-                    ),
-                    SizedBox(width: 20.sp),
+                    ),*/
+                 //   SizedBox(width: 20.sp),
                     Row(
                       children: [
                         // Expanded(
@@ -123,7 +125,7 @@ class MyRidesListingItem extends StatelessWidget {
                 indent: 10.w,
               ),
               SizedBox(
-                height: 20.h,
+                height: 10.h,
               ),
               Padding(
                 padding: EdgeInsets.only(left: 8.0.h, right: 8.h),
@@ -185,16 +187,16 @@ class MyRidesListingItem extends StatelessWidget {
                       style: TextStyle(fontSize: 14.sp),
                     ),
                   ),
-                  ride.paidTime != null
+                  ride.endTime != null
                       ? Text(
-                          formatISTTime(ride.paidTime!.toString()),
+                          formatISTTime(ride.endTime!.toString()),
                           style: TextStyle(fontSize: 14.sp),
                         )
                       : const SizedBox()
                 ],
               ),
               SizedBox(
-                height: 18.sp,
+                height: 15.sp,
               ),
               MyRideExpansionTile(
                 start: ride.startLocation ?? "",

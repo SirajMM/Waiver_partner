@@ -46,7 +46,7 @@ class HomeController extends GetxController {
   void onInit() async {
     super.onInit();
     currentPosition.value = convertToPosition(AppConstants.locationData);
-    // WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance.addObserver;
     _initializeHive();
     loc.Location location = loc.Location();
     try {
@@ -92,6 +92,7 @@ class HomeController extends GetxController {
     }
   }
 
+
   // @override
   // void didChangeAppLifecycleState(AppLifecycleState state) {
   //   if (state == AppLifecycleState.inactive) {
@@ -129,7 +130,7 @@ class HomeController extends GetxController {
 
   @override
   void onClose() {
-    // WidgetsBinding.instance.removeObserver(this);
+     WidgetsBinding.instance.removeObserver;
     super.onClose();
   }
 
@@ -957,7 +958,7 @@ class HomeController extends GetxController {
 
         Get.defaultDialog(
             middleText:
-            "This order has expired and has been transferred to another driver");
+            "This order has expired or transferred to another driver");
       }
     } finally {
       driverState.value = DriverState.idle;
@@ -1035,4 +1036,22 @@ class HomeController extends GetxController {
 //     cameraZoom.value = 14.0;
 //   }
 // }
+
+
+
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      appState.value = "Background";
+      sendLiveLocation();
+      print("App in Background - Scheduling background task or keeping location stream alive.");
+      // Keep location service alive or schedule WorkManager task here
+    } else if (state == AppLifecycleState.resumed) {
+      appState.value = "Active";
+      print(" App Resumed - Reconnecting services...");
+      sendLiveLocation(); // Resume location sending
+    }
+  }
+
 }
