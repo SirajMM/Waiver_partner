@@ -183,15 +183,38 @@ class MyRidesListingItem extends StatelessWidget {
                       left: 8.0,
                     ),
                     child: Text(
-                      "Date & Time : ",
-                      style: TextStyle(fontSize: 14.sp),
+                      " Starting Date & Time : ",
+                      style: TextStyle(fontSize: 14.sp,fontWeight: FontWeight.bold ),
                     ),
                   ),
                   ride.endTime != null
                       ? Text(
-                          formatISTTime(ride.endTime!.toString()),
+                          formatISTTime(ride.startTime!.toString()),
                           style: TextStyle(fontSize: 14.sp),
                         )
+                      : const SizedBox()
+                ],
+              ),
+               SizedBox(
+                height: 5.h,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 8.0,
+                    ),
+                    child: Text(
+                      " Ending Date & Time : ",
+                      style: TextStyle(fontSize: 14.sp,fontWeight: FontWeight.bold ),
+                    ),
+                  ),
+                  ride.endTime != null
+                      ? Text(
+                    formatISTTime(ride.endTime!.toString()),
+                    style: TextStyle(fontSize: 14.sp),
+                  )
                       : const SizedBox()
                 ],
               ),
