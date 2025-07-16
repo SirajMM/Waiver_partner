@@ -218,10 +218,24 @@ class HomeController extends GetxController {
     }
   }
 
+  // Future<void> getDriverOnlineStatus() async {
+  //   GetOnlineStatusResponseModel response = await ApiServices.getOnlineStatus();
+  //   if (response.status == 200) {
+  //     isOnline.value = response.data?.isOnline ?? false;
+  //   }
+  // }
+
   Future<void> getDriverOnlineStatus() async {
-    GetOnlineStatusResponseModel response = await ApiServices.getOnlineStatus();
-    if (response.status == 200) {
-      isOnline.value = response.data?.isOnline ?? false;
+    try {
+      GetOnlineStatusResponseModel response = await ApiServices.getOnlineStatus();
+      if (response.status == 200) {
+        isOnline.value = response.data?.isOnline ?? false;
+      }
+    } catch (error,s) {
+      AppConstants.handleError(error,s: s);
+      print('Error fetching driver online status: $error');
+      // You might want to set a default value or show an error message
+      isOnline.value = false;
     }
   }
 
@@ -264,6 +278,7 @@ class HomeController extends GetxController {
         rideIsActive = false;
       }
     } catch (error, s) {
+      // AppConstants.handleError(error,s: s);
       log('last active ride $error', error: error, stackTrace: s);
     }
   }
@@ -453,8 +468,13 @@ class HomeController extends GetxController {
       } else {
         isRefreshingWallet.value = false;
       }
-    } catch (e) {
+    } catch (error,s) {
       isRefreshingWallet.value = false;
+      Get.showSnackbar(GetSnackBar(
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.transparent,
+          padding: EdgeInsets.zero,
+          messageText: AppSnackBar(text: error.toString())));
     }
   }
 

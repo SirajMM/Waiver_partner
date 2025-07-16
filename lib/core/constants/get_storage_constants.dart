@@ -113,21 +113,25 @@ class AppConstants {
   static Position? currentPosition;
 
   static Color getColor() {
-    String user = box.read(BoxKeys.userTypeCode);
+    String user = box.read(BoxKeys.userTypeCode)??'none';
     if (user == UserTypeCode.driver) {
       return AppColors.orange;
     } else if (user == UserTypeCode.chauffeur) {
       return AppColors.blue;
-    } else {
+    } else if(user == UserTypeCode.fleet) {
       return AppColors.yellow;
+    } else{
+        return AppColors.blue;
     }
   }
 
   static Color getButtonTextColor() {
-    String user = box.read(BoxKeys.userTypeCode);
+    String user = box.read(BoxKeys.userTypeCode)??"none";
     if (user == UserTypeCode.fleet) {
       return AppColors.black;
-    } else {
+    } else if(user == UserTypeCode.chauffeur|| user == UserTypeCode.driver) {
+      return AppColors.white;
+    }else {
       return AppColors.white;
     }
   }
@@ -149,7 +153,7 @@ class AppConstants {
       try {
         final error = jsonDecode(e.message);
         if (error['code'] == "authentication_failed") {
-          Get.offAllNamed(AppRoutes1.getLoginRoute());
+          Get.offAllNamed(AppRoutes1.getDriverTypeSelectionRoute());
           box.erase();
 
           Get.showSnackbar(GetSnackBar(
