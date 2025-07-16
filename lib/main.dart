@@ -51,7 +51,7 @@ void startReceivePort() {
           );
         } else if (message['title'] == 'cancelled') {
           HomeController.to.rideId = message['rideId'];
-          HomeController.to.orderTimeOut();
+          HomeController.to.orderTimeOut;
         }
       } catch (e) {
         log('Error processing message: $e');
