@@ -60,7 +60,7 @@
             android:gravity="center"
             android:orientation="horizontal">
 
-            <TextView
+            <!-- <TextView
                 android:id="@+id/tvCallback"
                 style="@style/Widget.Compat.NotificationActionText"
                 android:layout_width="wrap_content"
@@ -68,7 +68,7 @@
                 android:gravity="center"
                 android:text="@string/text_call_back"
                 android:textAllCaps="false"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white" /> -->
 
         </LinearLayout>
 

@@ -59,9 +59,9 @@ class OngoingNotificationService : Service() {
                 notificationBuilder.setCategory(Notification.CATEGORY_CALL)
             }
         }
-        val textCalling = data.getString(CallkitConstants.EXTRA_CALLKIT_CALLING_SUBTITLE, "")
-        notificationBuilder.setSubText(if (TextUtils.isEmpty(textCalling)) getString(R.string.text_calling) else textCalling)
-        notificationBuilder.setSmallIcon(R.drawable.ic_accept)
+//        val textCalling = data.getString(CallkitConstants.EXTRA_CALLKIT_CALLING_SUBTITLE, "")
+//        notificationBuilder.setSubText(if (TextUtils.isEmpty(textCalling)) getString(R.string.text_calling) else textCalling)
+//        notificationBuilder.setSmallIcon(R.drawable.ic_accept)
         val isCustomNotification =
             data.getBoolean(CallkitConstants.EXTRA_CALLKIT_IS_CUSTOM_NOTIFICATION, false)
         if (isCustomNotification) {
@@ -94,12 +94,12 @@ class OngoingNotificationService : Service() {
                 R.id.llHangup,
                 if (isShowHangup) View.VISIBLE else View.GONE
             )
-            val textHangup =
-                data.getString(CallkitConstants.EXTRA_CALLKIT_CALLING_HANG_UP_TEXT, "")
-            notificationViews?.setTextViewText(
-                R.id.tvHangUp,
-                if (TextUtils.isEmpty(textHangup)) getString(R.string.text_hang_up) else textHangup
-            )
+//            val textHangup =
+//                data.getString(CallkitConstants.EXTRA_CALLKIT_CALLING_HANG_UP_TEXT, "")
+//            notificationViews?.setTextViewText(
+//                R.id.tvHangUp,
+//                if (TextUtils.isEmpty(textHangup)) getString(R.string.text_hang_up) else textHangup
+//            )
             val textTapOpen =
                 data.getString(CallkitConstants.EXTRA_CALLKIT_CALLING_TAP_OPEN_TEXT, "")
             notificationViews?.setTextViewText(
@@ -144,16 +144,16 @@ class OngoingNotificationService : Service() {
                 CallkitConstants.EXTRA_CALLKIT_CALLING_HANG_UP_SHOW,
                 true
             )
-            if (isShowHangup) {
-                val textHangup =
-                    data.getString(CallkitConstants.EXTRA_CALLKIT_CALLING_HANG_UP_TEXT, "")
-                val hangUpAction: NotificationCompat.Action = NotificationCompat.Action.Builder(
-                    R.drawable.transparent,
-                    if (TextUtils.isEmpty(textHangup)) this.getString(R.string.text_hang_up) else textHangup,
-                    getHangupPendingIntent(onGoingNotificationId, data)
-                ).build()
-                notificationBuilder.addAction(hangUpAction)
-            }
+//            if (isShowHangup) {
+//                val textHangup =
+//                    data.getString(CallkitConstants.EXTRA_CALLKIT_CALLING_HANG_UP_TEXT, "")
+//                val hangUpAction: NotificationCompat.Action = NotificationCompat.Action.Builder(
+//                    R.drawable.transparent,
+//                    if (TextUtils.isEmpty(textHangup)) this.getString(R.string.text_hang_up) else textHangup,
+//                    getHangupPendingIntent(onGoingNotificationId, data)
+//                ).build()
+//                notificationBuilder.addAction(hangUpAction)
+//            }
         }
         notificationBuilder.priority = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             NotificationManager.IMPORTANCE_LOW
