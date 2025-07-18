@@ -144,6 +144,19 @@ class AppConstants {
     return '${hours}h ${minutes}m';
   }
 
+  static String formatSecondsToHrAndMinForDouble(double totalSeconds) {
+    int hours = totalSeconds ~/ 3600;
+    int minutes = (totalSeconds % 3600) ~/ 60;
+    // int seconds = totalSeconds % 60;
+
+    return '${hours}h ${minutes}m';
+  }
+
+  static String metersToKilometersFormatted(double meters) {
+    double kilometers = meters / 1000;
+    return '${kilometers.toStringAsFixed(2)} km';
+  }
+
   static void handleError(Object e, {StackTrace? s}) {
     log('Error: $e ', error: e, stackTrace: s);
     String errorMessage;
