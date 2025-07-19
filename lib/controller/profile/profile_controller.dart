@@ -45,6 +45,7 @@ class ProfileController extends GetxController {
   bool? has_Vehicle_Assigned;
   profileModel.VehicleDetails? vehicleDetails;
   String profileImage = "";
+  // String transmission_type;
   // Future<void> getProfile() async {
   //   profileModel.GetProfileResponseModel response =
   //       await ApiServices.getProfile();
@@ -158,6 +159,23 @@ class ProfileController extends GetxController {
 
       // You can also show a snackbar or dialog to the user
       // Get.snackbar('Error', 'Failed to load profile data');
+    }
+  }
+  String getTransmissionTypeName(List<Transmission>? transmissionTypes, int? transmissionTypeId) {
+    // Handle null cases
+    if (transmissionTypes == null || transmissionTypeId == null) {
+      return 'Unknown';
+    }
+
+    try {
+      // Find the transmission type with matching ID
+      final transmissionType = transmissionTypes.firstWhere(
+            (type) => type.id == transmissionTypeId,
+      );
+      return transmissionType.name ?? 'Unknown';
+    } catch (e) {
+      // Return 'Unknown' if no matching ID is found
+      return 'Unknown';
     }
   }
 

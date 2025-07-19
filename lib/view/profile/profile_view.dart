@@ -708,12 +708,14 @@ class ProfileScreen extends StatelessWidget {
                                                           width: 14.sp,
                                                         ),
                                                         Text(
-                                                          ProfileController
+                                                          ProfileController.to.getTransmissionTypeName(
+                                                              ProfileController
+                                                                  .to
+                                                                  .transmissionType,
+                                                              ProfileController
                                                                   .to
                                                                   .vehicleDetails
-                                                                  ?.transmissionType
-                                                                  .toString() ??
-                                                              "",
+                                                                  ?.transmissionType),
                                                           style: TextStyle(
                                                               fontSize: 16.sp,
                                                               color: AppColors
