@@ -81,20 +81,18 @@ class RatingController extends GetxController {
 
   static RatingController get to => Get.find();
   DashBoardItemModel acceptance = DashBoardItemModel(
-      icon: Icon(
-        Icons.check,
-        color: AppColors.white,
-      ),
-      value: '11',
+      icon: Icon(Icons.check, color: AppColors.white),
+      value: '85.5',  // Will show as "85.5%"
       text: 'Acceptance');
+
   DashBoardItemModel rating = DashBoardItemModel(
       icon: Icon(Icons.star, color: AppColors.white),
-      value: '11',
+      value: '4.2',   // Will show as "4.2"
       text: 'Rating');
+
   DashBoardItemModel cancellation = DashBoardItemModel(
       icon: Icon(Icons.close, color: AppColors.white),
-      value: '11',
+      value: '12.8',  // Will show as "12.8%"
       text: 'Cancellation');
-
   RxList<ReviewModel> ratingsList = <ReviewModel>[].obs;
 }

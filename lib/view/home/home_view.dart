@@ -1090,6 +1090,53 @@ class DashBoardItem extends StatelessWidget {
     required this.item,
   });
 
+  String _formatValue() {
+    if (item.value == null) return '0';
+
+    String valueStr = item.value.toString();
+    String textLower = item.text.toLowerCase();
+
+    // Check if it's already formatted with % symbol
+    if (valueStr.contains('%')) {
+      return valueStr;
+    }
+
+    // Try to parse as double/int
+    double? doubleValue = double.tryParse(valueStr);
+    if (doubleValue != null) {
+      // Determine format based on the text field
+      if (_isPercentageType(textLower)) {
+        return '${doubleValue.toStringAsFixed(1)}%';
+      } else if (_isRatingType(textLower)) {
+        // For ratings, show with decimal if needed, otherwise as integer
+        return doubleValue % 1 == 0
+            ? doubleValue.toInt().toString()
+            : doubleValue.toStringAsFixed(1);
+      } else {
+        // For acceptance count, cancellation count, etc. - show as integer
+        return doubleValue.toInt().toString();
+      }
+    }
+
+    // Fallback: return original value
+    return valueStr;
+  }
+
+  bool _isPercentageType(String text) {
+    return text.contains('percentage') ||
+        text.contains('percent') ||
+        text.contains('rate') ||
+        text.contains('ratio') ||
+        text.contains('acceptance') ||  // Acceptance rate is usually shown as percentage
+        text.contains('cancellation'); // Cancellation rate is usually shown as percentage
+  }
+
+  bool _isRatingType(String text) {
+    return text.contains('rating') ||
+        text.contains('score') ||
+        text.contains('star');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1113,7 +1160,7 @@ class DashBoardItem extends StatelessWidget {
             height: 10.sp,
           ),
           Text(
-            "${(double.tryParse(item.value?.toString() ?? '0') ?? 0.0).toStringAsFixed(1)}",
+            _formatValue(),
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.w500,

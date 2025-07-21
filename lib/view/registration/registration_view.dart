@@ -61,13 +61,15 @@ class RegistrationScreen extends StatelessWidget {
                           AppTextFormField(
                             controller:
                                 RegistrationController.to.controllerFullName,
-                            header: 'Full Name',
-                            placeHolder: "e.g. Alex",
+                            header: 'Full Name only in Capital Letters',
+                            placeHolder: "E.G. ALEX",
                             restrictEmojis: true,
+                            textInputType: TextInputType.text,
                             // restrictSpecialCharacters: true,
                             inputFormatters: [
+                              UpperCaseTextFormatter(),
                               CustomCharacterFormatter(
-                                  allowedPattern: r'[^a-zA-Z\-. ]')
+                                  allowedPattern: r'[^A-Z\-. ]')
                             ],
                             validator: (value) => Validators.isEmpty(
                               value: value,
