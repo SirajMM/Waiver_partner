@@ -504,7 +504,7 @@ class EarningSummaryWeekly extends StatelessWidget {
             children: [
               EarningItem(item: controller.weeklyTrips),
               EarningItemHours(item: controller.weeklyOnlineHours),
-              EarningItemDistance(item: controller.weeklyDistance),
+              EarningItem(item: controller.weeklyDistance),
             ],
           ),
           GetX<EarningController>(builder: (controller) {
@@ -688,7 +688,7 @@ class EarningItemDistance extends StatelessWidget {
           ),
           // This is the main issue - using Obx and accessing value.value correctly
           Obx(() => Text(
-            "${AppConstants.metersToKilometersFormatted(item.value.value)}",
+            "${(item.value.value)}",
             style: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w500,
@@ -876,7 +876,7 @@ class EarningSummaryToday extends StatelessWidget {
             children: [
               EarningItem(item: controller.todayTrips),
               EarningItemHours(item: controller.todayOnlineHours),
-              EarningItemDistance(item: controller.todayDistance),
+              EarningItem(item: controller.todayDistance),
             ],
           ),
 
