@@ -19,6 +19,7 @@ import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 import 'package:waiver_driver/main.dart';
 import 'package:waiver_driver/view/home/home_view.dart';
 import 'package:location/location.dart' as loc;
+import '../../backend/LocationHandler/LocationTrackingService.dart';
 import '../../backend/api/api_services/api_services.dart';
 import '../../backend/api/api_services/web_socket_services.dart';
 import '../../backend/model/earning/earning_model.dart';
@@ -262,6 +263,81 @@ class HomeController extends GetxController {
         });
       }
     });
+  }
+// Replace your existing sendLiveLocation() function with this:
+//   void sendLiveLocation() {
+//
+//       startLocationTracking();
+//
+//   }
+//
+// // Add this new method to start the location tracking service
+//   Future<void> startLocationTracking() async {
+//     try {
+//       await LocationTrackingService.startLocationTracking(
+//         // driverId: driverId, // Make sure you have this variable
+//         passengerId: passengerId,
+//         driverState: driverState.value.toString(),
+//         onPositionUpdate: (Position position) {
+//           // This replaces: currentPosition.value = position;
+//           currentPosition.value = position;
+//         },
+//         onSaveLocation: (Map<String, dynamic> locationData) {
+//           // Convert the map to loc.LocationData and use your existing save method
+//           final locData = loc.LocationData.fromMap(locationData);
+//           saveLocationData(locData); // Uses your existing method
+//         },
+//         onWebSocketSend: (Map<String, dynamic> payload) {
+//           // This replaces your WebSocket logic with isOnline check
+//           if (isOnline.value) {
+//             WebSocketServices.sendLiveLocation(body: payload);
+//           }
+//         },
+//       );
+//
+//       print('Location tracking started successfully');
+//     } catch (e) {
+//       print('Failed to start location tracking: $e');
+//     }
+//   }
+//
+// // Add method to stop location tracking
+//   void stopLocationTracking() {
+//     LocationTrackingService.stopLocationTracking();
+//   }
+//
+// // Update driver state when needed
+//   void updateDriverState({
+//     String? newPassengerId,
+//     required DriverState newDriverState,
+//   }) {
+//     // Update local state
+//     passengerId = newPassengerId;
+//     driverState.value = newDriverState;
+//
+//     // Update in the isolate
+//     LocationTrackingService.updateDriverState(
+//       passengerId: newPassengerId,
+//       driverState: newDriverState.toString(),
+//     );
+//   }
+
+
+// Your existing saveLocationData method can stay the same, but now it receives a Map
+//   void saveLocationData(Map<String, dynamic> locationData) {
+//     // You can convert the map to your existing format if needed:
+//     // final convertedData = convertMapToLocationData(locationData);
+//     // Or use the map directly since it contains all the same data
+//
+//     // Your existing save logic here
+//     print('Location saved: ${locationData['latitude']}, ${locationData['longitude']}');
+//   }
+
+// Helper method to convert map to your existing format (if needed)
+  Map<String, dynamic> convertMapToLocationData(Map<String, dynamic> locationData) {
+    // This converts the locationData map to whatever format your existing
+    // convertPositionToLocationData method was returning
+    return locationData; // They should already be in the same format
   }
 
   RxBool isLoading = false.obs;
@@ -616,10 +692,10 @@ class HomeController extends GetxController {
           body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
       if (response.status == 200) {
         log(isButtonLoading.toString());
-        if (driverState.value == DriverState.idle) {
-          startLocationLongMarker = 0.0;
-          startLocationLatMarker = 0.0;
-        }
+        // if (driverState.value == DriverState.idle) {
+        //   startLocationLongMarker = 0.0;
+        //   startLocationLatMarker = 0.0;
+        // }
         rideIsActive = true;
         Get.back();
         driverState.value = DriverState.goingToPickUp;
@@ -636,6 +712,9 @@ class HomeController extends GetxController {
           ),
         ),
       );
+      startLocationLongMarker = 0.0;
+      startLocationLatMarker = 0.0;
+      recenter();
     } finally {
       isButtonLoading.value = false;
       recenter();
