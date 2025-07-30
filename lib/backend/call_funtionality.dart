@@ -167,8 +167,8 @@ class CallFunctionality {
        missedCallNotification: const NotificationParams(
          showNotification: false,
          isShowCallback: false,
-         subtitle: 'Missed a ride',
-       callbackText: 'Call back',),
+         /*subtitle: 'Missed a ride',
+       callbackText: 'Call back',*/),
       extra: <String, dynamic>{
         'userId': '1a2b3c4d',
         'rideStatus': data?.rideStatus,
@@ -215,8 +215,8 @@ class CallFunctionality {
     _isEventListenerRegistered = true;
 
     FlutterCallkitIncoming.onEvent.listen((event) {
-      final SendPort? sendPort =
-          IsolateNameServer.lookupPortByName('main_send_port');
+      final SendPort? sendPort = IsolateNameServer.lookupPortByName('main_send_port');
+
       if (event?.event == Event.actionCallAccept) {
         // _onCallAccepted(event?.body['id']);
         print("call data ${event?.body}");

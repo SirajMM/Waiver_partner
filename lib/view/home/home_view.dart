@@ -384,10 +384,12 @@ class EnterOtpBottomSheet extends StatelessWidget {
               currentCode: "",
               onCodeSubmitted: (code) {
                 HomeController.to.code = code;
+
               },
               onCodeChanged: (code) {
                 HomeController.to.code = code;
                 HomeController.to.showIsOtpValid.value = false;
+
               },
               codeLength: 4,
             ),
@@ -1020,7 +1022,7 @@ class ChangeOnlineStatusButton extends StatelessWidget {
                     backgroundColor: Colors.transparent,
                     padding: EdgeInsets.zero,
                     messageText: AppSnackBar(
-                      text: "Your have no assinged vehicles",
+                      text: "You have no assinged vehicles",
                     ),
                   ),
                 );

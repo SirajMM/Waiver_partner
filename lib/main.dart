@@ -64,6 +64,8 @@ void startReceivePort() {
 }
 
 // Start continuous location sending
+
+
 void _startContinuousLocationSending() {
   // Call immediately
   _sendLocationNow();
@@ -83,11 +85,15 @@ void _sendLocationNow() {
   }
 }
 
+
+
+
+
+
 Timer? _locationTimer;
 
 void _startLocationTracking() {
   _stopLocationTracking(); // Stop any existing timer
-
   // Send location every 30 seconds (adjust as needed)
   _locationTimer = Timer.periodic(Duration(seconds: 10), (timer) {
     try {
