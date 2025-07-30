@@ -5,6 +5,7 @@ import 'package:waiver_driver/backend/model/setting/setting_model.dart';
 import 'package:waiver_driver/backend/parser/Settings/settings_parser.dart';
 import 'package:waiver_driver/core/themes/assets/icons.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
+import 'package:waiver_driver/helper/router/app_routes/route.dart';
 
 import 'package:waiver_driver/main.dart';
 
@@ -93,8 +94,9 @@ class SettingController extends GetxController {
       var response = await ApiServices.deleteAccount(body: {});
       if (response.status == 200) {
         await FirebaseMessaging.instance.deleteToken();
-        Get.offAndToNamed(AppRoutes.driverTypeSelection);
         await box.erase();
+        // Clear entire navigation stack
+        Get.offAllNamed(AppRoutes1.getDriverTypeSelectionRoute());
       } else {
         Get.showSnackbar(
           GetSnackBar(

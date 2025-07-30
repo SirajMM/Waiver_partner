@@ -1,7 +1,7 @@
 name: waiver_driver
 description: "Waiver Driver App"
 publish_to: 'none'
-version: 3.0.8+39
+version: 3.1.2+43
 
 environment:
   sdk: ^3.6.0

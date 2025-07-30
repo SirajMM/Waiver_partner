@@ -400,15 +400,12 @@ class EarningController extends GetxController
       text: 'Distance');
 
   Future<void> handlePaymentSuccess(PaymentSuccessResponse response) async {
-    // print(response.data);
-    // razorpayPaymentId = response.paymentId ?? "";
-    // razorpaySignature = response.signature ?? "";
-    // Get.dialog(PaymentDialog(
-    //   isSuccess: true,
-    //   message: response.paymentId ?? '',
-    // ));
-    //
-    // await paymentSuccessful();
+    // Set payment successful and stop processing
+    isPaymentSuccessful.value = true;
+    isPaymentProcessing.value = false;
+
+    // Add your success handling logic here
+    // For example: update UI, save payment info, etc.
   }
 
   void handlePaymentError(PaymentFailureResponse response) {
@@ -421,15 +418,22 @@ class EarningController extends GetxController
   }
 
   void handlePaymentExternalWallet(ExternalWalletResponse response) {
-    // print(response);
+    isPaymentProcessing.value = false;
+    log(response.toString());
     // Get.dialog(PaymentDialog(
     //   isSuccess: true,
     //   message: response.walletName ?? '',
     // ));
   }
+
+  RxBool isPaymentSuccessful = false.obs;
+  RxBool isPaymentProcessing = false.obs;
   void checkOut(String amount) {
+    // Set payment processing to true
+    isPaymentProcessing.value = true;
+
     Map<String, dynamic> options = {
-      'key': 'rzp_live_AGIJ73c4q0mVTI',
+      'key': 'rzp_test_sITDpSzuyhkk9n',
       'order_id': '',
       'amount': amount,
       'name': 'waiver',
@@ -444,6 +448,8 @@ class EarningController extends GetxController
       debugPrint('Error: $e');
       debugPrint('Stack Trace: $stackTrace');
       print(options);
+      // Reset processing state on error
+      isPaymentProcessing.value = false;
     }
   }
 }

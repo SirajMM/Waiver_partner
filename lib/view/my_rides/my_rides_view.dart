@@ -22,39 +22,34 @@ class MyRidesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    appBar: appBar(title: "My Rides"),
-    body: GetX<MyRidesController>(builder: (controller) {
-      if (controller.isLoading.value) {
-        return const LoadingBarsAnimation();
-      }
+      appBar: appBar(title: "My Rides"),
+      body: GetX<MyRidesController>(builder: (controller) {
+        if (controller.isLoading.value) {
+          return const LoadingBarsAnimation();
+        }
 
-      if (controller.isError.value) {
-        return const ErrorPage();
-      }
+        if (controller.isError.value) {
+          return const ErrorPage();
+        }
 
-
-      return ListView.builder(
-        controller: controller.scrollController,
-        padding: EdgeInsets.symmetric(vertical: 30.sp, horizontal: 15.sp),
-        itemCount: controller.myRides.length + 1, // +1 for the loader or SizedBox
-        itemBuilder: (context, index) {
-
-
-
-          if (index < controller.myRides.length) {
-            final ride = controller.myRides[index];
-            return MyRidesListingItem(ride: ride);
-          } else {
-            return controller.isListCompeted.value
-                ? LoadingBarsAnimation(height: 200.sp)
-                : const SizedBox();
-          }
-        },
-      );
-
-    }),
+        return ListView.builder(
+          controller: controller.scrollController,
+          padding: EdgeInsets.symmetric(vertical: 30.sp, horizontal: 15.sp),
+          itemCount:
+              controller.myRides.length + 1, // +1 for the loader or SizedBox
+          itemBuilder: (context, index) {
+            if (index < controller.myRides.length) {
+              final ride = controller.myRides[index];
+              return MyRidesListingItem(ride: ride);
+            } else {
+              return controller.isListCompeted.value
+                  ? LoadingBarsAnimation(height: 200.sp)
+                  : const SizedBox();
+            }
+          },
+        );
+      }),
     );
-
   }
 }
 
@@ -91,7 +86,7 @@ class MyRidesListingItem extends StatelessWidget {
                 padding: EdgeInsets.only(
                     left: 8.0.h, right: 8.h, top: 8.h, bottom: 8.h),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     /*CircleAvatar(
                       backgroundColor: AppColors.grey249,
@@ -101,19 +96,33 @@ class MyRidesListingItem extends StatelessWidget {
                         radius: 50,
                       ),
                     ),*/
-                 //   SizedBox(width: 20.sp),
-                    Row(
-                      children: [
-                        // Expanded(
-                        //   child:
-                        Text(
-                          ride.passenger ?? "Passenger Name Not Available",
-                          style: TextStyle(
-                              fontSize: 15.sp, fontWeight: FontWeight.w500),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        // ),
-                      ],
+                    //   SizedBox(width: 20.sp),
+                    Expanded(
+                      child: Text(
+                        ride.passenger ?? "Passenger Name Not Available",
+                        style: TextStyle(
+                            fontSize: 15.sp, fontWeight: FontWeight.w500),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 12.sp, vertical: 6.sp),
+                      decoration: BoxDecoration(
+                        color: MyRidesController.to
+                            .getStatusContainerColor(ride.rideStatus),
+                        borderRadius: BorderRadius.circular(20.sp),
+                      ),
+                      child: Text(
+                        MyRidesController.to
+                            .getDisplayRideStatus(ride.rideStatus),
+                        style: TextStyle(
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w600,
+                            color: MyRidesController.to
+                                .getStatusTextColor(ride.rideStatus)),
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   ],
                 ),
@@ -183,8 +192,33 @@ class MyRidesListingItem extends StatelessWidget {
                       left: 8.0,
                     ),
                     child: Text(
-                      "Date & Time : ",
-                      style: TextStyle(fontSize: 14.sp),
+                      " Starting Date & Time : ",
+                      style: TextStyle(
+                          fontSize: 14.sp, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  ride.endTime != null
+                      ? Text(
+                          formatISTTime(ride.startTime!.toString()),
+                          style: TextStyle(fontSize: 14.sp),
+                        )
+                      : const SizedBox()
+                ],
+              ),
+              SizedBox(
+                height: 5.h,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 8.0,
+                    ),
+                    child: Text(
+                      " Ending Date & Time : ",
+                      style: TextStyle(
+                          fontSize: 14.sp, fontWeight: FontWeight.bold),
                     ),
                   ),
                   ride.endTime != null

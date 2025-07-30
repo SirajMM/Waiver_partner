@@ -372,13 +372,31 @@ class BalanceAmount extends StatelessWidget {
               ),
             ],
           ),
-          BlueButton(
-            width: 100.w,
-            height: 40.h,
-            text: 'Pay Now',
-            onTap: () => controller
-                .checkOut(controller.todayBalanceAmount.value.toString()),
-          )
+          Obx(() {
+            bool shouldDisable = controller.todayBalanceAmount.value == 0 ||
+                controller.isPaymentSuccessful.value ||
+                controller.isPaymentProcessing.value;
+
+            return Opacity(
+              opacity: shouldDisable ? 0.5 : 1.0,
+              child: BlueButton(
+                width: 150.w,
+                height: 40.h,
+                text: controller.isPaymentProcessing.value
+                    ? 'Processing...'
+                    : controller.isPaymentSuccessful.value
+                    ? 'Payment Completed'
+                    : controller.todayBalanceAmount.value == 0
+                    ? 'No Amount Due'
+                    : 'Pay Now',
+                onTap: shouldDisable
+                    ? () {} // Empty function to prevent action
+                    : () => controller.checkOut(
+                    controller.todayBalanceAmount.value.toString()
+                ),
+              ),
+            );
+          })
         ],
       ),
     );
@@ -485,7 +503,7 @@ class EarningSummaryWeekly extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               EarningItem(item: controller.weeklyTrips),
-              EarningItem(item: controller.weeklyOnlineHours),
+              EarningItemHours(item: controller.weeklyOnlineHours),
               EarningItem(item: controller.weeklyDistance),
             ],
           ),
@@ -512,7 +530,7 @@ class EarningSummaryWeekly extends StatelessWidget {
                       ),
                       DetailsItemView(
                         text: "Tax",
-                        value: "- ₹ ${controller.weeklyWaiverCharge}",
+                        value: "- ₹ ${controller.weeklyTax}",
                       ),
                       DetailsItemView(
                         text: "Incentives",
@@ -631,6 +649,96 @@ class EarningItem extends StatelessWidget {
                     fontWeight: FontWeight.w500,
                     color: AppColors.black),
               )),
+          Text(
+            item.text,
+            style: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w500,
+              color: Get.theme.indicatorColor.withOpacity(.5),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class EarningItemDistance extends StatelessWidget {
+  final EarningItemModel item;
+
+  const EarningItemDistance({
+    super.key,
+    required this.item,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: Get.width * .25,
+      padding: EdgeInsets.symmetric(vertical: 16.sp),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.sp),
+          border: Border.all(width: 1.5.sp, color: AppColors.grey155)),
+      child: Column(
+        children: [
+          CircleWithIcon(
+              height: 30.sp, color: AppColors.blue, child: item.icon),
+          SizedBox(
+            height: 10.sp,
+          ),
+          // This is the main issue - using Obx and accessing value.value correctly
+          Obx(() => Text(
+            "${(item.value.value)}",
+            style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: AppColors.black),
+          )),
+          Text(
+            item.text,
+            style: TextStyle(
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w500,
+              color: Get.theme.indicatorColor.withOpacity(.5),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class EarningItemHours extends StatelessWidget {
+  final EarningItemModel item;
+
+  const EarningItemHours({
+    super.key,
+    required this.item,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: Get.width * .25,
+      padding: EdgeInsets.symmetric(vertical: 16.sp),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10.sp),
+          border: Border.all(width: 1.5.sp, color: AppColors.grey155)),
+      child: Column(
+        children: [
+          CircleWithIcon(
+              height: 30.sp, color: AppColors.blue, child: item.icon),
+          SizedBox(
+            height: 10.sp,
+          ),
+          // This is the main issue - using Obx and accessing value.value correctly
+          Obx(() => Text(
+            "${AppConstants.formatSecondsToHrAndMinForDouble(item.value.value)}",
+            style: TextStyle(
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w500,
+                color: AppColors.black),
+          )),
           Text(
             item.text,
             style: TextStyle(
@@ -767,7 +875,7 @@ class EarningSummaryToday extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               EarningItem(item: controller.todayTrips),
-              EarningItem(item: controller.todayOnlineHours),
+              EarningItemHours(item: controller.todayOnlineHours),
               EarningItem(item: controller.todayDistance),
             ],
           ),

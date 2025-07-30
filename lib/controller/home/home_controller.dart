@@ -19,6 +19,7 @@ import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 import 'package:waiver_driver/main.dart';
 import 'package:waiver_driver/view/home/home_view.dart';
 import 'package:location/location.dart' as loc;
+import '../../backend/LocationHandler/LocationTrackingService.dart';
 import '../../backend/api/api_services/api_services.dart';
 import '../../backend/api/api_services/web_socket_services.dart';
 import '../../backend/model/earning/earning_model.dart';
@@ -219,10 +220,24 @@ class HomeController extends GetxController {
     }
   }
 
+  // Future<void> getDriverOnlineStatus() async {
+  //   GetOnlineStatusResponseModel response = await ApiServices.getOnlineStatus();
+  //   if (response.status == 200) {
+  //     isOnline.value = response.data?.isOnline ?? false;
+  //   }
+  // }
+
   Future<void> getDriverOnlineStatus() async {
-    GetOnlineStatusResponseModel response = await ApiServices.getOnlineStatus();
-    if (response.status == 200) {
-      isOnline.value = response.data?.isOnline ?? false;
+    try {
+      GetOnlineStatusResponseModel response = await ApiServices.getOnlineStatus();
+      if (response.status == 200) {
+        isOnline.value = response.data?.isOnline ?? false;
+      }
+    } catch (error,s) {
+      AppConstants.handleError(error,s: s);
+      print('Error fetching driver online status: $error');
+      // You might want to set a default value or show an error message
+      isOnline.value = false;
     }
   }
 
@@ -249,6 +264,81 @@ class HomeController extends GetxController {
       }
     });
   }
+// Replace your existing sendLiveLocation() function with this:
+//   void sendLiveLocation() {
+//
+//       startLocationTracking();
+//
+//   }
+//
+// // Add this new method to start the location tracking service
+//   Future<void> startLocationTracking() async {
+//     try {
+//       await LocationTrackingService.startLocationTracking(
+//         // driverId: driverId, // Make sure you have this variable
+//         passengerId: passengerId,
+//         driverState: driverState.value.toString(),
+//         onPositionUpdate: (Position position) {
+//           // This replaces: currentPosition.value = position;
+//           currentPosition.value = position;
+//         },
+//         onSaveLocation: (Map<String, dynamic> locationData) {
+//           // Convert the map to loc.LocationData and use your existing save method
+//           final locData = loc.LocationData.fromMap(locationData);
+//           saveLocationData(locData); // Uses your existing method
+//         },
+//         onWebSocketSend: (Map<String, dynamic> payload) {
+//           // This replaces your WebSocket logic with isOnline check
+//           if (isOnline.value) {
+//             WebSocketServices.sendLiveLocation(body: payload);
+//           }
+//         },
+//       );
+//
+//       print('Location tracking started successfully');
+//     } catch (e) {
+//       print('Failed to start location tracking: $e');
+//     }
+//   }
+//
+// // Add method to stop location tracking
+//   void stopLocationTracking() {
+//     LocationTrackingService.stopLocationTracking();
+//   }
+//
+// // Update driver state when needed
+//   void updateDriverState({
+//     String? newPassengerId,
+//     required DriverState newDriverState,
+//   }) {
+//     // Update local state
+//     passengerId = newPassengerId;
+//     driverState.value = newDriverState;
+//
+//     // Update in the isolate
+//     LocationTrackingService.updateDriverState(
+//       passengerId: newPassengerId,
+//       driverState: newDriverState.toString(),
+//     );
+//   }
+
+
+// Your existing saveLocationData method can stay the same, but now it receives a Map
+//   void saveLocationData(Map<String, dynamic> locationData) {
+//     // You can convert the map to your existing format if needed:
+//     // final convertedData = convertMapToLocationData(locationData);
+//     // Or use the map directly since it contains all the same data
+//
+//     // Your existing save logic here
+//     print('Location saved: ${locationData['latitude']}, ${locationData['longitude']}');
+//   }
+
+// Helper method to convert map to your existing format (if needed)
+  Map<String, dynamic> convertMapToLocationData(Map<String, dynamic> locationData) {
+    // This converts the locationData map to whatever format your existing
+    // convertPositionToLocationData method was returning
+    return locationData; // They should already be in the same format
+  }
 
   RxBool isLoading = false.obs;
   RxBool isButtonLoading = false.obs;
@@ -265,6 +355,7 @@ class HomeController extends GetxController {
         rideIsActive = false;
       }
     } catch (error, s) {
+      // AppConstants.handleError(error,s: s);
       log('last active ride $error', error: error, stackTrace: s);
     }
   }
@@ -454,8 +545,13 @@ class HomeController extends GetxController {
       } else {
         isRefreshingWallet.value = false;
       }
-    } catch (e) {
+    } catch (error,s) {
       isRefreshingWallet.value = false;
+      Get.showSnackbar(GetSnackBar(
+          duration: Duration(seconds: 2),
+          backgroundColor: Colors.transparent,
+          padding: EdgeInsets.zero,
+          messageText: AppSnackBar(text: error.toString())));
     }
   }
 
@@ -596,10 +692,10 @@ class HomeController extends GetxController {
           body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
       if (response.status == 200) {
         log(isButtonLoading.toString());
-        if (driverState.value == DriverState.idle) {
-          startLocationLongMarker = 0.0;
-          startLocationLatMarker = 0.0;
-        }
+        // if (driverState.value == DriverState.idle) {
+        //   startLocationLongMarker = 0.0;
+        //   startLocationLatMarker = 0.0;
+        // }
         rideIsActive = true;
         Get.back();
         driverState.value = DriverState.goingToPickUp;
@@ -616,6 +712,9 @@ class HomeController extends GetxController {
           ),
         ),
       );
+      startLocationLongMarker = 0.0;
+      startLocationLatMarker = 0.0;
+      recenter();
     } finally {
       isButtonLoading.value = false;
       recenter();
@@ -839,6 +938,72 @@ class HomeController extends GetxController {
     }
   }
 
+  // Future<void> verifyRideOtp({required String type}) async {
+  //   try {
+  //     driverState.value = DriverState.loading;
+  //     var response = await ApiServices.verifyRideOtp(body: {
+  //       "ride_id": rideId,
+  //       "otp": code,
+  //       "type": type == RideStatus.reachedPickUp ? "APO" : "ADO"
+  //     });
+  //     Get.back();
+  //     if (response.status == 200) {
+  //       if (response.status == 200) {
+  //         startLocationLatMarker = 0.0;
+  //         startLocationLongMarker = 0.0;
+  //         recenter();
+  //         if (type == RideStatus.reachedPickUp) {
+  //           // await ApiServices.changeRideStatus(body: {
+  //           //   "ride_id": rideId,
+  //           //   "ride_status": RideStatus.reachedPickUp
+  //           // });
+  //           goingToDropOffLocation();
+  //
+  //           log("tracking -----------");
+  //           log(isTracking.toString());
+  //           isTracking = true;
+  //           // trackDistance();
+  //           // goingToDropOffLocation();
+  //         } else {
+  //           MobilityFeatures().stopListening();
+  //           // ChangeRideStatusModel response = await ApiServices.changeRideStatus(
+  //           //     body: {
+  //           //       "ride_id": rideId,
+  //           //       "ride_status": RideStatus.paymentInitiated
+  //           //     });
+  //           // confirmedPayment();
+  //           // getFinalDropLocation();
+  //           await paymentInitiated();
+  //         }
+  //         code = " ";
+  //       } else {
+  //         Get.showSnackbar(const GetSnackBar(
+  //             duration: Duration(seconds: 5),
+  //             backgroundColor: Colors.transparent,
+  //             padding: EdgeInsets.zero,
+  //             messageText: AppSnackBar(text: "Wrong otp")));
+  //       }
+  //     } else {
+  //       Get.showSnackbar(const GetSnackBar(
+  //           duration: Duration(seconds: 5),
+  //           backgroundColor: Colors.transparent,
+  //           padding: EdgeInsets.zero,
+  //           messageText: AppSnackBar(text: "Wrong otp")));
+  //     }
+  //   } catch (error) {
+  //     Get.showSnackbar(const GetSnackBar(
+  //         duration: Duration(seconds: 5),
+  //         backgroundColor: Colors.transparent,
+  //         padding: EdgeInsets.zero,
+  //         messageText: AppSnackBar(text: "OOPS Something went wrong")));
+  //   } finally {
+  //     if (type == RideStatus.reachedPickUp) {
+  //       driverState.value = DriverState.arrivedAtPickUp;
+  //     } else {
+  //       driverState.value = DriverState.paymentInitiated;
+  //     }
+  //   }
+  // }
   Future<void> verifyRideOtp({required String type}) async {
     try {
       driverState.value = DriverState.loading;
@@ -847,65 +1012,53 @@ class HomeController extends GetxController {
         "otp": code,
         "type": type == RideStatus.reachedPickUp ? "APO" : "ADO"
       });
-      Get.back();
-      if (response.status == 200) {
-        if (response.status == 200) {
-          startLocationLatMarker = 0.0;
-          startLocationLongMarker = 0.0;
-          recenter();
-          if (type == RideStatus.reachedPickUp) {
-            // await ApiServices.changeRideStatus(body: {
-            //   "ride_id": rideId,
-            //   "ride_status": RideStatus.reachedPickUp
-            // });
-            goingToDropOffLocation();
 
-            log("tracking -----------");
-            log(isTracking.toString());
-            isTracking = true;
-            // trackDistance();
-            // goingToDropOffLocation();
-          } else {
-            MobilityFeatures().stopListening();
-            // ChangeRideStatusModel response = await ApiServices.changeRideStatus(
-            //     body: {
-            //       "ride_id": rideId,
-            //       "ride_status": RideStatus.paymentInitiated
-            //     });
-            // confirmedPayment();
-            // getFinalDropLocation();
-            await paymentInitiated();
-          }
-          code = " ";
+      Get.back();
+
+      if (response.status == 200) {
+        // Reset marker positions
+        startLocationLatMarker = 0.0;
+        startLocationLongMarker = 0.0;
+        recenter();
+
+        if (type == RideStatus.reachedPickUp) {
+          goingToDropOffLocation();
+          log("tracking -----------");
+          log(isTracking.toString());
+          isTracking = true;
+          driverState.value = DriverState.arrivedAtPickUp;
         } else {
-          Get.showSnackbar(const GetSnackBar(
-              duration: Duration(seconds: 5),
-              backgroundColor: Colors.transparent,
-              padding: EdgeInsets.zero,
-              messageText: AppSnackBar(text: "Wrong otp")));
+          MobilityFeatures().stopListening();
+          await paymentInitiated();
+          driverState.value = DriverState.paymentInitiated;
         }
+        code = " ";
       } else {
-        Get.showSnackbar(const GetSnackBar(
-            duration: Duration(seconds: 5),
-            backgroundColor: Colors.transparent,
-            padding: EdgeInsets.zero,
-            messageText: AppSnackBar(text: "Wrong otp")));
+        // Handle API error response
+        _showErrorSnackbar("Wrong otp");
+        // Reset to previous state on error
+        driverState.value = type == RideStatus.reachedPickUp
+            ? DriverState.arrivedAtPickUp
+            : DriverState.reachedDestination;
       }
     } catch (error) {
-      Get.showSnackbar(const GetSnackBar(
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: AppSnackBar(text: "OOPS Something went wrong")));
-    } finally {
-      if (type == RideStatus.reachedPickUp) {
-        driverState.value = DriverState.arrivedAtPickUp;
-      } else {
-        driverState.value = DriverState.paymentInitiated;
-      }
+      log("Error in verifyRideOtp: $error");
+      _showErrorSnackbar("OOPS Something went wrong");
+      // Reset to previous state on exception
+      driverState.value = type == RideStatus.reachedPickUp
+          ? DriverState.arrivedAtPickUp
+          : DriverState.reachedDestination;
     }
   }
 
+  void _showErrorSnackbar(String message) {
+    Get.showSnackbar(GetSnackBar(
+      duration: const Duration(seconds: 5),
+      backgroundColor: Colors.transparent,
+      padding: EdgeInsets.zero,
+      messageText: AppSnackBar(text: message),
+    ));
+  }
   Future<void> getFinalDropLocation() async {
     finalDropLocation = (await getLocationDetails(
         currentPosition.value?.latitude ?? 0.0,

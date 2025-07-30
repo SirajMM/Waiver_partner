@@ -89,6 +89,7 @@ class Ride {
   String? driver;
   String? passenger;
   String? passenger_profile_image;
+  String? rideStatus;
 
   Ride({
     this.id,
@@ -112,6 +113,7 @@ class Ride {
     this.driver,
     this.passenger,
     this.passenger_profile_image,
+    this.rideStatus
   });
 
   factory Ride.fromJson(Map<String, dynamic> json) => Ride(
@@ -146,6 +148,7 @@ class Ride {
         driver: json["driver"],
         passenger: json["passenger"],
         passenger_profile_image: json["passenger_profile_image  "],
+        rideStatus: json["ride_status"]
       );
 
   Map<String, dynamic> toJson() => {
@@ -172,6 +175,8 @@ class Ride {
         "driver": driver,
         "passenger": passenger,
         "passenger_profile_image": passenger_profile_image,
+        "ride_status": rideStatus
+
       };
 }
 

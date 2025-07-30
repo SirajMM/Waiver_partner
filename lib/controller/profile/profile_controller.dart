@@ -45,62 +45,138 @@ class ProfileController extends GetxController {
   bool? has_Vehicle_Assigned;
   profileModel.VehicleDetails? vehicleDetails;
   String profileImage = "";
+  // String transmission_type;
+  // Future<void> getProfile() async {
+  //   profileModel.GetProfileResponseModel response =
+  //       await ApiServices.getProfile();
+  //   // profileImage = response.data?.profileImage ?? "";
+  //   controllerFullName.text = response.data?.fullname ?? "";
+  //   controllerEmail.text = response.data?.email ?? "";
+  //   selectedGender = genderList.firstWhereOrNull(
+  //       (element) => (element.code) == (response.data?.gender));
+  //   controllerEmail.text = response.data?.email ?? "";
+  //   controllerDateOfBirth.text = (response.data?.dob ?? "").changeDateFormat(
+  //       fromFormat: "yyyy-MM-dd", toFormat: "dd / MMM / yyyy");
+  //   controllerAlternativeNumber.text = response.data?.alternativePhone ?? "";
+  //   controllerWhatsAppNumber.text = response.data?.whatsappPhone ?? "";
+  //   regPhoneNumber = response.data?.phone ?? "";
+  //   state = response.data?.state?.name ?? "";
+  //   district = response.data?.district?.name ?? "";
+  //   workingLocation = response.data?.workLocation?.name ?? "";
+  //   transmissionType = response.data?.transmissionType ?? [];
+  //   experience = response.data?.drivingExperience?.experience.toString();
+  //   // selectedState = statesList.firstWhereOrNull(
+  //   //     (element) => (element.id) == (response.data?.state?.id));
+  //   // getAllDistricts(districtsID: response.data?.district?.id);
+  //   controllerAddress.text = response.data?.address ?? "";
+  //
+  //   // selectedYearsOfDrivingExperience =
+  //   //     yearsOfDrivingExperience.firstWhereOrNull((element) =>
+  //   //         (element.id) == (response.data?.drivingExperience?.id));
+  //   // selectedWorkingLocation = workingLocations.firstWhereOrNull(
+  //   //     (element) => (element.id) == (response.data?.workLocation?.id));
+  //   vehicleTypes = response.data?.vehicleType ?? [];
+  //   has_Vehicle_Assigned = response.data?.hasVehicleAssigned;
+  //   vehicleDetails = response.data?.vehicleDetails;
+  //   await box.write(BoxKeys.isTaken, has_Vehicle_Assigned);
+  //   // for (var item in vehicleTypes) {
+  //   //   for (var item2 in response.data?.vehicleType ?? []) {
+  //   //     if (item.id == item2.id) {
+  //   //       item.isSelected?.value = true;
+  //   //     } else {
+  //   //       item.isSelected?.value = false;
+  //   //     }
+  //   //     print(item.isSelected?.value);
+  //   //   }
+  //   // }
+  //
+  //   // selectedTransmissionType = transmissionTypes.firstWhereOrNull(
+  //   //     (element) => (element.id) == (response.data?.transmissionType?.id));
+  //   response.data?.licenseValidity != null
+  //       ? controllerLicenseValidityDate.text =
+  //           (response.data?.licenseValidity ?? "").changeDateFormat(
+  //               fromFormat: "yyy-MM-dd", toFormat: "dd / MMM / yyy")
+  //       : null;
+  //
+  //   profileModel.ProfileImageModel imageResponse =
+  //       await ApiServices.getProfilePhoto(
+  //           queryParameter: {"document_type": "PPO"});
+  //   profileImage = imageResponse.data?.files?.firstOrNull?.file ?? "";
+  // }
   Future<void> getProfile() async {
-    profileModel.GetProfileResponseModel response =
-        await ApiServices.getProfile();
-    // profileImage = response.data?.profileImage ?? "";
-    controllerFullName.text = response.data?.fullname ?? "";
-    controllerEmail.text = response.data?.email ?? "";
-    selectedGender = genderList.firstWhereOrNull(
-        (element) => (element.code) == (response.data?.gender));
-    controllerEmail.text = response.data?.email ?? "";
-    controllerDateOfBirth.text = (response.data?.dob ?? "").changeDateFormat(
-        fromFormat: "yyyy-MM-dd", toFormat: "dd / MMM / yyyy");
-    controllerAlternativeNumber.text = response.data?.alternativePhone ?? "";
-    controllerWhatsAppNumber.text = response.data?.whatsappPhone ?? "";
-    regPhoneNumber = response.data?.phone ?? "";
-    state = response.data?.state?.name ?? "";
-    district = response.data?.district?.name ?? "";
-    workingLocation = response.data?.workLocation?.name ?? "";
-    transmissionType = response.data?.transmissionType ?? [];
-    experience = response.data?.drivingExperience?.experience.toString();
-    // selectedState = statesList.firstWhereOrNull(
-    //     (element) => (element.id) == (response.data?.state?.id));
-    // getAllDistricts(districtsID: response.data?.district?.id);
-    controllerAddress.text = response.data?.address ?? "";
+    try {
+      // First API call - Get Profile
+      profileModel.GetProfileResponseModel response =
+      await ApiServices.getProfile();
 
-    // selectedYearsOfDrivingExperience =
-    //     yearsOfDrivingExperience.firstWhereOrNull((element) =>
-    //         (element.id) == (response.data?.drivingExperience?.id));
-    // selectedWorkingLocation = workingLocations.firstWhereOrNull(
-    //     (element) => (element.id) == (response.data?.workLocation?.id));
-    vehicleTypes = response.data?.vehicleType ?? [];
-    has_Vehicle_Assigned = response.data?.hasVehicleAssigned;
-    vehicleDetails = response.data?.vehicleDetails;
-    await box.write(BoxKeys.isTaken, has_Vehicle_Assigned);
-    // for (var item in vehicleTypes) {
-    //   for (var item2 in response.data?.vehicleType ?? []) {
-    //     if (item.id == item2.id) {
-    //       item.isSelected?.value = true;
-    //     } else {
-    //       item.isSelected?.value = false;
-    //     }
-    //     print(item.isSelected?.value);
-    //   }
-    // }
+      // Update UI fields with profile data
+      controllerFullName.text = response.data?.fullname ?? "";
+      controllerEmail.text = response.data?.email ?? "";
+      selectedGender = genderList.firstWhereOrNull(
+              (element) => (element.code) == (response.data?.gender));
+      controllerEmail.text = response.data?.email ?? "";
+      controllerDateOfBirth.text = (response.data?.dob ?? "").changeDateFormat(
+          fromFormat: "yyyy-MM-dd", toFormat: "dd / MMM / yyyy");
+      controllerAlternativeNumber.text = response.data?.alternativePhone ?? "";
+      controllerWhatsAppNumber.text = response.data?.whatsappPhone ?? "";
+      regPhoneNumber = response.data?.phone ?? "";
+      state = response.data?.state?.name ?? "";
+      district = response.data?.district?.name ?? "";
+      workingLocation = response.data?.workLocation?.name ?? "";
+      transmissionType = response.data?.transmissionType ?? [];
+      experience = response.data?.drivingExperience?.experience.toString();
+      controllerAddress.text = response.data?.address ?? "";
 
-    // selectedTransmissionType = transmissionTypes.firstWhereOrNull(
-    //     (element) => (element.id) == (response.data?.transmissionType?.id));
-    response.data?.licenseValidity != null
-        ? controllerLicenseValidityDate.text =
+      vehicleTypes = response.data?.vehicleType ?? [];
+      has_Vehicle_Assigned = response.data?.hasVehicleAssigned;
+      vehicleDetails = response.data?.vehicleDetails;
+      await box.write(BoxKeys.isTaken, has_Vehicle_Assigned);
+
+      // Handle license validity date
+      if (response.data?.licenseValidity != null) {
+        controllerLicenseValidityDate.text =
             (response.data?.licenseValidity ?? "").changeDateFormat(
-                fromFormat: "yyy-MM-dd", toFormat: "dd / MMM / yyy")
-        : null;
+                fromFormat: "yyy-MM-dd", toFormat: "dd / MMM / yyy");
+      }
 
-    profileModel.ProfileImageModel imageResponse =
+      // Second API call - Get Profile Photo
+      try {
+        profileModel.ProfileImageModel imageResponse =
         await ApiServices.getProfilePhoto(
             queryParameter: {"document_type": "PPO"});
-    profileImage = imageResponse.data?.files?.firstOrNull?.file ?? "";
+        profileImage = imageResponse.data?.files?.firstOrNull?.file ?? "";
+      } catch (error,s) {
+        AppConstants.handleError(error,s: s);
+        print('Error fetching profile image: $error');
+        // Set default image or handle image error gracefully
+        profileImage = "";
+      }
+
+    } catch (error,s) {
+      print('Error in getProfile: $error');
+      AppConstants.handleError(error,s: s);
+
+
+      // You can also show a snackbar or dialog to the user
+      // Get.snackbar('Error', 'Failed to load profile data');
+    }
+  }
+  String getTransmissionTypeName(List<Transmission>? transmissionTypes, int? transmissionTypeId) {
+    // Handle null cases
+    if (transmissionTypes == null || transmissionTypeId == null) {
+      return 'Unknown';
+    }
+
+    try {
+      // Find the transmission type with matching ID
+      final transmissionType = transmissionTypes.firstWhere(
+            (type) => type.id == transmissionTypeId,
+      );
+      return transmissionType.name ?? 'Unknown';
+    } catch (e) {
+      // Return 'Unknown' if no matching ID is found
+      return 'Unknown';
+    }
   }
 
   String userTypeCode = box.read(BoxKeys.userTypeCode) ?? "";

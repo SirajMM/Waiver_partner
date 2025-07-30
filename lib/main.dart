@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:isolate';
@@ -37,6 +38,8 @@ void startReceivePort() {
   IsolateNameServer.registerPortWithName(
       _receivePort!.sendPort, 'main_send_port');
 
+
+  _startContinuousLocationSending();
   _receivePort!.listen((message) async {
     if (message is Map<String, dynamic>) {
       log('Received message: $message');
@@ -58,6 +61,83 @@ void startReceivePort() {
       }
     }
   });
+}
+
+// Start continuous location sending
+void _startContinuousLocationSending() {
+  // Call immediately
+  _sendLocationNow();
+
+  // Then call every 30 seconds (adjust interval as needed)
+  _locationTimer = Timer.periodic(Duration(seconds: 10), (timer) {
+    _sendLocationNow();
+  });
+}
+
+void _sendLocationNow() {
+  try {
+    HomeController.to.sendLiveLocation();
+    log('Live location sent at: ${DateTime.now()}');
+  } catch (e) {
+    log('Error calling sendLiveLocation: $e');
+  }
+}
+
+Timer? _locationTimer;
+
+void _startLocationTracking() {
+  _stopLocationTracking(); // Stop any existing timer
+
+  // Send location every 30 seconds (adjust as needed)
+  _locationTimer = Timer.periodic(Duration(seconds: 10), (timer) {
+    try {
+      HomeController.to.sendLiveLocation();
+    } catch (e) {
+      log('Error sending live location: $e');
+    }
+  });
+}
+
+void _stopLocationTracking() {
+  _locationTimer?.cancel();
+  _locationTimer = null;
+}
+
+// Function to send message from background isolate to main isolate
+@pragma('vm:entry-point')
+void sendLocationUpdateFromBackground() {
+  final SendPort? sendPort = IsolateNameServer.lookupPortByName('main_send_port');
+  if (sendPort != null) {
+    sendPort.send({
+      'title': 'send_live_location',
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    });
+  } else {
+    log('SendPort not found for location update');
+  }
+}
+
+// Function to start location tracking from background
+@pragma('vm:entry-point')
+void startLocationTrackingFromBackground() {
+  final SendPort? sendPort = IsolateNameServer.lookupPortByName('main_send_port');
+  if (sendPort != null) {
+    sendPort.send({
+      'title': 'start_location_tracking',
+      'interval': 30, // seconds
+    });
+  }
+}
+
+// Function to stop location tracking from background
+@pragma('vm:entry-point')
+void stopLocationTrackingFromBackground() {
+  final SendPort? sendPort = IsolateNameServer.lookupPortByName('main_send_port');
+  if (sendPort != null) {
+    sendPort.send({
+      'title': 'stop_location_tracking',
+    });
+  }
 }
 
 @pragma('vm:entry-point')

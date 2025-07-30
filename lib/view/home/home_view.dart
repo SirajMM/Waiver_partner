@@ -1,3 +1,4 @@
+
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -45,7 +46,7 @@ class HomeScreen extends StatelessWidget {
         if (homeController.driverState.value == DriverState.idle) {
           exit(0);
         } else if (homeController.driverState.value ==
-                DriverState.paymentInitiated ||
+            DriverState.paymentInitiated ||
             homeController.driverState.value == DriverState.completed) {
           Get.defaultDialog(middleText: "Confirm the payment !!!");
         } else {
@@ -68,106 +69,106 @@ class HomeScreen extends StatelessWidget {
         return controller.isLoading.value
             ? LoadingBarsAnimation()
             : Scaffold(
-                extendBodyBehindAppBar: true,
-                appBar: HomePageAppBar(),
-                drawer: const LeftMenuDriver(),
-                bottomSheet: GetX<HomeController>(builder: (controller) {
-                  switch (controller.driverState.value) {
-                    case DriverState.idle:
-                      return const DashBoardData();
+            extendBodyBehindAppBar: true,
+            appBar: HomePageAppBar(),
+            drawer: const LeftMenuDriver(),
+            bottomSheet: GetX<HomeController>(builder: (controller) {
+              switch (controller.driverState.value) {
+                case DriverState.idle:
+                  return const DashBoardData();
 
-                    case DriverState.goingToPickUp:
-                      return Going_To_Pick_screen();
+                case DriverState.goingToPickUp:
+                  return Going_To_Pick_screen();
 
-                    case DriverState.arrivedAtPickUp:
-                      return EnterOtpBottomSheet(
-                          orderStatus: RideStatus.reachedPickUp);
+                case DriverState.arrivedAtPickUp:
+                  return EnterOtpBottomSheet(
+                      orderStatus: RideStatus.reachedPickUp);
 
-                    case DriverState.readyToGoToDestination:
-                      return ReadyToGoToDestinationWidget();
+                case DriverState.readyToGoToDestination:
+                  return ReadyToGoToDestinationWidget();
 
-                    case DriverState.goingToDestination:
-                      return GoingToDestinationWidget();
+                case DriverState.goingToDestination:
+                  return GoingToDestinationWidget();
 
-                    case DriverState.reachedDestination:
-                      return EnterOtpBottomSheet(
-                          orderStatus: RideStatus.reachedDropOff);
+                case DriverState.reachedDestination:
+                  return EnterOtpBottomSheet(
+                      orderStatus: RideStatus.reachedDropOff);
 
-                    case DriverState.paymentInitiated:
-                      return box.read(BoxKeys.paymentType) == "CSH"
-                          ? const PaymentConfirmationSheetCash()
-                          : const PaymentConfirmationSheetOnline(
-                              text: 'Wait user to complete payment',
-                              titleText: 'Online Payment',
-                            );
-                    /*      case DriverState.paymentInitiated:
+                case DriverState.paymentInitiated:
+                  return box.read(BoxKeys.paymentType) == "CSH"
+                      ? const PaymentConfirmationSheetCash()
+                      : const PaymentConfirmationSheetOnline(
+                    text: 'Wait user to complete payment',
+                    titleText: 'Online Payment',
+                  );
+              /*      case DriverState.paymentInitiated:
                     //   return box.read(BoxKeys.paymentType) == "CSH"
                     //   return const PaymentConfirmationSheetOnline(titleText: "Payment",text: "Waiting for payment",);
                         return const MakingPaymentBottomSheet(isPay: false,);*/
-                    case DriverState.completed:
-                      return HomeController.to.rideIsActive
-                          ? const MakingPaymentBottomSheet(isPay: true)
-                          : const SizedBox();
-                    /*         case DriverState.completed:
+                case DriverState.completed:
+                  return HomeController.to.rideIsActive
+                      ? const MakingPaymentBottomSheet(isPay: true)
+                      : const SizedBox();
+              /*         case DriverState.completed:
                     return HomeController.to.rideIsActive
                         ? const MakingPaymentBottomSheet(isPay: true,)
                         : const SizedBox();*/
-                    case DriverState.loading:
-                      return LoadingStateWidget();
-                  }
-                }),
-                body: SizedBox(
-                  width: Get.width,
-                  height: Get.height,
-                  child: GetX<HomeController>(builder: (controller) {
-                    return GoogleMap(
-                      mapType: MapType.normal,
-                      // myLocationEnabled: true,
-                      myLocationButtonEnabled: true,
-                      zoomControlsEnabled: false,
-                      markers: {
-                        Marker(
-                          markerId: const MarkerId("1"),
-                          icon: BitmapDescriptor.defaultMarker,
-                          position: LatLng(
-                            controller.currentPosition.value?.latitude ?? 0.0,
-                            controller.currentPosition.value?.longitude ?? 0.0,
-                          ),
-                        ),
-                        if (controller.startLocationLatMarker != null &&
-                            controller.startLocationLongMarker != null &&
-                            controller.startLocationLatMarker != 0.0 &&
-                            controller.startLocationLongMarker != 0.0)
-                          Marker(
-                            icon: BitmapDescriptor.defaultMarker,
-                            markerId: const MarkerId("User"),
-                            position: LatLng(
-                              controller.startLocationLatMarker!.toDouble(),
-                              controller.startLocationLongMarker!.toDouble(),
-                            ),
-                          ),
-                      },
-                      onCameraIdle: () async => controller
-                              .pickUpLocation1?.name.value =
-                          await controller.getLocationDetails(
-                              controller.currentPosition.value?.latitude ?? 0,
-                              controller.currentPosition.value?.longitude ??
-                                  0.0),
-                      initialCameraPosition: CameraPosition(
-                        target: LatLng(
-                          controller.currentPosition.value?.latitude ?? 0,
-                          controller.currentPosition.value?.longitude ?? 0,
-                        ),
-                        zoom: 15,
+                case DriverState.loading:
+                  return LoadingStateWidget();
+              }
+            }),
+            body: SizedBox(
+              width: Get.width,
+              height: Get.height,
+              child: GetX<HomeController>(builder: (controller) {
+                return GoogleMap(
+                  mapType: MapType.normal,
+                  // myLocationEnabled: true,
+                  myLocationButtonEnabled: true,
+                  zoomControlsEnabled: false,
+                  markers: {
+                    Marker(
+                      markerId: const MarkerId("1"),
+                      icon: BitmapDescriptor.defaultMarker,
+                      position: LatLng(
+                        controller.currentPosition.value?.latitude ?? 0.0,
+                        controller.currentPosition.value?.longitude ?? 0.0,
                       ),
-                      onMapCreated:
-                          (GoogleMapController googleMapController) async {
-                        controller.googleMapController = googleMapController;
-                        await controller.onMapCreate();
-                      },
-                    );
-                  }),
-                ));
+                    ),
+                    if (controller.startLocationLatMarker != null &&
+                        controller.startLocationLongMarker != null &&
+                        controller.startLocationLatMarker != 0.0 &&
+                        controller.startLocationLongMarker != 0.0)
+                      Marker(
+                        icon: BitmapDescriptor.defaultMarker,
+                        markerId: const MarkerId("User"),
+                        position: LatLng(
+                          controller.startLocationLatMarker!.toDouble(),
+                          controller.startLocationLongMarker!.toDouble(),
+                        ),
+                      ),
+                  },
+                  onCameraIdle: () async => controller
+                      .pickUpLocation1?.name.value =
+                  await controller.getLocationDetails(
+                      controller.currentPosition.value?.latitude ?? 0,
+                      controller.currentPosition.value?.longitude ??
+                          0.0),
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(
+                      controller.currentPosition.value?.latitude ?? 0,
+                      controller.currentPosition.value?.longitude ?? 0,
+                    ),
+                    zoom: 15,
+                  ),
+                  onMapCreated:
+                      (GoogleMapController googleMapController) async {
+                    controller.googleMapController = googleMapController;
+                    await controller.onMapCreate();
+                  },
+                );
+              }),
+            ));
       }),
     );
   }
@@ -213,7 +214,7 @@ class MakingPaymentBottomSheet extends StatelessWidget {
                 child: Text(
                   HomeController.to.total ?? "",
                   style:
-                      TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
+                  TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
                 ),
               ),
               SizedBox(
@@ -260,19 +261,19 @@ class MakingPaymentBottomSheet extends StatelessWidget {
               ),
               isPay
                   ? BlueButton(
-                      text: "Confirm",
-                      onTap: () {
-                        Get.back();
-                        // HomeController.to.completeRide();
-                        box.read(BoxKeys.paymentType) == "CSH"
-                            ? HomeController.to.confirmedPayment()
-                            : {
-                          HomeController.to.driverState.value = DriverState.idle,
-                          HomeController.to.fetchWalletBalance()
-                        };
-                        // HomeController.to.isButtonLoading.value= false;
-                      },
-                    )
+                text: "Confirm",
+                onTap: () {
+                  Get.back();
+                  // HomeController.to.completeRide();
+                  box.read(BoxKeys.paymentType) == "CSH"
+                      ? HomeController.to.confirmedPayment()
+                      : {
+                    HomeController.to.driverState.value = DriverState.idle,
+                    HomeController.to.fetchWalletBalance()
+                  };
+                  // HomeController.to.isButtonLoading.value= false;
+                },
+              )
                   : SizedBox(),
               SizedBox(
                 height: 15.sp,
@@ -394,24 +395,24 @@ class EnterOtpBottomSheet extends StatelessWidget {
           GetX<HomeController>(builder: (controller) {
             return controller.showIsOtpValid.value
                 ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 10.sp,
-                        ),
-                        Container(
-                          margin: EdgeInsets.symmetric(horizontal: 55.sp),
-                          child: Text(
-                            "Please enter full Otp",
-                            style: TextStyle(
-                                fontSize: 14.sp, color: AppColors.red),
-                          ),
-                        ),
-                      ],
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    height: 10.sp,
+                  ),
+                  Container(
+                    margin: EdgeInsets.symmetric(horizontal: 55.sp),
+                    child: Text(
+                      "Please enter full Otp",
+                      style: TextStyle(
+                          fontSize: 14.sp, color: AppColors.red),
                     ),
-                  )
+                  ),
+                ],
+              ),
+            )
                 : const SizedBox();
           }),
           SizedBox(
@@ -1006,27 +1007,27 @@ class ChangeOnlineStatusButton extends StatelessWidget {
             onTap: controller.isOnlineButtonLoading.value
                 ? null
                 : () async {
-                    await ProfileController.to.getProfile();
-                    controller.isAssinged.value =
-                        await controller.hasAssigned();
+              await ProfileController.to.getProfile();
+              controller.isAssinged.value =
+              await controller.hasAssigned();
 
-                    String useTypeCode = box.read(BoxKeys.userTypeCode) ?? "";
-                    if (controller.isAssinged.value == false &&
-                        useTypeCode == UserTypeCode.driver) {
-                      Get.showSnackbar(
-                        const GetSnackBar(
-                          duration: Duration(seconds: 3),
-                          backgroundColor: Colors.transparent,
-                          padding: EdgeInsets.zero,
-                          messageText: AppSnackBar(
-                            text: "Your have no assinged vehicles",
-                          ),
-                        ),
-                      );
-                    } else {
-                      await controller.changeDriverOnlineStatus();
-                    }
-                  },
+              String useTypeCode = box.read(BoxKeys.userTypeCode) ?? "";
+              if (controller.isAssinged.value == false &&
+                  useTypeCode == UserTypeCode.driver) {
+                Get.showSnackbar(
+                  const GetSnackBar(
+                    duration: Duration(seconds: 3),
+                    backgroundColor: Colors.transparent,
+                    padding: EdgeInsets.zero,
+                    messageText: AppSnackBar(
+                      text: "Your have no assinged vehicles",
+                    ),
+                  ),
+                );
+              } else {
+                await controller.changeDriverOnlineStatus();
+              }
+            },
             child: GetX<HomeController>(builder: (controller) {
               return Container(
                 decoration: BoxDecoration(
@@ -1054,24 +1055,24 @@ class ChangeOnlineStatusButton extends StatelessWidget {
                       color: Colors.transparent),
                   child: controller.isOnlineButtonLoading.value
                       ? SizedBox(
-                          height: 25.sp,
-                          width: 25.sp,
-                          child: CircularProgressIndicator(
-                            color: controller.isOnline.value
-                                ? AppColors.red
-                                : Get.theme.primaryColor,
-                          ),
-                        )
+                    height: 25.sp,
+                    width: 25.sp,
+                    child: CircularProgressIndicator(
+                      color: controller.isOnline.value
+                          ? AppColors.red
+                          : Get.theme.primaryColor,
+                    ),
+                  )
                       : Text(
-                          controller.isOnline.value ? "Stop" : "GO",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 18.sp,
-                            color: controller.isOnline.value
-                                ? AppColors.red
-                                : Get.theme.primaryColor,
-                          ),
-                        ),
+                    controller.isOnline.value ? "Stop" : "GO",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 18.sp,
+                      color: controller.isOnline.value
+                          ? AppColors.red
+                          : Get.theme.primaryColor,
+                    ),
+                  ),
                 ),
               );
             }),
@@ -1089,6 +1090,53 @@ class DashBoardItem extends StatelessWidget {
     super.key,
     required this.item,
   });
+
+  String _formatValue() {
+    if (item.value == null) return '0';
+
+    String valueStr = item.value.toString();
+    String textLower = item.text.toLowerCase();
+
+    // Check if it's already formatted with % symbol
+    if (valueStr.contains('%')) {
+      return valueStr;
+    }
+
+    // Try to parse as double/int
+    double? doubleValue = double.tryParse(valueStr);
+    if (doubleValue != null) {
+      // Determine format based on the text field
+      if (_isPercentageType(textLower)) {
+        return '${doubleValue.toStringAsFixed(1)}%';
+      } else if (_isRatingType(textLower)) {
+        // For ratings, show with decimal if needed, otherwise as integer
+        return doubleValue % 1 == 0
+            ? doubleValue.toInt().toString()
+            : doubleValue.toStringAsFixed(1);
+      } else {
+        // For acceptance count, cancellation count, etc. - show as integer
+        return doubleValue.toInt().toString();
+      }
+    }
+
+    // Fallback: return original value
+    return valueStr;
+  }
+
+  bool _isPercentageType(String text) {
+    return text.contains('percentage') ||
+        text.contains('percent') ||
+        text.contains('rate') ||
+        text.contains('ratio') ||
+        text.contains('acceptance') ||  // Acceptance rate is usually shown as percentage
+        text.contains('cancellation'); // Cancellation rate is usually shown as percentage
+  }
+
+  bool _isRatingType(String text) {
+    return text.contains('rating') ||
+        text.contains('score') ||
+        text.contains('star');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1113,7 +1161,7 @@ class DashBoardItem extends StatelessWidget {
             height: 10.sp,
           ),
           Text(
-            "${(double.tryParse(item.value?.toString() ?? '0') ?? 0.0).toStringAsFixed(1)}",
+            _formatValue(),
             style: TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.w500,
@@ -1262,23 +1310,23 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
             }),
             SizedBox(width: 2.w),
             Obx(() => GestureDetector(
-                  onTap: () {
-                    if (!HomeController.to.isRefreshingWallet.value) {
-                      HomeController.to.refreshWalletBalance();
-                    }
-                  },
-                  child: AnimatedRotation(
-                    turns:
-                        HomeController.to.isRefreshingWallet.value ? 1.0 : 0.0,
-                    duration: const Duration(milliseconds: 1000),
-                    curve: Curves.linear,
-                    child: Icon(
-                      Icons.refresh,
-                      color: Get.theme.primaryColor,
-                      size: 18.sp,
-                    ),
-                  ),
-                )),
+              onTap: () {
+                if (!HomeController.to.isRefreshingWallet.value) {
+                  HomeController.to.refreshWalletBalance();
+                }
+              },
+              child: AnimatedRotation(
+                turns:
+                HomeController.to.isRefreshingWallet.value ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 1000),
+                curve: Curves.linear,
+                child: Icon(
+                  Icons.refresh,
+                  color: Get.theme.primaryColor,
+                  size: 18.sp,
+                ),
+              ),
+            )),
           ],
         ),
       ),
@@ -1388,25 +1436,25 @@ class IncomingOrderBottomSheet extends StatelessWidget {
             height: 15,
           ),
           Obx(() => BlueButton(
-                isLoading: HomeController.to.isButtonLoading.value,
-                text: "Accept",
-                onTap: () {
-                  // Check if already loading before calling acceptOrder
-                  if (!HomeController.to.isButtonLoading.value) {
-                    HomeController.to.acceptOrder();
-                  }
-                },
-                suffixIcon: CircleWithIcon(
-                  padding: const EdgeInsets.all(5),
-                  height: 30.sp,
-                  color: Get.theme.primaryColor.withOpacity(.2),
-                  child: AppCountDown(
-                    style: TextStyle(color: AppColors.white),
-                    onEnd: () => HomeController.to.orderTimeOut(),
-                    endDate: DateTime.now().add(const Duration(seconds: 14)),
-                  ),
-                ),
-              ))
+            isLoading: HomeController.to.isButtonLoading.value,
+            text: "Accept",
+            onTap: () {
+              // Check if already loading before calling acceptOrder
+              if (!HomeController.to.isButtonLoading.value) {
+                HomeController.to.acceptOrder();
+              }
+            },
+            suffixIcon: CircleWithIcon(
+              padding: const EdgeInsets.all(5),
+              height: 30.sp,
+              color: Get.theme.primaryColor.withOpacity(.2),
+              child: AppCountDown(
+                style: TextStyle(color: AppColors.white),
+                onEnd: () => HomeController.to.orderTimeOut(),
+                endDate: DateTime.now().add(const Duration(seconds: 14)),
+              ),
+            ),
+          ))
         ],
       ),
     );
@@ -1458,7 +1506,7 @@ class AcceptButton extends StatelessWidget {
                         "${date.inSeconds}",
                         textAlign: TextAlign.center,
                         style:
-                            TextStyle(color: AppColors.white, fontSize: 15.sp),
+                        TextStyle(color: AppColors.white, fontSize: 15.sp),
                       );
                     }))
           ],
