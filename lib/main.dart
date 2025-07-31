@@ -90,6 +90,8 @@ void _startLocationUpdates({int interval = 10}) {
 
 
 
+
+
 void _stopLocationUpdates() {
   _locationTimer?.cancel();
   _locationTimer = null;
