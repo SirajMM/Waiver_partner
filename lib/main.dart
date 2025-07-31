@@ -82,6 +82,14 @@ void _startLocationUpdates({int interval = 10}) {
   _locationTimer = Timer.periodic(Duration(seconds: interval), (_) => _sendLocationNow());
 }
 
+
+
+
+
+
+
+
+
 void _stopLocationUpdates() {
   _locationTimer?.cancel();
   _locationTimer = null;
