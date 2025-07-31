@@ -245,6 +245,7 @@ class HomeController extends GetxController {
 
   StreamSubscription<MobilityContext>? mobilitySubscription;
   MobilityContext? mobilityContext;
+
   void sendLiveLocation() {
     Geolocator.getPositionStream().listen((position) {
       currentPosition.value = position;
@@ -579,7 +580,7 @@ class HomeController extends GetxController {
           backgroundColor: Colors.transparent,
           padding: EdgeInsets.zero,
           messageText: AppSnackBar(
-            text: "Something wnet wrong",
+            text: "Something went wrong",
           ),
         ),
       );

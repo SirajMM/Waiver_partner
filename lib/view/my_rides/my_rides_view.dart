@@ -82,6 +82,7 @@ class MyRidesListingItem extends StatelessWidget {
           padding: EdgeInsets.all(16.sp),
           child: Column(
             children: [
+
               Padding(
                 padding: EdgeInsets.only(
                     left: 8.0.h, right: 8.h, top: 8.h, bottom: 8.h),
@@ -97,13 +98,11 @@ class MyRidesListingItem extends StatelessWidget {
                       ),
                     ),*/
                     //   SizedBox(width: 20.sp),
-                    Expanded(
-                      child: Text(
-                        ride.passenger ?? "Passenger Name Not Available",
-                        style: TextStyle(
-                            fontSize: 15.sp, fontWeight: FontWeight.w500),
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    Text(
+                      ride.passenger ?? "Passenger Name Not Available",
+                      style: TextStyle(
+                          fontSize: 15.sp, fontWeight: FontWeight.w500),
+                      overflow: TextOverflow.ellipsis,
                     ),
                     Container(
                       padding: EdgeInsets.symmetric(
@@ -182,8 +181,9 @@ class MyRidesListingItem extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: 10.sp,
+                height: 18.sp,
               ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -191,22 +191,27 @@ class MyRidesListingItem extends StatelessWidget {
                     padding: const EdgeInsets.only(
                       left: 8.0,
                     ),
-                    child: Text(
-                      " Starting Date & Time : ",
-                      style: TextStyle(
-                          fontSize: 14.sp, fontWeight: FontWeight.bold),
+                    child: SizedBox(
+                      width: 100.h,
+                      child: Text(
+                        " Started at : ",
+                        style: TextStyle(
+                            fontSize: 14.sp, fontWeight: FontWeight.normal),
+                      ),
                     ),
                   ),
                   ride.endTime != null
                       ? Text(
                           formatISTTime(ride.startTime!.toString()),
-                          style: TextStyle(fontSize: 14.sp),
+                          style: TextStyle(fontSize: 14.sp,fontWeight: FontWeight.normal),
                         )
                       : const SizedBox()
+
                 ],
+
               ),
               SizedBox(
-                height: 5.h,
+                height: 12.h,
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -215,10 +220,13 @@ class MyRidesListingItem extends StatelessWidget {
                     padding: const EdgeInsets.only(
                       left: 8.0,
                     ),
-                    child: Text(
-                      " Ending Date & Time : ",
-                      style: TextStyle(
-                          fontSize: 14.sp, fontWeight: FontWeight.bold),
+                    child: SizedBox(
+                      width: 100.h,
+                      child: Text(
+                        " Ended at   : ",
+                        style: TextStyle(
+                            fontSize: 14.sp, fontWeight: FontWeight.normal),
+                      ),
                     ),
                   ),
                   ride.endTime != null
@@ -229,9 +237,45 @@ class MyRidesListingItem extends StatelessWidget {
                       : const SizedBox()
                 ],
               ),
+
+
+/*
+              SizedBox(
+                height: 8.h,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      left: 8.0,
+                    ),
+                    child: Text(
+                      " Payment Type : ",
+                      style: TextStyle(
+                          fontSize: 14.sp, fontWeight: FontWeight.normal),
+                    ),
+                  ),
+                  ride.payment_Type != null
+                      ? Text(
+                    formatISTTime(ride.payment_Type!.toString()),
+                    style: TextStyle(fontSize: 14.sp),
+                  )
+                      : const SizedBox()
+                ],
+              ),
+*/
+
+
+
+
+
+
               SizedBox(
                 height: 15.sp,
               ),
+
+
               MyRideExpansionTile(
                 start: ride.startLocation ?? "",
                 stop: ride.endLocation ?? "",
@@ -267,15 +311,17 @@ class MyRideExpansionTile extends StatelessWidget {
         vertical: 15.sp,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Image.asset(
             AppIcons.startAndStop,
             height: 70.sp,
           ),
+
+          SizedBox(width: 6.h,),
           Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
@@ -283,24 +329,24 @@ class MyRideExpansionTile extends StatelessWidget {
                 child: Text(
                   start,
                   style: TextStyle(fontSize: 14.sp),
-                  overflow: TextOverflow.ellipsis,
+                  overflow: TextOverflow.visible,
                 ),
               ),
               Container(
                 margin: EdgeInsets.only(
-                  top: 12.sp,
+                  top: 2.sp,
                   bottom: 5.sp,
                 ),
                 height: 1.5.sp,
                 width: 250.sp,
-                color: Get.theme.indicatorColor.withOpacity(.01),
+                color: Get.theme.indicatorColor.withOpacity(.04),
               ),
               SizedBox(
                 width: 230.sp,
                 child: Text(
                   stop,
                   style: TextStyle(fontSize: 14.sp),
-                  overflow: TextOverflow.ellipsis,
+                  overflow: TextOverflow.visible,
                 ),
               ),
             ],
