@@ -380,8 +380,9 @@ class BalanceAmount extends StatelessWidget {
             return Opacity(
               opacity: shouldDisable ? 0.5 : 1.0,
               child: BlueButton(
-                width: 150.w,
+                width: 110.w,
                 height: 40.h,
+                fontSize: 12,
                 text: controller.isPaymentProcessing.value
                     ? 'Processing...'
                     : controller.isPaymentSuccessful.value
