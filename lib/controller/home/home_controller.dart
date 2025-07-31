@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:isolate';
 import 'dart:math' as math;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +37,7 @@ import '../profile/profile_controller.dart';
 //   }
 // }
 
-class HomeController extends GetxController {
+class HomeController extends GetxController implements GetxService {
   final HomeParser parser;
   HomeController({required this.parser});
 
@@ -62,12 +63,11 @@ class HomeController extends GetxController {
       final result = await Future.wait(apis);
 
       if (currentPosition.value == null) {
-        currentPosition.value =
-            convertToPosition(result[3] as loc.LocationData);
+        currentPosition.value = convertToPosition(result[3] as loc.LocationData);
         saveLocationData(result[3] as loc.LocationData);
       }
       isLoading.value = false;
-      sendLiveLocation();
+      sendLocationUpdateFromBackground();
       getVersionInfo();
       ProfileController.to.getProfile();
       isAssinged.value = await hasAssigned();
@@ -77,10 +77,8 @@ class HomeController extends GetxController {
           longitude: Rx(currentPosition.value?.longitude),
           name: "".obs);
 
-      getLocationDetails(
-          currentPosition.value!.latitude, currentPosition.value!.longitude)
-          .then(
-            (value) => pickUpLocation1?.name.value = value ?? '',
+      getLocationDetails(currentPosition.value!.latitude, currentPosition.value!.longitude).then(
+        (value) => pickUpLocation1?.name.value = value ?? '',
       );
       recenter();
 
@@ -93,33 +91,6 @@ class HomeController extends GetxController {
     }
   }
 
-
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   if (state == AppLifecycleState.inactive) {
-  //     appState.value = "Inactive";
-  //     print("🟡 App Inactive - Keeping API/WebSocket Running");
-  //   } else if (state == AppLifecycleState.resumed) {
-  //     appState.value = "Active";
-  //     print("🟢 App Resumed - Reconnecting WebSocket/Firebase...");
-  //     resumeConnection();
-  //   } else if (state == AppLifecycleState.paused) {
-  //     appState.value = "Background";
-  //     print("🔴 App in Background - Closing WebSocket...");
-  //     closeConnection();
-  //   } else if (state == AppLifecycleState.detached) {
-  //     appState.value = "Terminated";
-  //     print(
-  //         "⚠️ App Terminated - Scheduling WorkManager Task...${appState.value}");
-
-  //     // changeDriverOnlineStatus();
-  //     //   Workmanager().registerOneOffTask(
-  //     //     "backgroundTask",
-  //     //     "executeApiCall",
-  //     //   );
-  //   }
-  // }
-
   // void closeConnection() {
   //   log("🔴 Closing WebSocket/Firebase connection........................");
   //   sendLiveLocation();
@@ -129,18 +100,6 @@ class HomeController extends GetxController {
   //   print("🟢 Reconnecting WebSocket/Firebase...");
   // }
 
-  @override
-  void onClose() {
-     WidgetsBinding.instance.removeObserver;
-    super.onClose();
-  }
-
-  @override
-  void dispose() {
-    // changeDriverOnlineStatus();
-    super.dispose();
-  }
-
   final player = AudioPlayer();
 
   Rx<Position?> currentPosition = Rx<Position?>(null);
@@ -149,8 +108,7 @@ class HomeController extends GetxController {
   bool rideIsActive = false;
   String? finalDropLocation;
   bool isTracking = false;
-  double currentDistance =
-  0; // Current distance in meters before it exceeds 100m
+  double currentDistance = 0; // Current distance in meters before it exceeds 100m
   double totalDistance = 0; // Total distance saved in Hive (in meters)x
   List<Map<String, double>> latLongList = [];
   Box? distanceBox;
@@ -168,9 +126,7 @@ class HomeController extends GetxController {
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     var p = 0.017453292519943295; // Pi/180
     var c = math.cos;
-    var a = 0.5 -
-        c((lat2 - lat1) * p) / 2 +
-        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    var a = 0.5 - c((lat2 - lat1) * p) / 2 + c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
     return 12742 * math.asin(math.sqrt(a)); // Distance in kilometers
   }
 
@@ -179,15 +135,12 @@ class HomeController extends GetxController {
       if (isOnlineButtonLoading.value) return;
       isOnlineButtonLoading.value = true;
 
-      LogoutResponseModel response = await ApiServices.changeOnlineStatus(
-        body: {
-          "is_online": isOnline.value ? 0 : 1,
-        },
-      );
+      LogoutResponseModel response =
+          await ApiServices.changeOnlineStatus(body: {"is_online": isOnline.value ? 0 : 1});
       log("#####################${isOnline.value}#####################");
 
       if (response.status == 200) {
-        isOnline.value = !isOnline.value;
+        isOnline.value = response.data?.isOnline ?? false;
         log("#####################${isOnline.value}#####################");
 
         if (isOnline.value) {
@@ -212,7 +165,7 @@ class HomeController extends GetxController {
         //   await FlutterBackground.disableBackgroundExecution();
         // }
       }
-    } catch (error,s) {
+    } catch (error, s) {
       debugPrint("Error in changeDriverOnlineStatus: $error");
       AppConstants.handleError(error, s: s);
     } finally {
@@ -233,8 +186,8 @@ class HomeController extends GetxController {
       if (response.status == 200) {
         isOnline.value = response.data?.isOnline ?? false;
       }
-    } catch (error,s) {
-      AppConstants.handleError(error,s: s);
+    } catch (error, s) {
+      AppConstants.handleError(error, s: s);
       print('Error fetching driver online status: $error');
       // You might want to set a default value or show an error message
       isOnline.value = false;
@@ -252,12 +205,9 @@ class HomeController extends GetxController {
       saveLocationData(convertPositionToLocationData(position));
       if (isOnline.value) {
         WebSocketServices.sendLiveLocation(body: {
-          "passenger_id": driverState.value == DriverState.idle
-              ? RiderStatus.save
-              : passengerId ?? "placeholder",
-          "msg_type": driverState.value == DriverState.idle
-              ? RiderStatus.save
-              : RiderStatus.ride,
+          "passenger_id":
+              driverState.value == DriverState.idle ? RiderStatus.save : passengerId ?? "placeholder",
+          "msg_type": driverState.value == DriverState.idle ? RiderStatus.save : RiderStatus.ride,
           "ride_status": driverState.value.toString(),
           "current_loc_long": position.longitude,
           "current_loc_lat": position.latitude,
@@ -323,7 +273,6 @@ class HomeController extends GetxController {
 //     );
 //   }
 
-
 // Your existing saveLocationData method can stay the same, but now it receives a Map
 //   void saveLocationData(Map<String, dynamic> locationData) {
 //     // You can convert the map to your existing format if needed:
@@ -347,8 +296,7 @@ class HomeController extends GetxController {
 
   Future<void> latestActiveRide() async {
     try {
-      GetRideDetailsResponseModel response =
-      await ApiServices.latestActiveRide();
+      GetRideDetailsResponseModel response = await ApiServices.latestActiveRide();
       if ((response.data?.id ?? "").isNotEmpty) {
         rideIsActive = true;
         getOrderDetails(response: response);
@@ -378,14 +326,10 @@ class HomeController extends GetxController {
       ),
       value: '0 %',
       text: 'Acceptance');
-  DashBoardItemModel rating = DashBoardItemModel(
-      icon: Icon(Icons.star, color: AppColors.white),
-      value: '2.5',
-      text: 'Rating');
+  DashBoardItemModel rating =
+      DashBoardItemModel(icon: Icon(Icons.star, color: AppColors.white), value: '2.5', text: 'Rating');
   DashBoardItemModel cancellation = DashBoardItemModel(
-      icon: Icon(Icons.close, color: AppColors.white),
-      value: '0%',
-      text: 'Cancellation');
+      icon: Icon(Icons.close, color: AppColors.white), value: '0%', text: 'Cancellation');
 
   double? startLocationLat;
   double? startLocationLong;
@@ -403,14 +347,12 @@ class HomeController extends GetxController {
   String? pickUpLocation;
   String? dropOffLocation;
   String? passengerName;
-  TripsLocations? pickUpLocation1 =
-  TripsLocations(name: "".obs, latitude: 0.0.obs, longitude: 0.0.obs);
+  TripsLocations? pickUpLocation1 = TripsLocations(name: "".obs, latitude: 0.0.obs, longitude: 0.0.obs);
 
-  Future<void> getAndShowOrderDetails(
-      {required String id, bool? fromBackGroundCall}) async {
+  Future<void> getAndShowOrderDetails({required String id, bool? fromBackGroundCall}) async {
     player.play(AssetSource(AppAudio.notification));
     GetRideDetailsResponseModel response =
-    await ApiServices.rideOrderDetails(queryParameters: {"ride_id": id});
+        await ApiServices.rideOrderDetails(queryParameters: {"ride_id": id});
     getOrderDetails(response: response);
     // Get.bottomSheet(IncomingOrderBottomSheet(data: response.data),
     //     enableDrag: false, isDismissible: false
@@ -436,10 +378,8 @@ class HomeController extends GetxController {
   void getOrderDetails({required GetRideDetailsResponseModel response}) {
     startLocationLat = double.parse(response.data?.startLocationLat ?? "0.0");
     startLocationLong = double.parse(response.data?.startLocationLong ?? "0.0");
-    startLocationLatMarker =
-        double.parse(response.data?.startLocationLat ?? "0.0");
-    startLocationLongMarker =
-        double.parse(response.data?.startLocationLong ?? "0.0");
+    startLocationLatMarker = double.parse(response.data?.startLocationLat ?? "0.0");
+    startLocationLongMarker = double.parse(response.data?.startLocationLong ?? "0.0");
     log("################### passenger latitude ##########################");
     log("################### Isonline ##########################");
     log(isOnline.value.toString());
@@ -521,8 +461,7 @@ class HomeController extends GetxController {
     if (permission == LocationPermission.deniedForever) {
       throw Exception('Location permissions are permanently denied');
     }
-    return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
+    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
   }
 
   Future<void> makePhoneCall() async {
@@ -540,13 +479,12 @@ class HomeController extends GetxController {
       WalletResponse response = await ApiServices.getPartnerWallet();
 
       if (response.status == 200) {
-        walletBalance.value =
-            double.tryParse(response.data.amount ?? '') ?? 0.0;
+        walletBalance.value = double.tryParse(response.data.amount ?? '') ?? 0.0;
         isRefreshingWallet.value = false;
       } else {
         isRefreshingWallet.value = false;
       }
-    } catch (error,s) {
+    } catch (error, s) {
       isRefreshingWallet.value = false;
       Get.showSnackbar(GetSnackBar(
           duration: Duration(seconds: 2),
@@ -606,8 +544,7 @@ class HomeController extends GetxController {
             ),
           ),
         );
-        await Future.delayed(
-            Duration(milliseconds: 300)); // Ensure Snackbar is shown
+        await Future.delayed(Duration(milliseconds: 300)); // Ensure Snackbar is shown
         Navigator.pop(context);
       } else {
         Get.showSnackbar(
@@ -753,15 +690,12 @@ class HomeController extends GetxController {
           body: {"ride_id": rideId, "ride_status": RideStatus.onGoing});
       if (response.status == 200) {
         driverState.value = DriverState.readyToGoToDestination;
-        await MobilityFeatures()
-            .startListening(Geolocator.getPositionStream().map((location) {
+        await MobilityFeatures().startListening(Geolocator.getPositionStream().map((location) {
           log("mobility features");
           log("${mobilityContext?.distanceTraveled}");
           log(location.toString());
           log(location.longitude.toString());
-          return LocationSample(
-              GeoLocation(location.latitude, location.longitude),
-              DateTime.now());
+          return LocationSample(GeoLocation(location.latitude, location.longitude), DateTime.now());
         }));
       }
     } finally {
@@ -773,8 +707,7 @@ class HomeController extends GetxController {
     try {
       driverState.value = DriverState.loading;
       await getFinalDropLocation();
-      ChangeRideStatusModel response =
-      await ApiServices.changeRideStatus(body: {
+      ChangeRideStatusModel response = await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.reachedDropOff,
         "location": finalDropLocation,
@@ -791,8 +724,7 @@ class HomeController extends GetxController {
   }
 
   Future<String?> getLocationDetails(double latitude, double longitude) async {
-    GoogleLocationResponse response =
-    await ApiServices.getCurrentLocation(latitude, longitude);
+    GoogleLocationResponse response = await ApiServices.getCurrentLocation(latitude, longitude);
 
     for (var result in response.results ?? []) {
       for (var addressComponent in result.addressComponents ?? []) {
@@ -810,7 +742,7 @@ class HomeController extends GetxController {
     if (!recenterLoading.value) {
       recenterLoading.value = true;
       loc.Location().getLocation().then(
-            (newLoc) {
+        (newLoc) {
           recenterLoading.value = false;
           saveLocationData(newLoc);
           googleMapController?.animateCamera(CameraUpdate.newCameraPosition(
@@ -828,42 +760,31 @@ class HomeController extends GetxController {
   Future<String?> getLocationDetails1() async {
     if (driverState.value == DriverState.idle) {
       GoogleLocationResponse response = await ApiServices.getCurrentLocation(
-          pickUpLocation1?.latitude.value ?? 0.0,
-          pickUpLocation1?.longitude.value ?? 0.0);
+          pickUpLocation1?.latitude.value ?? 0.0, pickUpLocation1?.longitude.value ?? 0.0);
 
       String? neighborhood = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("neighborhood")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("neighborhood")))
           ?.longName;
 
       String? political = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("political")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("political")))
           ?.longName;
       String? sublocality = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("sublocality")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("sublocality")))
           ?.longName;
       String? locality = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("locality")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("locality")))
           ?.longName;
       String? postalCode = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("postal_code")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("postal_code")))
           ?.longName;
       String? premise = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("premise")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("premise")))
           ?.longName;
-      return ({
-        premise,
-        neighborhood,
-        political,
-        sublocality,
-        locality,
-        postalCode
-      }.toList().where((name) => name != null).join(","));
+      return ({premise, neighborhood, political, sublocality, locality, postalCode}
+          .toList()
+          .where((name) => name != null)
+          .join(","));
     } else {
       return "";
     }
@@ -874,8 +795,7 @@ class HomeController extends GetxController {
     log("mobilityContext?.stops");
     log("${mobilityContext?.stops}");
     try {
-      ChangeRideStatusModel response =
-      await ApiServices.changeRideStatus(body: {
+      ChangeRideStatusModel response = await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.paymentInitiated,
         "stops": mobilityContext?.stops,
@@ -888,10 +808,9 @@ class HomeController extends GetxController {
         resetDistance();
         // getRidePayment();
       }
-    }catch(error,s){
+    } catch (error, s) {
       AppConstants.handleError(error, s: s);
-    }
-    finally {
+    } finally {
       driverState.value = DriverState.paymentInitiated;
     }
   }
@@ -906,7 +825,7 @@ class HomeController extends GetxController {
   String? total;
   Future<void> getRidePayment() async {
     RidePaymentResponseModel response =
-    await ApiServices.getRidePayment(queryParameter: {"ride_id": rideId});
+        await ApiServices.getRidePayment(queryParameter: {"ride_id": rideId});
     if (response.status == 200) {
       fare = response.data?.fare;
       tax = response.data?.tax;
@@ -1060,10 +979,10 @@ class HomeController extends GetxController {
       messageText: AppSnackBar(text: message),
     ));
   }
+
   Future<void> getFinalDropLocation() async {
     finalDropLocation = (await getLocationDetails(
-        currentPosition.value?.latitude ?? 0.0,
-        currentPosition.value?.longitude ?? 0.0)) ??
+            currentPosition.value?.latitude ?? 0.0, currentPosition.value?.longitude ?? 0.0)) ??
         "";
     // paymentInitiated();
   }
@@ -1076,8 +995,7 @@ class HomeController extends GetxController {
       if (Get.isBottomSheetOpen ?? false) {
         Get.back();
       }
-      ChangeRideStatusModel response =
-      await ApiServices.changeRideStatus(body: {
+      ChangeRideStatusModel response = await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.cancelled,
       });
@@ -1090,9 +1008,7 @@ class HomeController extends GetxController {
           recenter();
         }
 
-        Get.defaultDialog(
-            middleText:
-            "This order has expired or transferred to another driver");
+        Get.defaultDialog(middleText: "This order has expired or transferred to another driver");
       }
     } finally {
       driverState.value = DriverState.idle;
@@ -1102,8 +1018,7 @@ class HomeController extends GetxController {
     }
   }
 
-  Future<void> openMap(
-      {required double? latitude, required double? longitude}) async {
+  Future<void> openMap({required double? latitude, required double? longitude}) async {
     var uri = Uri.parse("google.navigation:q=$latitude,$longitude&mode=d");
     if (await canLaunch(uri.toString())) {
       await launch(uri.toString());
@@ -1171,21 +1086,18 @@ class HomeController extends GetxController {
 //   }
 // }
 
-
-
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
-      appState.value = "Background";
-      sendLiveLocation();
-      print("App in Background - Scheduling background task or keeping location stream alive.");
-      // Keep location service alive or schedule WorkManager task here
-    } else if (state == AppLifecycleState.resumed) {
-      appState.value = "Active";
-      print(" App Resumed - Reconnecting services...");
-      sendLiveLocation(); // Resume location sending
-    }
-  }
-
+  //
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (state == AppLifecycleState.paused) {
+  //     appState.value = "Background";
+  //     sendLiveLocation();
+  //     print("App in Background - Scheduling background task or keeping location stream alive.");
+  //     // Keep location service alive or schedule WorkManager task here
+  //   } else if (state == AppLifecycleState.resumed) {
+  //     appState.value = "Active";
+  //     print(" App Resumed - Reconnecting services...");
+  //     sendLiveLocation(); // Resume location sending
+  //   }
+  // }
 }
