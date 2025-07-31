@@ -46,8 +46,8 @@ class EarningController extends GetxController
       animation = Tween(begin: 0.0, end: 0.0).animate(curve);
       // await Future.wait([
       getEarningStatusWeekly();
-      getEarnings();
-      getEarningsWeekly();
+      // getEarnings();
+      // getEarningsWeekly();
       getEarningStatusToday();
       // ]);
       isError.value = false;
@@ -91,27 +91,27 @@ class EarningController extends GetxController
     }
   }
 
-  Future<void> getEarningsWeekly() async {
-    try {
-      var response = await ApiServices.getEarnings(queryParameter: {
-        "start_date": weeklyDateEnd.value
-            .subtract(const Duration(days: 7))
-            .changeDateFormat(),
-        "end_date": weeklyDateEnd.value.changeDateFormat()
-      });
-
-      weeklyEarningList.addAll(response.data?.results ?? []);
-      // isWeeklyEarningsIsListCompleted.value = response.data?.next ?? false;
-      // isWeeklyEarningsIsListCompleted.value = false;
-    } catch (error, s) {
-      print('Error fetching weekly earnings: $error');
-      AppConstants.handleError(error, s: s);
-    } finally {
-      // Code that always executes (cleanup, loading states, etc.)
-      // isWeeklyLoading.value = false;
-      print('Weekly earnings API call completed');
-    }
-  }
+  // Future<void> getEarningsWeekly() async {
+  //   try {
+  //     var response = await ApiServices.getEarnings(queryParameter: {
+  //       "start_date": weeklyDateEnd.value
+  //           .subtract(const Duration(days: 7))
+  //           .changeDateFormat(),
+  //       "end_date": weeklyDateEnd.value.changeDateFormat()
+  //     });
+  //
+  //     weeklyEarningList.addAll(response.data?.results ?? []);
+  //     // isWeeklyEarningsIsListCompleted.value = response.data?.next ?? false;
+  //     // isWeeklyEarningsIsListCompleted.value = false;
+  //   } catch (error, s) {
+  //     print('Error fetching weekly earnings: $error');
+  //     AppConstants.handleError(error, s: s);
+  //   } finally {
+  //     // Code that always executes (cleanup, loading states, etc.)
+  //     // isWeeklyLoading.value = false;
+  //     print('Weekly earnings API call completed');
+  //   }
+  // }
 
   RxBool isLoading = false.obs;
   RxBool isError = false.obs;
@@ -149,6 +149,7 @@ class EarningController extends GetxController
 
   Future<void> getEarningStatusWeekly() async {
     try {
+      log("Weekly earning @@#####");
       GetEarningStatusResponseModel response =
           await ApiServices.getEarningStatus(queryParameter: {
         "start_date": weeklyDateEnd.value
@@ -174,13 +175,14 @@ class EarningController extends GetxController
       weeklyDistance.value.value = (response.data?.rides?.totalDistance ?? 0);
       weeklyOnlineHours.value.value =
           (response.data?.rides?.totalDuration ?? 0);
-      weeklyTripFare = response.data?.earnings?.rideFare ?? 0;
-      weeklyWaiverCharge = response.data?.earnings?.waiverCharge ?? 0;
+      weeklyTripFare.value = response.data?.earnings?.rideFare ?? 0;
+      weeklyWaiverCharge.value = response.data?.earnings?.waiverCharge ?? 0;
       weeklyTax = response.data?.earnings?.tax ?? 0;
       weeklyIncentives = response.data?.earnings?.incentives ?? 0;
       weeklyReferEarnings = response.data?.earnings?.referrals ?? 0;
       weeklyPayment.value = response.data?.earnings?.total ?? 0;
-      print(weeklyTripFare);
+      weeklyBalanceAmount.value= response.data?.earnings?.balanceAmount ?? 0;
+      print(weeklyTripFare.value);
     } catch (error, s) {
       AppConstants.handleError(error, s: s);
       print('Error fetching weekly earning status: $error');
@@ -193,8 +195,8 @@ class EarningController extends GetxController
       weeklyTrips.value.value = 0;
       weeklyDistance.value.value = 0;
       weeklyOnlineHours.value.value = 0;
-      weeklyTripFare = 0;
-      weeklyWaiverCharge = 0;
+      weeklyTripFare.value = 0;
+      weeklyWaiverCharge.value = 0;
       weeklyTax = 0;
       weeklyIncentives = 0;
       weeklyReferEarnings = 0;
@@ -255,6 +257,7 @@ class EarningController extends GetxController
 
   Future<void> getEarningStatusToday() async {
     try {
+      log("Today Eraning ###########@@@@@@@@@@");
       var response = await ApiServices.getEarningStatus(queryParameter: {
         "start_date": DateTime.now().changeDateFormat(),
         "end_date": DateTime.now().changeDateFormat(),
@@ -270,7 +273,7 @@ class EarningController extends GetxController
       todayIncentives.value = response.data?.earnings?.incentives ?? 0;
       todayReferEarnings.value = response.data?.earnings?.referrals ?? 0;
       todayPayment.value = response.data?.earnings?.total ?? 0;
-      todayBalanceAmount.value = response.data?.earnings?.total ?? 0;
+      todayBalanceAmount.value = response.data?.earnings?.balanceAmount ?? 0;
     } catch (error, s) {
       print('Error fetching today\'s earning status: $error');
 
@@ -302,9 +305,9 @@ class EarningController extends GetxController
   Rx<double?> todayEarning = Rx<double?>(null);
   Rx<double?> weeklyEarning = Rx<double?>(null);
   Rx<double?> todayTripFare = Rx<double?>(null);
-  double? weeklyTripFare;
+  RxDouble weeklyTripFare = 0.0.obs;
   Rx<double?> todayWaiverCharge = Rx<double?>(null);
-  double? weeklyWaiverCharge;
+  Rx<double?> weeklyWaiverCharge= Rx<double?>(null);
   Rx<double?> todayTax = Rx<double?>(null);
   double? weeklyTax;
   Rx<double?> todayIncentives = Rx<double?>(null);
@@ -313,10 +316,10 @@ class EarningController extends GetxController
   Rx<double?> todayReferEarnings = Rx<double?>(null);
   Rx<double?> weeklyPayment = Rx<double?>(null);
   Rx<double?> todayPayment = Rx<double?>(null);
-  double? weeklyBalanceAmount;
+  Rx<double?> weeklyBalanceAmount= Rx<double?>(null);
   Rx<double?> todayBalanceAmount = Rx<double?>(null);
   RxList<EarningListItem> todayEarningList = <EarningListItem>[].obs;
-  RxList<EarningListItem> weeklyEarningList = <EarningListItem>[].obs;
+  // RxList<EarningListItem> weeklyEarningList = <EarningListItem>[].obs;
   RxList<EarningsByDay?> graphValues = <EarningsByDay?>[].obs;
   RxDouble maxValue = 1.0.obs;
 

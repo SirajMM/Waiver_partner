@@ -70,6 +70,7 @@ class Earnings {
   double? incentives;
   double? referrals;
   double? total;
+  double? balanceAmount;
   List<EarningsByDay>? earningsByDay;
 
   Earnings({
@@ -80,6 +81,7 @@ class Earnings {
     this.referrals,
     this.total,
     this.earningsByDay,
+    this.balanceAmount
   });
 
   factory Earnings.fromJson(Map<String, dynamic> json) => Earnings(
@@ -89,6 +91,7 @@ class Earnings {
         incentives: (json["incentives"] is num) ? (json["incentives"] as num).toDouble() : 0.0,
         referrals: (json["referrals"] is num) ? (json["referrals"] as num).toDouble() : 0.0,
         total: (json["total"] is num) ? (json["total"] as num).toDouble() : 0.0,
+        balanceAmount: (json["total_balance"] is num) ? (json["total_balance"] as num).toDouble() : 0.0,
         earningsByDay: json["earnings_by_day"] == null
             ? []
             : List<EarningsByDay>.from(json["earnings_by_day"]!.map((x) => EarningsByDay.fromJson(x))),
@@ -101,6 +104,7 @@ class Earnings {
         "incentives": incentives,
         "referrals": referrals,
         "total": total,
+        "total_balance":balanceAmount,
         "earnings_by_day":
             earningsByDay == null ? [] : List<dynamic>.from(earningsByDay!.map((x) => x.toJson())),
       };
@@ -230,7 +234,7 @@ class Data {
 }
 
 class EarningListItem {
-  String? id;
+  int? id;
   String? earningType;
   String? amount;
   bool? isPaid;
