@@ -47,6 +47,7 @@ class MyRidesController extends GetxController {
   ScrollController scrollController = ScrollController();
   getRides() async {
     GetRidesResponseModel response = await ApiServices.getRides();
+
     myRides.addAll(response.data?.results ?? []);
     isListCompeted.value = response.data!.next?.isEmpty ?? false;
   }
