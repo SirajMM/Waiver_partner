@@ -26,6 +26,7 @@ import 'package:waiver_driver/helper/init/init.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:uuid/uuid.dart';
 
+import 'backend/LocationHandler/LocationTrackingService.dart';
 import 'backend/model/home/home_model.dart';
 import 'backend/notificaton_services/notification_service/notification_service.dart';
 import 'core/constants/enums/enums.dart';
@@ -99,7 +100,7 @@ void _stopLocationUpdates() {
 
 void _sendLocationNow() {
   try {
-    HomeController.to.sendLiveLocation();
+    // HomeController.to.sendLiveLocation();
     log('Live location sent at: ${DateTime.now()}');
   } catch (e) {
     log('Error sending location: $e');
@@ -176,6 +177,7 @@ void main() async {
   await Firebase.initializeApp(name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
 
   await MainBinding().dependencies();
+
   await _requestPermissions();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -188,7 +190,7 @@ void main() async {
   startReceivePort();
 
   HttpOverrides.global = MyHttpOverrides();
-
+  Get.put(LocationTrackingService());
   runApp(const MyApp());
 }
 

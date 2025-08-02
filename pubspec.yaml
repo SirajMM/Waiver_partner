@@ -31,7 +31,9 @@ dependencies:
   flutter_callkit_incoming:
     path: lib/core/packages/flutter_callkit_incoming-master
 
-#  workmanager: ^0.5.2``````````
+  workmanager: ^0.9.0
+  flutter_background_service: ^5.1.0
+  flutter_local_notifications: ^19.4.0
 
 
   share_plus: ^11.0.0

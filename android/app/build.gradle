@@ -25,6 +25,7 @@ android {
     compileSdkVersion 35
     ndkVersion "27.2.12479018"
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -68,4 +69,7 @@ flutter {
 
 dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.work:work-runtime:2.9.0")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }
