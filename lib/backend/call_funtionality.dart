@@ -145,13 +145,12 @@ class CallFunctionality {
   //   final homeController = Get.find<HomeController>();
   // }
   static Future<void> onInit() async {
-    await MainBinding().dependencies();
+    MainBinding().dependencies();
 
     // listenCallEvents(); // Ensure call events are always being listened to
   }
 
-  Future<void> showCallkitIncoming(
-      String uuid, RemoteMessage notification) async {
+  Future<void> showCallkitIncoming(String uuid, RemoteMessage notification) async {
     data = OrderDetailsModel.fromJson(notification.data);
 
     final params = CallKitParams(
@@ -164,11 +163,12 @@ class CallFunctionality {
       duration: 15000,
       textAccept: 'Accept',
       textDecline: 'Decline',
-       missedCallNotification: const NotificationParams(
-         showNotification: false,
-         isShowCallback: false,
-         /*subtitle: 'Missed a ride',
-       callbackText: 'Call back',*/),
+      missedCallNotification: const NotificationParams(
+        showNotification: false,
+        isShowCallback: false,
+        /*subtitle: 'Missed a ride',
+       callbackText: 'Call back',*/
+      ),
       extra: <String, dynamic>{
         'userId': '1a2b3c4d',
         'rideStatus': data?.rideStatus,
@@ -181,8 +181,7 @@ class CallFunctionality {
         isShowLogo: false,
         ringtonePath: AppAudio.notification,
         backgroundColor: '#3685e0', // Changed to a dark green color
-        backgroundUrl: AppIcons
-            .appIcon, // Changed to a car icon (replace with your actual icon)
+        backgroundUrl: AppIcons.appIcon, // Changed to a car icon (replace with your actual icon)
         actionColor: '#ffffff', // Changed accept button to blue
         // incomingCallNotificationColor: '#E53935',  // Changed decline button to red
         textColor: '#000000',
@@ -268,7 +267,7 @@ class CallFunctionality {
     print("Ride Status: $rideStatus");
 
     switch (rideStatus) {
-      case "RED"|| "FRED":
+      case "RED" || "FRED":
         HomeController.to.getAndShowOrderDetails(id: rideId ?? "");
         break;
       case "cancelled" || "FCAD": // <-- Use string value instead of RideStatus.cancelled

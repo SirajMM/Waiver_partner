@@ -7,10 +7,12 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
@@ -25,13 +27,12 @@ import 'package:waiver_driver/firebase_options.dart';
 import 'package:waiver_driver/helper/init/init.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:uuid/uuid.dart';
-import 'package:workmanager/workmanager.dart';
 
 import 'backend/api/api_services/web_socket_services.dart';
 import 'backend/model/home/home_model.dart';
 import 'backend/notificaton_services/notification_service/notification_service.dart';
+import 'backend/shared_pref.dart';
 import 'core/constants/enums/enums.dart';
-import 'core/constants/get_storage_constants.dart';
 
 final box = GetStorage();
 ReceivePort? _receivePort;
@@ -63,27 +64,12 @@ void startReceivePort() {
             HomeController.to.rideId = message['rideId'];
             HomeController.to.orderTimeOut;
             break;
-          case 'send_live_location':
-            HomeController.to.sendLiveLocation();
-            break;
         }
       } catch (e, s) {
         log('Error processing message: $e', stackTrace: s);
       }
     }
   });
-}
-
-@pragma('vm:entry-point')
-void sendLocationUpdateFromBackground() {
-  final sendPort = IsolateNameServer.lookupPortByName('main_send_port');
-  sendPort?.send({'title': 'send_live_location', 'timestamp': DateTime.now().millisecondsSinceEpoch});
-}
-
-@pragma('vm:entry-point')
-void startLocationTrackingFromBackground() {
-  final sendPort = IsolateNameServer.lookupPortByName('main_send_port');
-  sendPort?.send({'title': 'start_location_tracking', 'interval': 30});
 }
 
 @pragma('vm:entry-point')
@@ -143,18 +129,22 @@ void main() async {
   await Hive.initFlutter();
   await Firebase.initializeApp(name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
   MainBinding mainBinding = MainBinding();
-  await mainBinding.dependencies();
+  mainBinding.dependencies();
+
   await _requestPermissions();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen((msg) => NotificationService.onMessage(notification: msg));
-  FirebaseMessaging.onMessageOpenedApp
-      .listen((msg) => NotificationService.onMessageOpenedApp(notification: msg));
+  FirebaseMessaging.onMessageOpenedApp.listen(
+    (msg) => NotificationService.onMessageOpenedApp(notification: msg),
+  );
 
   await NotificationService.onInit();
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   startReceivePort();
+  await SharedPrefsService.init();
+
   HttpOverrides.global = MyHttpOverrides();
   runApp(const MyApp());
 }
@@ -195,4 +185,101 @@ class MyHttpOverrides extends HttpOverrides {
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)..badCertificateCallback = (cert, host, port) => true;
   }
+}
+
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+
+  await AwesomeNotifications().initialize(
+      null,
+      [
+        NotificationChannel(
+          channelKey: 'basic_notification_channel',
+          channelName: 'Foreground Location Service',
+          channelDescription: 'Notification for location tracking in background',
+          importance: NotificationImportance.Low,
+          defaultColor: const Color(0xFF9D50DD),
+          ledColor: Colors.white,
+          locked: true,
+          channelShowBadge: false,
+        ),
+      ],
+      debug: true);
+
+  if (!await AwesomeNotifications().isNotificationAllowed()) {
+    await AwesomeNotifications().requestPermissionToSendNotifications();
+  }
+
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      onStart: onStart,
+      autoStart: true,
+      isForegroundMode: true,
+      // notificationChannelId: 'basic_notification_channel',
+      initialNotificationTitle: 'Tracking',
+      initialNotificationContent: 'Tracking your location',
+      foregroundServiceNotificationId: 888,
+    ),
+    iosConfiguration: IosConfiguration(),
+  );
+}
+
+@pragma('vm:entry-point')
+void onStart(ServiceInstance service) {
+  DartPluginRegistrant.ensureInitialized();
+
+  String? passengerId;
+  String? driverState;
+  String? messageType;
+
+  bool isOnline = false;
+  service.on('stopService').listen((event) {
+    service.stopSelf();
+  });
+  service.on("setData").listen((event) {
+    passengerId = event?['passengerId'];
+    driverState = event?['driverState'];
+    messageType = event?['messageType'];
+    isOnline = event?['isOnline'];
+    final token = event?["token"];
+
+    if (token != null && isOnline) {
+      WebSocketServices.connect(token);
+    } else {
+      WebSocketServices.disconnect();
+    }
+  });
+  // service.on("connectSocket").listen((event) async {
+  //   await WebSocketServices.connect();
+  // });
+  AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: 888,
+      channelKey: 'basic_notification_channel',
+      title: 'Tracking in Background',
+      body: 'Live location updates running...',
+      notificationLayout: NotificationLayout.Default,
+      icon: "resource://drawable/ic_stat_applogo_removebg_preview",
+      locked: true,
+      autoDismissible: false,
+      category: NotificationCategory.Service,
+    ),
+  );
+  Timer.periodic(Duration(seconds: 5), (timer) async {
+    if (isOnline) {
+      Position position = await Geolocator.getCurrentPosition(
+          locationSettings: LocationSettings(accuracy: LocationAccuracy.high));
+
+      WebSocketServices.sendLiveLocation(body: {
+        "passenger_id": passengerId,
+        "msg_type": messageType,
+        "ride_status": driverState,
+        "current_loc_long": position.longitude,
+        "current_loc_lat": position.latitude,
+      });
+      print('🎈Sending periodic location update... $position');
+    } else {
+      await AwesomeNotifications().cancel(888);
+    }
+  });
 }

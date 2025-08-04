@@ -8,6 +8,7 @@ import 'package:sms_autofill/sms_autofill.dart';
 import 'package:waiver_driver/backend/model/login/login_model.dart';
 import 'package:waiver_driver/backend/model/otp/otp_model.dart';
 import 'package:waiver_driver/backend/parser/otp/otp_parser.dart';
+import 'package:waiver_driver/backend/shared_pref.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 
@@ -63,8 +64,7 @@ class OtpController extends GetxController {
         "code": mobileCode ?? "",
         "user_type": userTypeCode,
       };
-      SendPhoneOtpResponseModel response =
-          await ApiServices.sendPhoneOtp(body: body);
+      SendPhoneOtpResponseModel response = await ApiServices.sendPhoneOtp(body: body);
       OtpController.to.showTimer.value = ShowTimerState.timer;
       AppConstants.handleError(response.message ?? "");
     } catch (error, s) {
@@ -88,16 +88,13 @@ class OtpController extends GetxController {
           "fcm_token": await (FirebaseMessaging.instance.getToken()) ?? ""
         };
 
-        VerifyOtpResponseModel response =
-            await ApiServices.phoneAuth(body: body);
+        VerifyOtpResponseModel response = await ApiServices.phoneAuth(body: body);
 
         bool? isRegistered = response.data?.isRegistered;
         bool? isVerifed = response.data?.isVerifed;
         box.write(BoxKeys.userID, response.data?.userId ?? "");
-        box.write(BoxKeys.isRegistered,
-            response.data?.isRegistered ?? false ? "1" : "0");
-        box.write(
-            BoxKeys.isVerified, response.data?.isVerifed ?? false ? "1" : "0");
+        box.write(BoxKeys.isRegistered, response.data?.isRegistered ?? false ? "1" : "0");
+        box.write(BoxKeys.isVerified, response.data?.isVerifed ?? false ? "1" : "0");
         if (response.status == 200) {
           if (userTypeCode != (response.data?.userType ?? "")) {
             userTypeCode = response.data?.userType ?? "";
@@ -105,19 +102,22 @@ class OtpController extends GetxController {
           if (userTypeCode == UserTypeCode.fleet) {
             if (isRegistered ?? false) {
               box.write(BoxKeys.token, response.data?.accessToken);
+              SharedPrefsService().setToken(response.data?.accessToken);
               Get.offAllNamed(AppRoutes1.getFleetHomePageInRoute());
             } else {
               box.write(BoxKeys.token, response.data?.accessToken);
+              SharedPrefsService().setToken(response.data?.accessToken);
+
               Get.toNamed(AppRoutes.registration, arguments: user ?? "");
             }
           } else {
             box.write(BoxKeys.token, response.data?.accessToken);
+            SharedPrefsService().setToken(response.data?.accessToken);
 
             if (isVerifed ?? false) {
               Get.offAllNamed(AppRoutes1.getHomeInRoute());
             } else if (isRegistered ?? false) {
-              Get.toNamed(AppRoutes1.getChauffeurProofInRoute(),
-                  arguments: user ?? "");
+              Get.toNamed(AppRoutes1.getChauffeurProofInRoute(), arguments: user ?? "");
             } else {
               Get.toNamed(AppRoutes1.registration, arguments: user ?? "");
             }

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:developer';
-import 'dart:isolate';
 import 'dart:math' as math;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:waiver_driver/backend/model/home/home_model.dart';
 import 'package:waiver_driver/backend/model/setting/setting_model.dart';
 import 'package:waiver_driver/backend/parser/Home/home_parser.dart';
-import 'package:waiver_driver/controller/driver_profile/driver_profile_controller.dart';
+import 'package:waiver_driver/backend/shared_pref.dart';
 import 'package:waiver_driver/core/themes/assets/audio.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 import 'package:waiver_driver/main.dart';
@@ -38,15 +37,18 @@ import '../profile/profile_controller.dart';
 // }
 
 class HomeController extends GetxController implements GetxService {
+  static HomeController get to => Get.find<HomeController>();
+
   final HomeParser parser;
   HomeController({required this.parser});
 
-  static HomeController get to => Get.find();
+  // final service = FlutterBackgroundService();
 
   RxString appState = "Active".obs;
   @override
   void onInit() async {
     super.onInit();
+    // _initializeService();
     currentPosition.value = convertToPosition(AppConstants.locationData);
     WidgetsBinding.instance.addObserver;
     _initializeHive();
@@ -67,7 +69,6 @@ class HomeController extends GetxController implements GetxService {
         saveLocationData(result[3] as loc.LocationData);
       }
       isLoading.value = false;
-      sendLocationUpdateFromBackground();
       getVersionInfo();
       ProfileController.to.getProfile();
       isAssinged.value = await hasAssigned();
@@ -88,6 +89,16 @@ class HomeController extends GetxController implements GetxService {
       log(error.toString());
     } finally {
       isLoading.value = false;
+      if (isOnline.value) {
+        await initializeService();
+        WebSocketServices.setData(
+            token: SharedPrefsService().getToken() ?? "",
+            passengerId:
+                driverState.value == DriverState.idle ? RiderStatus.save : passengerId ?? "placeholder",
+            driverState: driverState.value.toString(),
+            isOnline: isOnline.value,
+            messageType: driverState.value == DriverState.idle ? RiderStatus.save : RiderStatus.ride);
+      }
     }
   }
 
@@ -142,34 +153,24 @@ class HomeController extends GetxController implements GetxService {
       if (response.status == 200) {
         isOnline.value = response.data?.isOnline ?? false;
         log("#####################${isOnline.value}#####################");
-
-        if (isOnline.value) {
-          // Initialize FlutterBackground if needed
-          // var androidConfig = const FlutterBackgroundAndroidConfig(
-          //   notificationTitle: "Driver Active",
-          //   notificationText: "You are currently available for rides.",
-          //   notificationImportance: AndroidNotificationImportance.max,
-          //   enableWifiLock: true,
-          // );
-          //
-          // final initialized =
-          //     await FlutterBackground.initialize(androidConfig: androidConfig);
-          // if (initialized) {
-          //   await FlutterBackground.enableBackgroundExecution();
-        } else {
-          log("Failed to initialize background execution");
-        }
-      } else {
-        // Disable background execution if it’s enabled
-        // if (FlutterBackground.isBackgroundExecutionEnabled) {
-        //   await FlutterBackground.disableBackgroundExecution();
-        // }
       }
     } catch (error, s) {
       debugPrint("Error in changeDriverOnlineStatus: $error");
       AppConstants.handleError(error, s: s);
     } finally {
       isOnlineButtonLoading.value = false;
+      if (!isOnline.value) {
+        WebSocketServices.disconnect();
+      } else {
+        await initializeService();
+        WebSocketServices.setData(
+            token: SharedPrefsService().getToken() ?? "",
+            passengerId:
+                driverState.value == DriverState.idle ? RiderStatus.save : passengerId ?? "placeholder",
+            driverState: driverState.value.toString(),
+            isOnline: isOnline.value,
+            messageType: driverState.value == DriverState.idle ? RiderStatus.save : RiderStatus.ride);
+      }
     }
   }
 
@@ -191,6 +192,19 @@ class HomeController extends GetxController implements GetxService {
       print('Error fetching driver online status: $error');
       // You might want to set a default value or show an error message
       isOnline.value = false;
+    } finally {
+      if (!isOnline.value) {
+        WebSocketServices.disconnect();
+      } else {
+        await initializeService();
+        WebSocketServices.setData(
+            token: SharedPrefsService().getToken() ?? "",
+            passengerId:
+                driverState.value == DriverState.idle ? RiderStatus.save : passengerId ?? "placeholder",
+            driverState: driverState.value.toString(),
+            isOnline: isOnline.value,
+            messageType: driverState.value == DriverState.idle ? RiderStatus.save : RiderStatus.ride);
+      }
     }
   }
 
@@ -199,89 +213,22 @@ class HomeController extends GetxController implements GetxService {
   StreamSubscription<MobilityContext>? mobilitySubscription;
   MobilityContext? mobilityContext;
 
-  void sendLiveLocation() {
-    Geolocator.getPositionStream().listen((position) {
-      currentPosition.value = position;
-      saveLocationData(convertPositionToLocationData(position));
-      if (isOnline.value) {
-        WebSocketServices.sendLiveLocation(body: {
-          "passenger_id":
-              driverState.value == DriverState.idle ? RiderStatus.save : passengerId ?? "placeholder",
-          "msg_type": driverState.value == DriverState.idle ? RiderStatus.save : RiderStatus.ride,
-          "ride_status": driverState.value.toString(),
-          "current_loc_long": position.longitude,
-          "current_loc_lat": position.latitude,
-        });
-      }
-    });
-  }
-// Replace your existing sendLiveLocation() function with this:
-//   void sendLiveLocation() {
-//
-//       startLocationTracking();
-//
-//   }
-//
-// // Add this new method to start the location tracking service
-//   Future<void> startLocationTracking() async {
-//     try {
-//       await LocationTrackingService.startLocationTracking(
-//         // driverId: driverId, // Make sure you have this variable
-//         passengerId: passengerId,
-//         driverState: driverState.value.toString(),
-//         onPositionUpdate: (Position position) {
-//           // This replaces: currentPosition.value = position;
-//           currentPosition.value = position;
-//         },
-//         onSaveLocation: (Map<String, dynamic> locationData) {
-//           // Convert the map to loc.LocationData and use your existing save method
-//           final locData = loc.LocationData.fromMap(locationData);
-//           saveLocationData(locData); // Uses your existing method
-//         },
-//         onWebSocketSend: (Map<String, dynamic> payload) {
-//           // This replaces your WebSocket logic with isOnline check
-//           if (isOnline.value) {
-//             WebSocketServices.sendLiveLocation(body: payload);
-//           }
-//         },
-//       );
-//
-//       print('Location tracking started successfully');
-//     } catch (e) {
-//       print('Failed to start location tracking: $e');
-//     }
-//   }
-//
-// // Add method to stop location tracking
-//   void stopLocationTracking() {
-//     LocationTrackingService.stopLocationTracking();
-//   }
-//
-// // Update driver state when needed
-//   void updateDriverState({
-//     String? newPassengerId,
-//     required DriverState newDriverState,
-//   }) {
-//     // Update local state
-//     passengerId = newPassengerId;
-//     driverState.value = newDriverState;
-//
-//     // Update in the isolate
-//     LocationTrackingService.updateDriverState(
-//       passengerId: newPassengerId,
-//       driverState: newDriverState.toString(),
-//     );
-//   }
-
-// Your existing saveLocationData method can stay the same, but now it receives a Map
-//   void saveLocationData(Map<String, dynamic> locationData) {
-//     // You can convert the map to your existing format if needed:
-//     // final convertedData = convertMapToLocationData(locationData);
-//     // Or use the map directly since it contains all the same data
-//
-//     // Your existing save logic here
-//     print('Location saved: ${locationData['latitude']}, ${locationData['longitude']}');
-//   }
+  // void sendLiveLocation() {
+  //   Geolocator.getPositionStream().listen((position) {
+  //     currentPosition.value = position;
+  //     saveLocationData(convertPositionToLocationData(position));
+  //     if (isOnline.value) {
+  //       WebSocketServices.sendLiveLocation(body: {
+  //         "passenger_id":
+  //             driverState.value == DriverState.idle ? RiderStatus.save : passengerId ?? "placeholder",
+  //         "msg_type": driverState.value == DriverState.idle ? RiderStatus.save : RiderStatus.ride,
+  //         "ride_status": driverState.value.toString(),
+  //         "current_loc_long": position.longitude,
+  //         "current_loc_lat": position.latitude,
+  //       });
+  //     }
+  //   });
+  // }
 
 // Helper method to convert map to your existing format (if needed)
   Map<String, dynamic> convertMapToLocationData(Map<String, dynamic> locationData) {
@@ -724,18 +671,22 @@ class HomeController extends GetxController implements GetxService {
   }
 
   Future<String?> getLocationDetails(double latitude, double longitude) async {
-    GoogleLocationResponse response = await ApiServices.getCurrentLocation(latitude, longitude);
+    try {
+      GoogleLocationResponse response = await ApiServices.getCurrentLocation(latitude, longitude);
 
-    for (var result in response.results ?? []) {
-      for (var addressComponent in result.addressComponents ?? []) {
-        if ((addressComponent.types?.contains("sublocality") ?? false) ||
-            (addressComponent.types?.contains("subpremise") ?? false)) {
-          return addressComponent.shortName;
+      for (var result in response.results ?? []) {
+        for (var addressComponent in result.addressComponents ?? []) {
+          if ((addressComponent.types?.contains("sublocality") ?? false) ||
+              (addressComponent.types?.contains("subpremise") ?? false)) {
+            return addressComponent.shortName;
+          }
         }
       }
+    } catch (e, s) {
+      log("getLocationDetails", error: e, stackTrace: s);
     }
 
-    return null; // Return null if no sublocality or subpremise is found
+    return "";
   }
 
   void recenter() {
@@ -1100,4 +1051,90 @@ class HomeController extends GetxController implements GetxService {
   //     sendLiveLocation(); // Resume location sending
   //   }
   // }
+
+  // Future<void> _initializeService() async {
+  //   await service.configure(
+  //     androidConfiguration: AndroidConfiguration(
+  //       autoStart: false,
+  //       isForegroundMode: true,
+  //       notificationChannelId: 'bg_service_channel',
+  //       initialNotificationTitle: 'Tracking Location',
+  //       initialNotificationContent: 'Service is running',
+  //       foregroundServiceNotificationId: 888,
+  //       onStart: _onStart,
+  //     ),
+  //     iosConfiguration: IosConfiguration(
+  //       autoStart: false,
+  //       onForeground: _onStart,
+  //       onBackground: _onIosBackground,
+  //     ),
+  //   );
+  // }
+  //
+  // void startService() async {
+  //   await service.startService();
+  // }
+  //
+  // void stopService() {
+  //   service.invoke("stop");
+  // }
 }
+
+// @pragma('vm:entry-point')
+// Future<bool> _onIosBackground(ServiceInstance service) async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   return true;
+// }
+//
+// @pragma('vm:entry-point')
+// void _onStart(ServiceInstance service) async {
+//   DartPluginRegistrant.ensureInitialized();
+//
+//   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+//       FlutterLocalNotificationsPlugin();
+//
+//   const AndroidNotificationChannel channel = AndroidNotificationChannel(
+//     'bg_service_channel',
+//     'Background Service',
+//     description: 'Used for background location tracking',
+//     importance: Importance.defaultImportance,
+//   );
+//
+//   await flutterLocalNotificationsPlugin
+//       .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+//       ?.createNotificationChannel(channel);
+//
+//   if (service is AndroidServiceInstance) {
+//     service.setForegroundNotificationInfo(
+//       title: "Location Service Running",
+//       content: DateTime.now().toString(),
+//     );
+//   }
+//
+//   final timer = Timer.periodic(const Duration(seconds: 15), (timer) async {
+//     try {
+//       final position = await Geolocator.getCurrentPosition(
+//         desiredAccuracy: LocationAccuracy.high,
+//       );
+//
+//       final response = await http.post(
+//         Uri.parse("https://your-api.com/location"),
+//         headers: {'Content-Type': 'application/json'},
+//         body: jsonEncode({
+//           'lat': position.latitude,
+//           'lng': position.longitude,
+//           'timestamp': DateTime.now().toIso8601String(),
+//         }),
+//       );
+//
+//       log("📍 ${DateTime.now()}: ${position.latitude}, ${position.longitude} | status: ${response.statusCode}");
+//     } catch (e) {
+//       log("❌ Error fetching/sending location: $e");
+//     }
+//   });
+//
+//   service.on('stop').listen((event) {
+//     timer.cancel();
+//     service.stopSelf();
+//   });
+// }

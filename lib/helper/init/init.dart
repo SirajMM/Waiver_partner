@@ -26,11 +26,11 @@ import '../../backend/parser/Preference/preference_parser.dart';
 
 class MainBinding extends Bindings {
   @override
-  Future<void> dependencies() async {
+  void dependencies() {
     // Get.put<NetworkController>(NetworkController(), permanent: true);
-    Get.lazyPut(() => ApiServices(appBaseUrl: AppUrls.base));
+    Get.put(ApiServices(appBaseUrl: AppUrls.base), permanent: true);
 
-    Get.lazyPut(() => HomeParser(apiService: Get.find()), fenix: true);
+    Get.put(HomeParser(apiService: Get.find()), permanent: true);
 
     Get.lazyPut(() => SplashParser(apiService: Get.find()), fenix: true);
 

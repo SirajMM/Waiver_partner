@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -48,14 +49,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.inactive) {
-      print("🟡 App Inactive - Keeping API/WebSocket Running");
+      log("🟡 App Inactive ");
     } else if (state == AppLifecycleState.resumed) {
-      print("🟢 App Resumed - Reconnecting WebSocket/Firebase...");
+      log("🟢 App Resumed ");
     } else if (state == AppLifecycleState.paused) {
-      sendLocationUpdateFromBackground();
-      print("🔴 App in Background - Closing WebSocket...");
+      log("🔴 App in Background ");
     } else if (state == AppLifecycleState.detached) {
-      print("⚠️ App Terminated - Scheduling WorkManager Task...");
+      log("⚠️ App Terminated ");
     }
   }
 
@@ -68,16 +68,15 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(HomeController(parser: Get.find()), permanent: true);
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-        HomeController homeController = Get.find();
+        if (didPop) return;
 
-        if (homeController.driverState.value == DriverState.idle) {
+        if (HomeController.to.driverState.value == DriverState.idle) {
           exit(0);
-        } else if (homeController.driverState.value == DriverState.paymentInitiated ||
-            homeController.driverState.value == DriverState.completed) {
+        } else if (HomeController.to.driverState.value == DriverState.paymentInitiated ||
+            HomeController.to.driverState.value == DriverState.completed) {
           Get.defaultDialog(middleText: "Confirm the payment !!!");
         } else {
           Get.defaultDialog(
@@ -178,8 +177,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                       },
                       onCameraIdle: () async => controller.pickUpLocation1?.name.value =
                           await controller.getLocationDetails(
-                              controller.currentPosition.value?.latitude ?? 0,
-                              controller.currentPosition.value?.longitude ?? 0.0),
+                                  controller.currentPosition.value?.latitude ?? 0,
+                                  controller.currentPosition.value?.longitude ?? 0.0) ??
+                              "",
                       initialCameraPosition: CameraPosition(
                         target: LatLng(
                           controller.currentPosition.value?.latitude ?? 0,
