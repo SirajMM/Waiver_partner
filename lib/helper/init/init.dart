@@ -26,29 +26,33 @@ import '../../backend/parser/Preference/preference_parser.dart';
 
 class MainBinding extends Bindings {
   @override
-  void dependencies() {
+  Future<void> dependencies() async {
     // Get.put<NetworkController>(NetworkController(), permanent: true);
-    Get.put(ApiServices(appBaseUrl: AppUrls.base), permanent: true);
 
-    Get.put(HomeParser(apiService: Get.find()), permanent: true);
+    Get.lazyPut(() => ApiServices(appBaseUrl: AppUrls.base));
 
     Get.lazyPut(() => SplashParser(apiService: Get.find()), fenix: true);
 
     Get.lazyPut(() => SignInParser(apiService: Get.find()), fenix: true);
 
     Get.lazyPut(() => LoginParser(apiService: Get.find()), fenix: true);
-    Get.lazyPut(() => DriverTypeSelectionParser(apiService: Get.find()), fenix: true);
+    Get.lazyPut(() => DriverTypeSelectionParser(apiService: Get.find()),
+        fenix: true);
     Get.lazyPut(() => OtpParser(apiService: Get.find()), fenix: true);
     Get.lazyPut(() => FleetHomePageParser(apiService: Get.find()), fenix: true);
-    Get.lazyPut(() => ChauffeurProof_parser(apiService: Get.find()), fenix: true);
+    Get.lazyPut(() => HomeParser(apiService: Get.find()), fenix: true);
+    Get.lazyPut(() => ChauffeurProof_parser(apiService: Get.find()),
+        fenix: true);
     Get.lazyPut(() => RegistrationParser(apiService: Get.find()), fenix: true);
-    Get.lazyPut(() => WaitingForAuthorizationParser(apiService: Get.find()), fenix: true);
+    Get.lazyPut(() => WaitingForAuthorizationParser(apiService: Get.find()),
+        fenix: true);
 
     Get.lazyPut(() => AadharParser(apiService: Get.find()), fenix: true);
     Get.lazyPut(() => BankaccountParser(apiService: Get.find()), fenix: true);
     Get.lazyPut(() => ProfilescreenParser(apiService: Get.find()), fenix: true);
     Get.lazyPut(() => EarningscreenParser(apiService: Get.find()), fenix: true);
-    Get.lazyPut(() => ViewbankaccountParser(apiService: Get.find()), fenix: true);
+    Get.lazyPut(() => ViewbankaccountParser(apiService: Get.find()),
+        fenix: true);
     Get.lazyPut(() => RatingscreenParser(apiService: Get.find()), fenix: true);
     Get.lazyPut(() => MyrideScreenParser(apiService: Get.find()), fenix: true);
     Get.lazyPut(() => NotificationParser(apiService: Get.find()), fenix: true);

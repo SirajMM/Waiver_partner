@@ -18,7 +18,8 @@ class SettingItemModel {
 LogoutResponseModel logoutResponseModelFromJson(String str) =>
     LogoutResponseModel.fromJson(json.decode(str));
 
-String logoutResponseModelToJson(LogoutResponseModel data) => json.encode(data.toJson());
+String logoutResponseModelToJson(LogoutResponseModel data) =>
+    json.encode(data.toJson());
 
 class LogoutResponseModel {
   final int? status;
@@ -31,7 +32,8 @@ class LogoutResponseModel {
     this.data,
   });
 
-  factory LogoutResponseModel.fromJson(Map<String, dynamic> json) => LogoutResponseModel(
+  factory LogoutResponseModel.fromJson(Map<String, dynamic> json) =>
+      LogoutResponseModel(
         status: json["status"],
         message: json["message"],
         data: json["data"] == null ? null : Data.fromJson(json["data"]),
@@ -45,10 +47,9 @@ class LogoutResponseModel {
 }
 
 class Data {
-  final bool? isOnline;
-  Data({this.isOnline});
+  Data();
 
-  factory Data.fromJson(Map<String, dynamic> json) => Data(isOnline: json["is_online"]);
+  factory Data.fromJson(Map<String, dynamic> json) => Data();
 
-  Map<String, dynamic> toJson() => {"is_online": isOnline};
+  Map<String, dynamic> toJson() => {};
 }

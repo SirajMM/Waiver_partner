@@ -16,7 +16,10 @@ class AddDriverScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar(title: AddDriverController.to.isChangeDriver ? "Change Driver" : "Add Driver"),
+      appBar: appBar(
+          title: AddDriverController.to.isChangeDriver
+              ? "Change Driver"
+              : "Add Driver"),
       body: SafeArea(
         child: GetX<AddDriverController>(
           builder: (controller) {
@@ -36,26 +39,33 @@ class AddDriverScreen extends StatelessWidget {
                                 ),
                                 children: [
                                   AppTextFormField(
-                                    controller: AddDriverController.to.controllerDriverName,
+                                    controller: AddDriverController
+                                        .to.controllerDriverName,
                                     header: "Driver Full Name",
-                                    placeHolder: "e.g. Alex John",
-                                    textCapitalization: TextCapitalization.characters,
-                                    validator: (value) => Validators.isEmpty(value: value),
+                                    placeHolder: "e.g. #25254565",
+                                    textCapitalization:
+                                        TextCapitalization.characters,
+                                    validator: (value) =>
+                                        Validators.isEmpty(value: value),
                                     inputFormatters: [
-                                      CustomCharacterFormatter(allowedPattern: r'[^a-zA-Z\-.]')
+                                      CustomCharacterFormatter(
+                                          allowedPattern: r'[^a-zA-Z\-.]')
                                     ],
                                   ),
                                   SizedBox(
                                     height: 15.sp,
                                   ),
                                   AppTextFormField(
-                                    controller: AddDriverController.to.controllerDriverId,
+                                    controller: AddDriverController
+                                        .to.controllerDriverId,
                                     inputFormatters: [
-                                      CustomCharacterFormatter(allowedPattern: r'[^a-zA-Z0-9]')
+                                      CustomCharacterFormatter(
+                                          allowedPattern: r'[^a-zA-Z0-9]')
                                     ],
                                     header: "Driver ID",
                                     placeHolder: "e.g. #25254565",
-                                    validator: (value) => Validators.isEmpty(value: value),
+                                    validator: (value) =>
+                                        Validators.isEmpty(value: value),
                                   ).cPadOnly(b: 20),
                                 ],
                               ),
@@ -65,11 +75,15 @@ class AddDriverScreen extends StatelessWidget {
                                 return Padding(
                                   padding: EdgeInsets.only(bottom: 15.0.sp),
                                   child: BlueButton(
-                                      text: controller.isChangeDriver ? "Change Driver" : "Submit",
-                                      isLoading: controller.isButtonLoading.value,
-                                      onTap: () => controller.isChangeDriver
-                                          ? controller.changeDriver()
-                                          : controller.addDriver()).cPadSymmetric(h: 30),
+                                          text: controller.isChangeDriver
+                                              ? "Change Driver"
+                                              : "Submit",
+                                          isLoading:
+                                              controller.isButtonLoading.value,
+                                          onTap: () => controller.isChangeDriver
+                                              ? controller.changeDriver()
+                                              : controller.addDriver())
+                                      .cPadSymmetric(h: 30),
                                 );
                               },
                             ),
