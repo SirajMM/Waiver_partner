@@ -36,9 +36,16 @@ class LocationTrackingService extends GetxController {
     super.onClose();
   }
 
+  // Future<void> _setup() async {
+  //   await _requestPermissions();
+  //   // Don't save initial data here - will be done when startService is called
+  //   await _initializeService();
+  //   isRunning.value = await service.isRunning();
+  // }
+
   Future<void> _setup() async {
     await _requestPermissions();
-    // Don't save initial data here - will be done when startService is called
+    await createNotificationChannel(); // Create channel first
     await _initializeService();
     isRunning.value = await service.isRunning();
   }
@@ -53,7 +60,8 @@ class LocationTrackingService extends GetxController {
 
     // Save WebSocket configuration from your existing service
     await prefs.setString('websocket_base_url', WebSocketUrl.base);
-    await prefs.setString('websocket_live_location_path', WebSocketUrl.liveLocation);
+    await prefs.setString(
+        'websocket_live_location_path', WebSocketUrl.liveLocation);
 
     // Get token from your box
     final token = box.read(BoxKeys.token) ?? '';
@@ -93,6 +101,21 @@ class LocationTrackingService extends GetxController {
     });
   }
 
+  // Future<void> _requestPermissions() async {
+  //   LocationPermission permission = await Geolocator.checkPermission();
+  //   if (permission == LocationPermission.denied) {
+  //     permission = await Geolocator.requestPermission();
+  //   }
+
+  //   if (permission == LocationPermission.deniedForever) {
+  //     throw Exception('Location permissions are permanently denied');
+  //   }
+
+  //   if (Platform.isAndroid) {
+  //     await Permission.notification.request();
+  //   }
+  // }
+
   Future<void> _requestPermissions() async {
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
@@ -104,11 +127,37 @@ class LocationTrackingService extends GetxController {
     }
 
     if (Platform.isAndroid) {
+      // Request notification permission for Android 13+
       await Permission.notification.request();
+
+      // Also request the specific permissions
+      await Permission.locationAlways.request();
     }
   }
 
+  // Future<void> _initializeService() async {
+  //   await service.configure(
+  //     androidConfiguration: AndroidConfiguration(
+  //       autoStart: false,
+  //       isForegroundMode: true,
+  //       notificationChannelId: 'bg_service_channel',
+  //       initialNotificationTitle: 'Location Tracking Active',
+  //       initialNotificationContent: 'Tracking your location in background',
+  //       foregroundServiceNotificationId: 888,
+  //       onStart: onStart,
+  //       autoStartOnBoot: false,
+  //     ),
+  //     iosConfiguration: IosConfiguration(
+  //       autoStart: false,
+  //       onForeground: onStart,
+  //       onBackground: onIosBackground,
+  //     ),
+  //   );
+  // }
   Future<void> _initializeService() async {
+    // Create notification channel BEFORE configuring service
+    await createNotificationChannel();
+
     await service.configure(
       androidConfiguration: AndroidConfiguration(
         autoStart: false,
@@ -158,8 +207,13 @@ class LocationTrackingService extends GetxController {
 
   Future<void> stopService() async {
     try {
-      service.invoke("stop_service");
-      isRunning.value = false;
+      // Only call service methods from main isolate
+      if (await service.isRunning()) {
+        service.invoke("stop_service");
+        await Future.delayed(
+            Duration(milliseconds: 500)); // Give time to process
+        isRunning.value = await service.isRunning();
+      }
       log('🛑 Location tracking service stopped');
     } catch (e) {
       log('❌ Error stopping service: $e');
@@ -167,7 +221,8 @@ class LocationTrackingService extends GetxController {
   }
 
   // Method to update driver state from main app
-  Future<void> updateDriverState(String driverState, {String? passengerId}) async {
+  Future<void> updateDriverState(String driverState,
+      {String? passengerId}) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('driver_state', driverState);
     if (passengerId != null) {
@@ -216,23 +271,24 @@ void onStart(ServiceInstance service) async {
   DartPluginRegistrant.ensureInitialized();
 
   // Initialize notifications
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin();
+  // final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  //     FlutterLocalNotificationsPlugin();
 
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'bg_service_channel',
-    'Location Tracking Service',
-    description: 'Used for background location tracking',
-    importance: Importance.low,
-    enableVibration: false,
-    playSound: false,
-  );
+  // const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  //   'bg_service_channel',
+  //   'Location Tracking Service',
+  //   description: 'Used for background location tracking',
+  //   importance: Importance.low,
+  //   enableVibration: false,
+  //   playSound: false,
+  // );
 
-  if (Platform.isAndroid) {
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
-  }
+  // if (Platform.isAndroid) {
+  //   await flutterLocalNotificationsPlugin
+  //       .resolvePlatformSpecificImplementation<
+  //           AndroidFlutterLocalNotificationsPlugin>()
+  //       ?.createNotificationChannel(channel);
+  // }
 
   // Set up foreground notification for Android - FIXED
   if (Platform.isAndroid && service is AndroidServiceInstance) {
@@ -248,7 +304,8 @@ void onStart(ServiceInstance service) async {
   );
 
   // Initialize background WebSocket and location tracking
-  final backgroundLocationService = BackgroundLocationService(service, sendPort);
+  final backgroundLocationService =
+      BackgroundLocationService(service, sendPort);
   await backgroundLocationService.initialize();
 
   // Listen for commands from main isolate
@@ -280,6 +337,27 @@ void onStart(ServiceInstance service) async {
   });
 }
 
+Future<void> createNotificationChannel() async {
+  if (Platform.isAndroid) {
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'bg_service_channel',
+      'Location Tracking Service',
+      description: 'Used for background location tracking',
+      importance: Importance.low,
+      enableVibration: false,
+      playSound: false,
+    );
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+  }
+}
+
 // Background WebSocket service that mimics your WebSocketServices
 class BackgroundWebSocketService {
   WebSocketChannel? _channel;
@@ -304,7 +382,7 @@ class BackgroundWebSocketService {
         log('✅ Background WebSocket connected to: $url');
 
         _channel!.stream.listen(
-              (data) {
+          (data) {
             log('📨 WebSocket received: $data');
           },
           onError: (error) {
@@ -396,10 +474,14 @@ class BackgroundLocationService {
       _isOnline = prefs.getBool('is_online') ?? false;
 
       final baseUrl = prefs.getString('websocket_base_url') ?? '';
-      final liveLocationPath = prefs.getString('websocket_live_location_path') ?? '';
+      final liveLocationPath =
+          prefs.getString('websocket_live_location_path') ?? '';
       final token = prefs.getString('auth_token') ?? '';
 
-      if (_isOnline && baseUrl.isNotEmpty && liveLocationPath.isNotEmpty && token.isNotEmpty) {
+      if (_isOnline &&
+          baseUrl.isNotEmpty &&
+          liveLocationPath.isNotEmpty &&
+          token.isNotEmpty) {
         _webSocketService.initialize(baseUrl, liveLocationPath, token);
 
         sendPort?.send({
@@ -458,7 +540,6 @@ class BackgroundLocationService {
         _updateNotification(position);
 
         log("📍 ${DateTime.now()}: ${position.latitude}, ${position.longitude}");
-
       } catch (e) {
         log("❌ Error in location tracking: $e");
 
@@ -478,7 +559,8 @@ class BackgroundLocationService {
     if (Platform.isAndroid && service is AndroidServiceInstance) {
       (service as AndroidServiceInstance).setForegroundNotificationInfo(
         title: "Location Tracking Active",
-        content: "Last updated: ${_formatDateTime(DateTime.now())}\nLat: ${position.latitude.toStringAsFixed(4)}, Lon: ${position.longitude.toStringAsFixed(4)}",
+        content:
+            "Last updated: ${_formatDateTime(DateTime.now())}\nLat: ${position.latitude.toStringAsFixed(4)}, Lon: ${position.longitude.toStringAsFixed(4)}",
       );
     }
   }
@@ -488,7 +570,8 @@ class BackgroundLocationService {
     if (Platform.isAndroid && service is AndroidServiceInstance) {
       (service as AndroidServiceInstance).setForegroundNotificationInfo(
         title: "Location Tracking - Error",
-        content: "Error: ${error.length > 50 ? error.substring(0, 50) + '...' : error}",
+        content:
+            "Error: ${error.length > 50 ? error.substring(0, 50) + '...' : error}",
       );
     }
   }
@@ -516,7 +599,6 @@ class BackgroundLocationService {
         'type': 'location_sent',
         'data': locationData,
       });
-
     } catch (e) {
       log('❌ Error sending location via WebSocket: $e');
       sendPort?.send({
