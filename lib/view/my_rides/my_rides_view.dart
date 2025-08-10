@@ -32,21 +32,49 @@ class MyRidesScreen extends StatelessWidget {
           return const ErrorPage();
         }
 
-        return ListView.builder(
-          controller: controller.scrollController,
-          padding: EdgeInsets.symmetric(vertical: 30.sp, horizontal: 15.sp),
-          itemCount:
-              controller.myRides.length + 1, // +1 for the loader or SizedBox
-          itemBuilder: (context, index) {
-            if (index < controller.myRides.length) {
-              final ride = controller.myRides[index];
-              return MyRidesListingItem(ride: ride);
-            } else {
-              return controller.isListCompeted.value
-                  ? LoadingBarsAnimation(height: 200.sp)
-                  : const SizedBox();
-            }
-          },
+        if (controller.myRides.isEmpty) {
+          return const EmptyPage(); // Show empty state if no rides
+        }
+
+        return RefreshIndicator(
+          onRefresh: () => controller.refreshRides(),
+          child: ListView.builder(
+            controller: controller.scrollController,
+            padding: EdgeInsets.symmetric(vertical: 30.sp, horizontal: 15.sp),
+            itemCount: controller.myRides.length + 1, // +1 for the pagination loader
+            itemBuilder: (context, index) {
+              if (index < controller.myRides.length) {
+                final ride = controller.myRides[index];
+                return MyRidesListingItem(ride: ride);
+              } else {
+                // Show loading indicator at the bottom when loading more
+                if (controller.shouldShowLoadingIndicator) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.sp),
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+                // Show "No more rides" indicator if there are no more pages
+                else if (!controller.hasNextPage.value && controller.myRides.isNotEmpty) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20.sp),
+                    child: Center(
+                      child: Text(
+                        "No more rides to load",
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+                return const SizedBox();
+              }
+            },
+          ),
         );
       }),
     );
@@ -65,7 +93,7 @@ class MyRidesListingItem extends StatelessWidget {
     String formatISTTime(String startTime) {
       DateTime dateTime = DateTime.parse(startTime).toLocal();
       String formattedDate =
-          DateFormat('d MMM yyyy \'at\' h:mm a').format(dateTime);
+      DateFormat('d MMM yyyy \'at\' h:mm a').format(dateTime);
       return formattedDate;
     }
 
@@ -202,9 +230,9 @@ class MyRidesListingItem extends StatelessWidget {
                   ),
                   ride.endTime != null
                       ? Text(
-                          formatISTTime(ride.startTime!.toString()),
-                          style: TextStyle(fontSize: 14.sp,fontWeight: FontWeight.normal),
-                        )
+                    formatISTTime(ride.startTime!.toString()),
+                    style: TextStyle(fontSize: 14.sp,fontWeight: FontWeight.normal),
+                  )
                       : const SizedBox()
 
                 ],
@@ -231,9 +259,9 @@ class MyRidesListingItem extends StatelessWidget {
                   ),
                   ride.endTime != null
                       ? Text(
-                          formatISTTime(ride.endTime!.toString()),
-                          style: TextStyle(fontSize: 14.sp),
-                        )
+                    formatISTTime(ride.endTime!.toString()),
+                    style: TextStyle(fontSize: 14.sp),
+                  )
                       : const SizedBox()
                 ],
               ),

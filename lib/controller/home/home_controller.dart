@@ -1625,6 +1625,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       // Background service was already running, nothing needed
     } else if (state == AppLifecycleState.detached) {
       appState.value = "Terminated";
+      stopLocationTrackingFromBackground();
+      stopLocationTracking();
+      setDriverOfflineOnTermination();
       log("⚠️ App Terminated - Background service will continue");
       // Background service continues even when app is terminated
     }
@@ -1643,6 +1646,22 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   // Method to check if location service is running
   Future<bool> isLocationServiceRunning() async {
     return await locationTrackingService.getServiceStatus();
+  }
+
+  Future<void> setDriverOfflineOnTermination() async {
+    try {
+      // Call your API to set driver offline
+      await ApiServices.changeOnlineStatus(
+        body: {"is_online": 0},
+      );
+
+      // Update local state
+      isOnline.value = false;
+
+      log('✅ Driver set to offline due to app termination');
+    } catch (e) {
+      log('❌ Error setting driver offline on termination: $e');
+    }
   }
 
   // Keep all your existing methods unchanged...
@@ -2149,6 +2168,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       paymentType = response.data?.paymentType;
       waiverCharge = response.data?.waiverCharge;
       driverState.value = DriverState.completed;
+      await locationTrackingService.updateDriverState(
+        driverState.value.toString(),
+        passengerId: null,
+      );
       Get.back();
     }
   }

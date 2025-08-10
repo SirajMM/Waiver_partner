@@ -74,7 +74,7 @@ flutter_launcher_icons:
   ios: true
   alpha : true
   remove_alpha_ios: true
-  image_path: "assets/icons/app_icon.png"
+  image_path: "assets/icons/Waiver-PartnerIcon.png"
   
 
 flutter:

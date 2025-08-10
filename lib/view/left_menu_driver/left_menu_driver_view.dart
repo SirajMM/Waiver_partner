@@ -113,7 +113,7 @@ class LeftMenuDriver extends StatelessWidget {
               item: LeftMenuControllerDriver.to.help,
               onTap: () async {
                 final Uri whatsapp = Uri.parse(
-                    'https://api.whatsapp.com/send?phone=918943099085&text=Hi');
+                    'https://wa.me/message/DDC362JXDWX7D1');
                 launchUrl(whatsapp);
               }),
           const Divider().cPadSymmetric(v: 20.sp),

@@ -14,45 +14,105 @@ import '../../backend/api/api_services/api_services.dart';
 // }
 
 class MyRidesController extends GetxController {
-  
   MyrideScreenParser parser;
   MyRidesController({required this.parser});
   static MyRidesController get to => Get.find();
+
   @override
   void onInit() async {
     super.onInit();
-    // try {
-    //   isLoading.value = true;
     await getRides();
     isError.value = false;
-    // } catch (error) {
-    //   isError.value = true;
-    // } finally {
-    //   isLoading.value = false;
-    // }
+
     scrollController.addListener(() {
-      if (isListCompeted.value &&
-          scrollController.position.maxScrollExtent ==
-              scrollController.position.pixels) {
-        if (isListCompeted.value) {
-          getRides();
+      if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+        // User has reached the bottom of the list
+        if (hasNextPage.value && !isLoadingMore.value) {
+          loadMoreRides();
         }
       }
     });
   }
 
+  // Observable variables
   RxBool isLoading = false.obs;
   RxBool isError = false.obs;
-  RxBool isListCompeted = false.obs;
-  ScrollController scrollController = ScrollController();
-  getRides() async {
-    GetRidesResponseModel response = await ApiServices.getRides();
+  RxBool isLoadingMore = false.obs; // For loading more items
+  RxBool hasNextPage = true.obs; // To check if there are more pages
 
-    myRides.addAll(response.data?.results ?? []);
-    isListCompeted.value = response.data!.next?.isEmpty ?? false;
+  ScrollController scrollController = ScrollController();
+  RxList<Ride> myRides = <Ride>[].obs;
+  String? nextPageUrl; // Store the next page URL
+
+  // Initial load of rides
+  Future<void> getRides() async {
+    try {
+      isLoading.value = true;
+      isError.value = false;
+
+      GetRidesResponseModel response = await ApiServices.getRides();
+
+      if (response.data != null) {
+        myRides.clear(); // Clear existing data for fresh load
+        myRides.addAll(response.data!.results ?? []);
+
+        // Set next page URL and hasNextPage flag
+        nextPageUrl = response.data!.next;
+        hasNextPage.value = nextPageUrl != null && nextPageUrl!.isNotEmpty;
+      }
+    } catch (error) {
+      isError.value = true;
+      print("Error loading rides: $error");
+    } finally {
+      isLoading.value = false;
+    }
   }
 
-  RxList<Ride> myRides = <Ride>[].obs;
+  // Load more rides for pagination
+  Future<void> loadMoreRides() async {
+    if (!hasNextPage.value || isLoadingMore.value || nextPageUrl == null) {
+      return;
+    }
+
+    try {
+      isLoadingMore.value = true;
+
+      // Call API with the next page URL
+      GetRidesResponseModel response = await ApiServices.getRidesFromUrl(nextPageUrl!);
+
+      if (response.data != null) {
+        // Add new rides to existing list
+        myRides.addAll(response.data!.results ?? []);
+
+        // Update next page URL and hasNextPage flag
+        nextPageUrl = response.data!.next;
+        hasNextPage.value = nextPageUrl != null && nextPageUrl!.isNotEmpty;
+      }
+    } catch (error) {
+      print("Error loading more rides: $error");
+      // You might want to show a snackbar or toast here
+    } finally {
+      isLoadingMore.value = false;
+    }
+  }
+
+  // Refresh the entire list
+  Future<void> refreshRides() async {
+    nextPageUrl = null;
+    hasNextPage.value = true;
+    await getRides();
+  }
+
+  // Helper method to check if we should show loading indicator
+  bool get shouldShowLoadingIndicator {
+    return hasNextPage.value && isLoadingMore.value;
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
+  }
 
   String getDisplayRideStatus(String? rideStatus) {
     switch (rideStatus) {

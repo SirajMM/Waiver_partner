@@ -37,7 +37,7 @@ class RatingController extends GetxController {
     }
 
     scrollController.addListener(() {
-      if (isListCompeted.value &&
+      if (isListCompeted.value.isNotEmpty &&
           scrollController.position.maxScrollExtent ==
               scrollController.position.pixels) {
         getReviews();
@@ -47,23 +47,73 @@ class RatingController extends GetxController {
 
   RxBool isLoading = false.obs;
   RxBool isError = false.obs;
-  RxBool isListCompeted = false.obs;
+  RxString isListCompeted = "".obs;
   ScrollController scrollController = ScrollController();
-  Future<void> getReviews() async {
+  int currentOffset = 0;
+  int limit = 10;
+  bool hasMoreData = true;
+
+  RxBool isPaginationLoading = false.obs;
+  RxList<ReviewModel> ratingsList = <ReviewModel>[].obs;
+
+  // Future<void> getReviews() async {
+  //   try {
+  //     var response = await ApiServices.getReviews();
+  //     ratingsList.addAll(response.data?.results ?? []);
+  //     isListCompeted.value = response.data?.next ?? "";
+  //   } catch (error, s) {
+  //     AppConstants.handleError(error, s: s);
+  //     print('Error fetching reviews: $error');
+  //   } finally {}
+  // }
+  void setupScrollListener() {
+    scrollController.addListener(() {
+      if (scrollController.position.pixels >=
+          scrollController.position.maxScrollExtent - 200) {
+        // Load more when user is near the bottom
+        loadMoreReviews();
+      }
+    });
+  }
+
+  Future<void> loadMoreReviews() async {
+    if (hasMoreData && !isPaginationLoading.value && !isLoading.value) {
+      await getReviews(isInitial: false);
+    }
+  }
+
+  Future<void> refreshReviews() async {
+    await getReviews(isInitial: true);
+  }
+  Future<void> getReviews({bool isInitial = true}) async {
     try {
+      if (isInitial) {
+        isLoading.value = true;
+        ratingsList.clear();
+      }
+
       var response = await ApiServices.getReviews();
-      ratingsList.addAll(response.data?.results ?? []);
-      isListCompeted.value = response.data?.next ?? false;
+
+      if (response.data?.results != null) {
+        ratingsList.addAll(response.data!.results!);
+        // Check if there's more data to load
+        isListCompeted.value = response.data?.next ?? "";
+      }
+
+      isError.value = false;
     } catch (error, s) {
+      isError.value = true;
       AppConstants.handleError(error, s: s);
       print('Error fetching reviews: $error');
-    } finally {}
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future<void> getReviewsStatus() async {
     try {
       GetReviewStatusResponseModel response =
-          await ApiServices.getReviewsStatus();
+      await ApiServices.getReviewsStatus();
       acceptance.value = "${response.data?.acceptance ?? 0.0} %";
       rating.value = "${response.data?.rating ?? 0.0} ";
       cancellation.value = "${response.data?.cancellation ?? 0.0} %";
@@ -94,5 +144,5 @@ class RatingController extends GetxController {
       icon: Icon(Icons.close, color: AppColors.white),
       value: '12.8',  // Will show as "12.8%"
       text: 'Cancellation');
-  RxList<ReviewModel> ratingsList = <ReviewModel>[].obs;
+// RxList<ReviewModel> ratingsList = <ReviewModel>[].obs;
 }

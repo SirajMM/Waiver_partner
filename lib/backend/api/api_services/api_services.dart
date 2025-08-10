@@ -609,6 +609,30 @@ class ApiServices {
     }
   }
 
+  static Future<GetRidesResponseModel> getRidesFromUrl(String url) async {
+    try {
+      https.Response response = await Interceptor().get(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          "Authorization": getToken()
+        },
+      );
+
+      log("$url===============>${response.statusCode}");
+      log("$url===============>${response.body}");
+
+      if (response.statusCode == 200) {
+        return getRidesResponseModelFromJson(response.body);
+      } else {
+        throw HttpException(response.body);
+      }
+    } catch (e) {
+      log('Error in getRidesFromUrl: $e');
+      throw HttpException('Failed to load more rides: $e');
+    }
+  }
+
   static Future<GetRidesDetailsResponseModel> getRideDetails(
       {required Map<String, dynamic> queryParameter}) async {
     https.Response response = await https.get(
