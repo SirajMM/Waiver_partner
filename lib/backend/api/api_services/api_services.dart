@@ -573,6 +573,8 @@ class ApiServices {
     }
   }
 
+
+
   static Future<GetReviewResponseModel> verifyRideOtp(
       {required Map<String, dynamic> body}) async {
     https.Response response = await https.post(
@@ -591,6 +593,30 @@ class ApiServices {
       throw HttpException(response.body);
     }
   }
+
+  static Future<GetReviewResponseModel> getReviewsWithPagination({int? offset, int? limit}) async {
+    Map<String, String> queryParams = {};
+    if (offset != null) queryParams['offset'] = offset.toString();
+    if (limit != null) queryParams['limit'] = limit.toString();
+
+    Uri uri = Uri.https(AppUrls.base, AppUrls.reviews, queryParams);
+
+    https.Response response = await https.get(
+      uri,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        "Authorization": getToken()
+      },
+    );
+    log("$uri===============>${response.statusCode}");
+    log("$uri===============>${response.body}");
+    if (response.statusCode == 200) {
+      return getReviewResponseModelFromJson(response.body);
+    } else {
+      throw HttpException(response.body);
+    }
+  }
+
 
   static Future<GetRidesResponseModel> getRides() async {
     https.Response response = await Interceptor().get(

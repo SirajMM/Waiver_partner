@@ -94,32 +94,32 @@
 //   }
 //
 //
-//   // @override
-//   // void didChangeAppLifecycleState(AppLifecycleState state) {
-//   //   if (state == AppLifecycleState.inactive) {
-//   //     appState.value = "Inactive";
-//   //     print("🟡 App Inactive - Keeping API/WebSocket Running");
-//   //   } else if (state == AppLifecycleState.resumed) {
-//   //     appState.value = "Active";
-//   //     print("🟢 App Resumed - Reconnecting WebSocket/Firebase...");
-//   //     resumeConnection();
-//   //   } else if (state == AppLifecycleState.paused) {
-//   //     appState.value = "Background";
-//   //     print("🔴 App in Background - Closing WebSocket...");
-//   //     closeConnection();
-//   //   } else if (state == AppLifecycleState.detached) {
-//   //     appState.value = "Terminated";
-//   //     print(
-//   //         "⚠️ App Terminated - Scheduling WorkManager Task...${appState.value}");
-//
-//   //     // changeDriverOnlineStatus();
-//   //     //   Workmanager().registerOneOffTask(
-//   //     //     "backgroundTask",
-//   //     //     "executeApiCall",
-//   //     //   );
-//   //   }
-//   // }
-//
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (state == AppLifecycleState.inactive) {
+  //     appState.value = "Inactive";
+  //     print("🟡 App Inactive - Keeping API/WebSocket Running");
+  //   } else if (state == AppLifecycleState.resumed) {
+  //     appState.value = "Active";
+  //     print("🟢 App Resumed - Reconnecting WebSocket/Firebase...");
+  //     resumeConnection();
+  //   } else if (state == AppLifecycleState.paused) {
+  //     appState.value = "Background";
+  //     print("🔴 App in Background - Closing WebSocket...");
+  //     closeConnection();
+  //   } else if (state == AppLifecycleState.detached) {
+  //     appState.value = "Terminated";
+  //     print(
+  //         "⚠️ App Terminated - Scheduling WorkManager Task...${appState.value}");
+
+  //     // changeDriverOnlineStatus();
+  //     //   Workmanager().registerOneOffTask(
+  //     //     "backgroundTask",
+  //     //     "executeApiCall",
+  //     //   );
+  //   }
+  // }
+
 //   // void closeConnection() {
 //   //   log("🔴 Closing WebSocket/Firebase connection........................");
 //   //   sendLiveLocation();

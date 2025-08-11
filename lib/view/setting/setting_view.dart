@@ -24,7 +24,7 @@ class SettingScreen extends StatelessWidget {
           GestureDetector(
               onTap: () async {
                 final Uri whatsapp = Uri.parse(
-                    'https://api.whatsapp.com/send?phone=918943099085&text=Hi');
+                    'https://wa.me/message/DDC362JXDWX7D1');
                 launchUrl(whatsapp);
               },
               child: Container(

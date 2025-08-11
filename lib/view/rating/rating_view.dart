@@ -47,9 +47,9 @@ class RatingScreen extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      DashBoardItem(item: controller.acceptance),
-                      DashBoardItem(item: controller.rating),
-                      DashBoardItem(item: controller.cancellation),
+                      Obx(() => DashBoardItem(item: controller.acceptance.value)),
+                      Obx(() => DashBoardItem(item: controller.rating.value)),
+                      Obx(() => DashBoardItem(item: controller.cancellation.value)),
                     ],
                   ),
                 ),
@@ -67,13 +67,15 @@ class RatingScreen extends StatelessWidget {
                     .map((rating) => RatingContainer(review: rating)),
 
                 // Pagination loading indicator
-                if (controller.isPaginationLoading.value)
-                  Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16.sp),
-                    child: const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                Obx(() => controller.isPaginationLoading.value
+                    ? Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.sp),
+                  child: const Center(
+                    child: CircularProgressIndicator(),
                   ),
+                )
+                    : const SizedBox.shrink(),
+                ),
 
                 // End of list indicator
                 if (!controller.hasMoreData && controller.ratingsList.isNotEmpty)
@@ -146,12 +148,21 @@ class LoadMoreButton extends StatelessWidget {
 
 // Usage with manual button (if you prefer this approach):
 /*
-// Add this after the ratings list in RatingScreen:
-if (controller.hasMoreData && !controller.isPaginationLoading.value)
-  LoadMoreButton(
-    onPressed: () => controller.loadMoreReviews(),
-    isLoading: controller.isPaginationLoading.value,
-  ),
+// Replace the pagination loading indicator section with this:
+Obx(() => controller.hasMoreData && !controller.isPaginationLoading.value
+    ? LoadMoreButton(
+        onPressed: () => controller.loadMoreReviews(),
+        isLoading: controller.isPaginationLoading.value,
+      )
+    : controller.isPaginationLoading.value
+        ? Padding(
+            padding: EdgeInsets.symmetric(vertical: 16.sp),
+            child: const Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        : const SizedBox.shrink(),
+),
 */
 
 class RatingContainer extends StatelessWidget {
@@ -177,38 +188,39 @@ class RatingContainer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Add user info section
+          // User info section (uncomment and customize as needed)
           Row(
             children: [
-              // CircleAvatar(
-              //   radius: 16.sp,
-              //   backgroundColor: AppColors.grey93.withOpacity(0.2),
-              //   child: Icon(
-              //     Icons.person,
-              //     size: 18.sp,
-              //     color: AppColors.grey93,
-              //   ),
-              // ),
+              CircleAvatar(
+                radius: 16.sp,
+                backgroundColor: AppColors.grey93.withOpacity(0.2),
+                child: Icon(
+                  Icons.person,
+                  size: 18.sp,
+                  color: AppColors.grey93,
+                ),
+              ),
               SizedBox(width: 10.sp),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Text(
-                    //   "Passenger", // You can get passenger name from API if available
-                    //   style: TextStyle(
-                    //     fontSize: 14.sp,
-                    //     fontWeight: FontWeight.w500,
-                    //     color: AppColors.black,
-                    //   ),
-                    // ),
-                    // Text(
-                    //   _formatDate(review.createdAt.toString() ?? ""),
-                    //   style: TextStyle(
-                    //     fontSize: 11.sp,
-                    //     color: AppColors.grey93,
-                    //   ),
-                    // ),
+                    Text(
+                      review.passenger ?? "Passenger",
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.black,
+                      ),
+                    ),
+                    if (review.createdAt != null)
+                      Text(
+                        _formatDate(review.createdAt.toString()),
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          color: AppColors.grey93,
+                        ),
+                      ),
                   ],
                 ),
               ),

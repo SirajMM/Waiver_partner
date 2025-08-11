@@ -5,29 +5,58 @@ import 'package:get/get.dart';
 import 'package:waiver_driver/backend/model/home/home_model.dart';
 import 'package:waiver_driver/backend/model/rating/rating_model.dart';
 import 'package:waiver_driver/backend/parser/Rating/ratingscreen_parser.dart';
-
-import '../../backend/api/api_services/api_services.dart';
-import '../../core/colors/app_colors.dart';
-import '../../core/constants/get_storage_constants.dart';
-
-// class RatingControllerBinding extends Bindings {
-//   @override
-//   void dependencies() {
-//     Get.lazyPut(() => RatingController());
-//   }
-// }
+import 'package:waiver_driver/backend/api/api_services/api_services.dart';
+import 'package:waiver_driver/core/colors/app_colors.dart';
+import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 
 class RatingController extends GetxController {
   RatingscreenParser parser;
   RatingController({required this.parser});
 
+  // Reactive variables
+  RxBool isLoading = false.obs;
+  RxBool isError = false.obs;
+  RxBool isPaginationLoading = false.obs;
+  RxList<ReviewModel> ratingsList = <ReviewModel>[].obs;
+
+  // Pagination variables
+  ScrollController scrollController = ScrollController();
+  int currentOffset = 0;
+  int limit = 10;
+  bool hasMoreData = true;
+
+  // Dashboard items (moved outside onInit)
+  static RatingController get to => Get.find();
+
+  Rx<DashBoardItemModel> acceptance = DashBoardItemModel(
+      icon: Icon(Icons.check, color: AppColors.white),
+      value: '0.0',
+      text: 'Acceptance').obs;
+
+  Rx<DashBoardItemModel> rating = DashBoardItemModel(
+      icon: Icon(Icons.star, color: AppColors.white),
+      value: '0.0',
+      text: 'Rating').obs;
+
+  Rx<DashBoardItemModel> cancellation = DashBoardItemModel(
+      icon: Icon(Icons.close, color: AppColors.white),
+      value: '0.0',
+      text: 'Cancellation').obs;
+
   @override
   void onInit() async {
     super.onInit();
+    setupScrollListener();
+    await _loadInitialData();
+  }
 
+  Future<void> _loadInitialData() async {
     try {
       isLoading.value = true;
-      await Future.wait([getReviews(), getReviewsStatus()]);
+      await Future.wait([
+        getReviews(isInitial: true),
+        getReviewsStatus()
+      ]);
       isError.value = false;
     } catch (error, s) {
       log(error.toString(), error: error, stackTrace: s);
@@ -35,45 +64,57 @@ class RatingController extends GetxController {
     } finally {
       isLoading.value = false;
     }
-
-    scrollController.addListener(() {
-      if (isListCompeted.value.isNotEmpty &&
-          scrollController.position.maxScrollExtent ==
-              scrollController.position.pixels) {
-        getReviews();
-      }
-    });
   }
 
-  RxBool isLoading = false.obs;
-  RxBool isError = false.obs;
-  RxString isListCompeted = "".obs;
-  ScrollController scrollController = ScrollController();
-  int currentOffset = 0;
-  int limit = 10;
-  bool hasMoreData = true;
-
-  RxBool isPaginationLoading = false.obs;
-  RxList<ReviewModel> ratingsList = <ReviewModel>[].obs;
-
-  // Future<void> getReviews() async {
-  //   try {
-  //     var response = await ApiServices.getReviews();
-  //     ratingsList.addAll(response.data?.results ?? []);
-  //     isListCompeted.value = response.data?.next ?? "";
-  //   } catch (error, s) {
-  //     AppConstants.handleError(error, s: s);
-  //     print('Error fetching reviews: $error');
-  //   } finally {}
-  // }
   void setupScrollListener() {
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
           scrollController.position.maxScrollExtent - 200) {
-        // Load more when user is near the bottom
         loadMoreReviews();
       }
     });
+  }
+
+  Future<void> getReviews({bool isInitial = false}) async {
+    try {
+      if (isInitial) {
+        isLoading.value = true;
+        ratingsList.clear();
+        currentOffset = 0;
+        hasMoreData = true;
+      } else {
+        if (!hasMoreData || isPaginationLoading.value) {
+          return;
+        }
+        isPaginationLoading.value = true;
+      }
+
+      GetReviewResponseModel response = await ApiServices.getReviewsWithPagination(
+        offset: currentOffset,
+        limit: limit,
+      );
+
+      if (response.data?.results != null) {
+        ratingsList.addAll(response.data!.results!);
+
+        // Update pagination state
+        String? nextUrl = response.data?.next;
+        hasMoreData = nextUrl != null && nextUrl.isNotEmpty;
+
+        if (hasMoreData) {
+          currentOffset += limit;
+        }
+      }
+
+      isError.value = false;
+    } catch (error, s) {
+      isError.value = true;
+      AppConstants.handleError(error, s: s);
+      print('Error fetching reviews: $error');
+    } finally {
+      isLoading.value = false;
+      isPaginationLoading.value = false;
+    }
   }
 
   Future<void> loadMoreReviews() async {
@@ -85,64 +126,60 @@ class RatingController extends GetxController {
   Future<void> refreshReviews() async {
     await getReviews(isInitial: true);
   }
-  Future<void> getReviews({bool isInitial = true}) async {
-    try {
-      if (isInitial) {
-        isLoading.value = true;
-        ratingsList.clear();
-      }
-
-      var response = await ApiServices.getReviews();
-
-      if (response.data?.results != null) {
-        ratingsList.addAll(response.data!.results!);
-        // Check if there's more data to load
-        isListCompeted.value = response.data?.next ?? "";
-      }
-
-      isError.value = false;
-    } catch (error, s) {
-      isError.value = true;
-      AppConstants.handleError(error, s: s);
-      print('Error fetching reviews: $error');
-    } finally {
-      isLoading.value = false;
-    }
-  }
 
   Future<void> getReviewsStatus() async {
     try {
-      GetReviewStatusResponseModel response =
-      await ApiServices.getReviewsStatus();
-      acceptance.value = "${response.data?.acceptance ?? 0.0} %";
-      rating.value = "${response.data?.rating ?? 0.0} ";
-      cancellation.value = "${response.data?.cancellation ?? 0.0} %";
+      GetReviewStatusResponseModel response = await ApiServices.getReviewsStatus();
+
+      // Update the dashboard items
+      acceptance.value = DashBoardItemModel(
+          icon: Icon(Icons.check, color: AppColors.white),
+          value: "${response.data?.acceptance ?? 0.0}",
+          text: 'Acceptance'
+      );
+
+      rating.value = DashBoardItemModel(
+          icon: Icon(Icons.star, color: AppColors.white),
+          value: "${response.data?.rating ?? 0.0}",
+          text: 'Rating'
+      );
+
+      cancellation.value = DashBoardItemModel(
+          icon: Icon(Icons.close, color: AppColors.white),
+          value: "${response.data?.cancellation ?? 0.0}",
+          text: 'Cancellation'
+      );
+
     } catch (error, s) {
       // Handle error appropriately
       print('Error fetching review status: $error');
-      // Set default values or error state
-      acceptance.value = "0.0 %";
-      rating.value = "0.0 ";
-      cancellation.value = "0.0 %";
-      // errorMessage.value = 'Failed to load review status';
+
+      // Set default values on error
+      acceptance.value = DashBoardItemModel(
+          icon: Icon(Icons.check, color: AppColors.white),
+          value: "0.0",
+          text: 'Acceptance'
+      );
+
+      rating.value = DashBoardItemModel(
+          icon: Icon(Icons.star, color: AppColors.white),
+          value: "0.0",
+          text: 'Rating'
+      );
+
+      cancellation.value = DashBoardItemModel(
+          icon: Icon(Icons.close, color: AppColors.white),
+          value: "0.0",
+          text: 'Cancellation'
+      );
+
       AppConstants.handleError(error, s: s);
-    } finally {}
+    }
   }
 
-  static RatingController get to => Get.find();
-  DashBoardItemModel acceptance = DashBoardItemModel(
-      icon: Icon(Icons.check, color: AppColors.white),
-      value: '85.5',  // Will show as "85.5%"
-      text: 'Acceptance');
-
-  DashBoardItemModel rating = DashBoardItemModel(
-      icon: Icon(Icons.star, color: AppColors.white),
-      value: '4.2',   // Will show as "4.2"
-      text: 'Rating');
-
-  DashBoardItemModel cancellation = DashBoardItemModel(
-      icon: Icon(Icons.close, color: AppColors.white),
-      value: '12.8',  // Will show as "12.8%"
-      text: 'Cancellation');
-// RxList<ReviewModel> ratingsList = <ReviewModel>[].obs;
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
+  }
 }

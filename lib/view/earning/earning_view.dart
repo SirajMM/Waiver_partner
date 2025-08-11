@@ -323,22 +323,54 @@ class BalanceAmountToday extends StatelessWidget {
           color: Get.theme.indicatorColor.withOpacity(.05),
           borderRadius: BorderRadius.circular(8.sp)),
       child: Obx(() =>
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "Balance Amount",
-                style: TextStyle(fontSize: 14.sp),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Balance Amount",
+                    style: TextStyle(fontSize: 14.sp),
+                  ),
+                  Text(
+                    "₹ ${controller.todayBalanceAmount.value ?? "0"}",
+                    style: TextStyle(fontSize: 23.sp, fontWeight: FontWeight.w600),
+                  ),
+                  Text(
+                    "Payout scheduled: ${DateFormat("dd MMMM").format(
+                        controller.payOutDate.value)}",
+                    style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+                  ),
+                ],
               ),
-              Text(
-                "₹ ${controller.todayBalanceAmount.value ?? "0"}",
-                style: TextStyle(fontSize: 23.sp, fontWeight: FontWeight.w600),
-              ),
-              Text(
-                "Payout scheduled: ${DateFormat("dd MMMM").format(
-                    controller.payOutDate.value)}",
-                style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
-              ),
+              Obx(() {
+                bool shouldDisable = controller.todayBalanceAmount.value == 0 ||
+                    controller.isPaymentSuccessful.value ||
+                    controller.isPaymentProcessing.value;
+
+                return Opacity(
+                  opacity: shouldDisable ? 0.5 : 1.0,
+                  child: BlueButton(
+                    width: 110.w,
+                    height: 40.h,
+                    fontSize: 12,
+                    text: controller.isPaymentProcessing.value
+                        ? 'Processing...'
+                        : controller.isPaymentSuccessful.value
+                        ? 'Payment Completed'
+                        : controller.todayBalanceAmount.value == 0
+                        ? 'No Amount Due'
+                        : 'Pay Now',
+                    onTap: shouldDisable
+                        ? () {} // Empty function to prevent action
+                        : () =>
+                        controller.checkOut(
+                            controller.todayBalanceAmount.value.toString()
+                        ),
+                  ),
+                );
+              })
             ],
           )),
     );
