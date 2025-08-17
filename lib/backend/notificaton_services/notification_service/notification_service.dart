@@ -40,7 +40,7 @@ class NotificationService {
         debug: true);
 
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    if (!isAllowed) {
+    if (isAllowed) {
       await AwesomeNotifications().requestPermissionToSendNotifications();
     }
     await AwesomeNotifications().setListeners(

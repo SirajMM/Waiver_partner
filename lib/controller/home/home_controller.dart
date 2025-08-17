@@ -1199,6 +1199,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hive/hive.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:mobility_features/mobility_features.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -1261,7 +1262,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         saveLocationData(result[3] as loc.LocationData);
       }
       isLoading.value = false;
-
+      checkForUpdate();
       // Start location tracking instead of old sendLiveLocation
       sendLiveLocation();
       await startLocationTracking();
@@ -2255,4 +2256,20 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       "heading": position.heading,
     });
   }
+
+
+Future<void> checkForUpdate() async {
+  print('checking for Update');
+  await InAppUpdate.checkForUpdate().then((info) async {
+    if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+      print('update available');
+      await InAppUpdate.startFlexibleUpdate();
+      InAppUpdate.completeFlexibleUpdate().then((_) {}).catchError((e) {
+        print(e.toString());
+      });
+    }
+  }).catchError((e, s) {
+    log(e.toString(), error: e, stackTrace: s);
+  });
+}
 }

@@ -195,15 +195,28 @@ void main() async {
 }
 
 Future<void> _requestPermissions() async {
-  if (await Permission.notification.isDenied) {
-    await Permission.notification.request();
+  try {
+    if (Platform.isIOS) {
+      await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+    } else {
+      if (await Permission.notification.isDenied) {
+        await Permission.notification.request();
+      }
+    }
+    var locationPermission = await Geolocator.checkPermission();
+    if (locationPermission == LocationPermission.denied) {
+      locationPermission = await Geolocator.requestPermission();
+    }
+  }catch(e){
+    log("Error requesting permissions: $e");
   }
-
-  var locationPermission = await Geolocator.checkPermission();
-  if (locationPermission == LocationPermission.denied ||
-      locationPermission == LocationPermission.deniedForever) {
-    await Geolocator.requestPermission();
-  }
+  // if (locationPermission == LocationPermission.deniedForever) {
+  //   await Geolocator.openAppSettings();
+  // }
 }
 
 class MyApp extends StatelessWidget {
