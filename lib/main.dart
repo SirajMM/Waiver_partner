@@ -40,7 +40,8 @@ void startReceivePort() {
   IsolateNameServer.removePortNameMapping('main_send_port');
 
   _receivePort ??= ReceivePort();
-  IsolateNameServer.registerPortWithName(_receivePort!.sendPort, 'main_send_port');
+  IsolateNameServer.registerPortWithName(
+      _receivePort!.sendPort, 'main_send_port');
 
   _startLocationUpdates(); // Unified method
 
@@ -80,18 +81,9 @@ void startReceivePort() {
 
 void _startLocationUpdates({int interval = 10}) {
   _locationTimer?.cancel();
-  _locationTimer = Timer.periodic(Duration(seconds: interval), (_) => _sendLocationNow());
+  _locationTimer =
+      Timer.periodic(Duration(seconds: interval), (_) => _sendLocationNow());
 }
-
-
-
-
-
-
-
-
-
-
 
 void _stopLocationUpdates() {
   _locationTimer?.cancel();
@@ -110,7 +102,10 @@ void _sendLocationNow() {
 @pragma('vm:entry-point')
 void sendLocationUpdateFromBackground() {
   final sendPort = IsolateNameServer.lookupPortByName('main_send_port');
-  sendPort?.send({'title': 'send_live_location', 'timestamp': DateTime.now().millisecondsSinceEpoch});
+  sendPort?.send({
+    'title': 'send_live_location',
+    'timestamp': DateTime.now().millisecondsSinceEpoch
+  });
 }
 
 @pragma('vm:entry-point')
@@ -170,19 +165,22 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   await Hive.initFlutter();
-  await Firebase.initializeApp(name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+      name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
 
   await MainBinding().dependencies();
 
-  await _requestPermissions();
+  await requestPermissions();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  FirebaseMessaging.onMessage.listen((msg) => NotificationService.onMessage(notification: msg));
-  FirebaseMessaging.onMessageOpenedApp.listen((msg) => NotificationService.onMessageOpenedApp(notification: msg));
+  FirebaseMessaging.onMessage
+      .listen((msg) => NotificationService.onMessage(notification: msg));
+  FirebaseMessaging.onMessageOpenedApp.listen(
+      (msg) => NotificationService.onMessageOpenedApp(notification: msg));
 
   await NotificationService.onInit();
 
@@ -194,7 +192,26 @@ void main() async {
   runApp(const MyApp());
 }
 
-Future<void> _requestPermissions() async {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      builder: (context, child) => GetMaterialApp(
+        title: 'Waiver Partner',
+        theme: AppTheme.lightTheme,
+        themeMode: ThemeMode.light,
+        debugShowCheckedModeBanner: false,
+        initialRoute: AppRoutes1.splash,
+        getPages: AppRoutes1.appPages1,
+      ),
+    );
+  }
+}
+
+Future<void> requestPermissions() async {
   try {
     if (Platform.isIOS) {
       await FirebaseMessaging.instance.requestPermission(
@@ -211,31 +228,12 @@ Future<void> _requestPermissions() async {
     if (locationPermission == LocationPermission.denied) {
       locationPermission = await Geolocator.requestPermission();
     }
-  }catch(e){
+  } catch (e) {
     log("Error requesting permissions: $e");
   }
   // if (locationPermission == LocationPermission.deniedForever) {
   //   await Geolocator.openAppSettings();
   // }
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return ScreenUtilInit(
-      designSize: const Size(375, 812),
-      builder: (context, child) => GetMaterialApp(
-        title: 'Waiver Driver',
-        theme: AppTheme.lightTheme,
-        themeMode: ThemeMode.light,
-        debugShowCheckedModeBanner: false,
-        initialRoute: AppRoutes1.splash,
-        getPages: AppRoutes1.appPages1,
-      ),
-    );
-  }
 }
 
 class MyHttpOverrides extends HttpOverrides {

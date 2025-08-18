@@ -15,7 +15,6 @@ import 'package:waiver_driver/main.dart';
 
 class NotificationService {
   static Future<void> onInit() async {
-    // Get.find<HomeController>();
     await MainBinding().dependencies();
     await AwesomeNotifications().initialize(
         null,
@@ -41,8 +40,10 @@ class NotificationService {
 
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
     if (isAllowed) {
+      // <-- FIXED: Only request if NOT allowed
       await AwesomeNotifications().requestPermissionToSendNotifications();
     }
+
     await AwesomeNotifications().setListeners(
         onActionReceivedMethod: onActionReceivedMethod,
         onDismissActionReceivedMethod: onDismissActionReceivedMethod,
