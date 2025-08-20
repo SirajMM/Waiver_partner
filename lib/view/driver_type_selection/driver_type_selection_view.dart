@@ -99,8 +99,8 @@ class TypeOfServices extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () async {
-                      final Uri whatsapp = Uri.parse(
-                          'https://wa.me/message/DDC362JXDWX7D1');
+                      final Uri whatsapp =
+                          Uri.parse('https://wa.me/message/DDC362JXDWX7D1');
                       launchUrl(whatsapp);
                     },
                     child: Container(
@@ -149,7 +149,7 @@ class TypeOfServicesListing extends StatelessWidget {
           tag: UserType.chauffeur,
           child: Material(
             child: BlueOnlyButton(
-              text: "Chauffeur",
+              text: "Chauffeur (Call Driver)",
               onTap: () async {
                 box.write(BoxKeys.userTypeCode, UserTypeCode.chauffeur);
                 // Get.toNamed(AppRoutes.signIn, arguments: UserType.chauffeur);
@@ -186,7 +186,7 @@ class TypeOfServicesListing extends StatelessWidget {
               child: Hero(
                 tag: UserType.driver,
                 child: BlueOnlyButton(
-                  text: "Driver",
+                  text: "Cab Driver",
                   onTap: () {
                     box.write(BoxKeys.userTypeCode, UserTypeCode.driver);
                     Get.toNamed(AppRoutes1.getSignInRoute(),

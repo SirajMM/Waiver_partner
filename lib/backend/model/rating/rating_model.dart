@@ -109,7 +109,7 @@ class GetReviewResponseModel {
 class ReviewItemData {
   int? count;
   String? next;
-  bool? previous;
+  String? previous;
   List<ReviewModel>? results;
 
   ReviewItemData({

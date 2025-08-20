@@ -177,39 +177,39 @@ class LocationTrackingService extends GetxController {
     //     ),
     //   );
     // }
-    await AwesomeNotifications().initialize(
-        null,
-        [
-          NotificationChannel(
-            channelKey: 'basic_notification_channel',
-            channelName: 'Foreground Location Service',
-            channelDescription:
-                'Notification for location tracking in background',
-            importance: NotificationImportance.Low,
-            defaultColor: const Color(0xFF9D50DD),
-            ledColor: Colors.white,
-            locked: true,
-            channelShowBadge: false,
-          ),
-        ],
-        debug: true);
+    // await AwesomeNotifications().initialize(
+    //     null,
+    //     [
+    //       NotificationChannel(
+    //         channelKey: 'basic_notification_channel',
+    //         channelName: 'Foreground Location Service',
+    //         channelDescription:
+    //             'Notification for location tracking in background',
+    //         importance: NotificationImportance.Low,
+    //         defaultColor: const Color(0xFF9D50DD),
+    //         ledColor: Colors.white,
+    //         locked: true,
+    //         channelShowBadge: false,
+    //       ),
+    //     ],
+    //     debug: true);
 
-    if (!await AwesomeNotifications().isNotificationAllowed()) {
-      // await AwesomeNotifications().requestPermissionToSendNotifications();
-    }
+    // if (!await AwesomeNotifications().isNotificationAllowed()) {
+    //   // await AwesomeNotifications().requestPermissionToSendNotifications();
+    // }
 
-    await service.configure(
-      androidConfiguration: AndroidConfiguration(
-        onStart: onStart,
-        autoStart: true,
-        isForegroundMode: true,
-        // notificationChannelId: 'basic_notification_channel',
-        initialNotificationTitle: 'Tracking',
-        initialNotificationContent: 'Tracking your location',
-        foregroundServiceNotificationId: 888,
-      ),
-      iosConfiguration: IosConfiguration(),
-    );
+    // await service.configure(
+    //   androidConfiguration: AndroidConfiguration(
+    //     onStart: onStart,
+    //     autoStart: true,
+    //     isForegroundMode: true,
+    //     // notificationChannelId: 'basic_notification_channel',
+    //     initialNotificationTitle: 'Tracking',
+    //     initialNotificationContent: 'Tracking your location',
+    //     foregroundServiceNotificationId: 888,
+    //   ),
+    //   iosConfiguration: IosConfiguration(),
+    // );
   }
 
   Future<void> startService({
@@ -328,23 +328,23 @@ void onStart(ServiceInstance service) async {
 
   // Set up foreground notification for Android - FIXED
   if (Platform.isAndroid && service is AndroidServiceInstance) {
-    // service.setForegroundNotificationInfo(
-    //   title: "Location Tracking Active",
-    //   content: "Initializing location services...",
-    // );
-    // AwesomeNotifications().createNotification(
-    //   content: NotificationContent(
-    //     id: 888,
-    //     channelKey: 'basic_notification_channel',
-    //     title: 'Tracking in Background',
-    //     body: 'Live location updates running...',
-    //     notificationLayout: NotificationLayout.Default,
-    //     icon: "resource://drawable/ic_stat_applogo_removebg_preview",
-    //     locked: true,
-    //     autoDismissible: false,
-    //     category: NotificationCategory.Service,
-    //   ),
-    // );
+    service.setForegroundNotificationInfo(
+      title: "Location Tracking Active",
+      content: "Initializing location services...",
+    );
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 888,
+        channelKey: 'basic_notification_channel',
+        title: 'Tracking in Background',
+        body: 'Live location updates running...',
+        notificationLayout: NotificationLayout.Default,
+        icon: "resource://drawable/ic_stat_applogo_removebg_preview",
+        locked: true,
+        autoDismissible: false,
+        category: NotificationCategory.Service,
+      ),
+    );
   }
 
   // Get port for communication with main isolate
@@ -410,18 +410,18 @@ Future<void> createNotificationChannel() async {
       // await AwesomeNotifications().requestPermissionToSendNotifications();
     }
 
-    await service.configure(
-      androidConfiguration: AndroidConfiguration(
-        onStart: onStart,
-        autoStart: true,
-        isForegroundMode: true,
-        // notificationChannelId: 'basic_notification_channel',
-        initialNotificationTitle: 'Tracking',
-        initialNotificationContent: 'Tracking your location',
-        foregroundServiceNotificationId: 888,
-      ),
-      iosConfiguration: IosConfiguration(),
-    );
+    // await service.configure(
+    //   androidConfiguration: AndroidConfiguration(
+    //     onStart: onStart,
+    //     autoStart: true,
+    //     isForegroundMode: true,
+    //     // notificationChannelId: 'basic_notification_channel',
+    //     initialNotificationTitle: 'Tracking',
+    //     initialNotificationContent: 'Tracking your location',
+    //     foregroundServiceNotificationId: 888,
+    //   ),
+    //   iosConfiguration: IosConfiguration(),
+    // );
   }
 }
 
@@ -629,19 +629,19 @@ class BackgroundLocationService {
       //   content:
       //       "Last updated: ${_formatDateTime(DateTime.now())}\nLat: ${position.latitude.toStringAsFixed(4)}, Lon: ${position.longitude.toStringAsFixed(4)}",
       // );
-      // AwesomeNotifications().createNotification(
-      //   content: NotificationContent(
-      //     id: 888,
-      //     channelKey: 'basic_notification_channel',
-      //     title: 'Tracking in Background',
-      //     body: 'Live location updates running...',
-      //     notificationLayout: NotificationLayout.Default,
-      //     icon: "resource://drawable/ic_stat_applogo_removebg_preview",
-      //     locked: true,
-      //     autoDismissible: false,
-      //     category: NotificationCategory.Service,
-      //   ),
-      // );
+      AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: 888,
+          channelKey: 'basic_notification_channel',
+          title: 'Tracking in Background',
+          body: 'Live location updates running...',
+          notificationLayout: NotificationLayout.Default,
+          icon: "resource://drawable/ic_stat_applogo_removebg_preview",
+          locked: true,
+          autoDismissible: false,
+          category: NotificationCategory.Service,
+        ),
+      );
     }
   }
 

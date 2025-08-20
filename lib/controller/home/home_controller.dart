@@ -94,31 +94,31 @@
 //   }
 //
 //
-  // @override
-  // void didChangeAppLifecycleState(AppLifecycleState state) {
-  //   if (state == AppLifecycleState.inactive) {
-  //     appState.value = "Inactive";
-  //     print("🟡 App Inactive - Keeping API/WebSocket Running");
-  //   } else if (state == AppLifecycleState.resumed) {
-  //     appState.value = "Active";
-  //     print("🟢 App Resumed - Reconnecting WebSocket/Firebase...");
-  //     resumeConnection();
-  //   } else if (state == AppLifecycleState.paused) {
-  //     appState.value = "Background";
-  //     print("🔴 App in Background - Closing WebSocket...");
-  //     closeConnection();
-  //   } else if (state == AppLifecycleState.detached) {
-  //     appState.value = "Terminated";
-  //     print(
-  //         "⚠️ App Terminated - Scheduling WorkManager Task...${appState.value}");
+// @override
+// void didChangeAppLifecycleState(AppLifecycleState state) {
+//   if (state == AppLifecycleState.inactive) {
+//     appState.value = "Inactive";
+//     print("🟡 App Inactive - Keeping API/WebSocket Running");
+//   } else if (state == AppLifecycleState.resumed) {
+//     appState.value = "Active";
+//     print("🟢 App Resumed - Reconnecting WebSocket/Firebase...");
+//     resumeConnection();
+//   } else if (state == AppLifecycleState.paused) {
+//     appState.value = "Background";
+//     print("🔴 App in Background - Closing WebSocket...");
+//     closeConnection();
+//   } else if (state == AppLifecycleState.detached) {
+//     appState.value = "Terminated";
+//     print(
+//         "⚠️ App Terminated - Scheduling WorkManager Task...${appState.value}");
 
-  //     // changeDriverOnlineStatus();
-  //     //   Workmanager().registerOneOffTask(
-  //     //     "backgroundTask",
-  //     //     "executeApiCall",
-  //     //   );
-  //   }
-  // }
+//     // changeDriverOnlineStatus();
+//     //   Workmanager().registerOneOffTask(
+//     //     "backgroundTask",
+//     //     "executeApiCall",
+//     //   );
+//   }
+// }
 
 //   // void closeConnection() {
 //   //   log("🔴 Closing WebSocket/Firebase connection........................");
@@ -1545,6 +1545,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           driverState.value = DriverState.arrivedAtPickUp;
         } else {
           MobilityFeatures().stopListening();
+          addStopCount.value = 0;
+          log("addStopCount after otp*************$addStopCount");
           await paymentInitiated();
           driverState.value = DriverState.paymentInitiated;
         }
@@ -1956,8 +1958,23 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     } finally {}
   }
 
+  RxInt addStopCount = 0.obs;
   Future<void> addStop(context) async {
     try {
+      if (addStopCount.value > 4) {
+        Get.showSnackbar(
+          const GetSnackBar(
+            duration: Duration(seconds: 5),
+            backgroundColor: Colors.transparent,
+            padding: EdgeInsets.zero,
+            messageText: AppSnackBar(
+              text: "Only 4 Stops can be added",
+            ),
+          ),
+        );
+        // Get.back();
+        return;
+      }
       driverState.value = DriverState.loading;
       AddStopResponseModel response = await ApiServices.addStop(body: {
         "ride_id": rideId,
@@ -1965,6 +1982,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         "end_loc_long": currentPosition.value?.longitude.toString()
       });
       if (response.status == 200) {
+        addStopCount++;
+        log("addStopCount************$addStopCount");
         Get.showSnackbar(
           const GetSnackBar(
             duration: Duration(seconds: 5),
@@ -2257,19 +2276,18 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     });
   }
 
-
-Future<void> checkForUpdate() async {
-  print('checking for Update');
-  await InAppUpdate.checkForUpdate().then((info) async {
-    if (info.updateAvailability == UpdateAvailability.updateAvailable) {
-      print('update available');
-      await InAppUpdate.startFlexibleUpdate();
-      InAppUpdate.completeFlexibleUpdate().then((_) {}).catchError((e) {
-        print(e.toString());
-      });
-    }
-  }).catchError((e, s) {
-    log(e.toString(), error: e, stackTrace: s);
-  });
-}
+  Future<void> checkForUpdate() async {
+    print('checking for Update');
+    await InAppUpdate.checkForUpdate().then((info) async {
+      if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+        print('update available');
+        await InAppUpdate.startFlexibleUpdate();
+        InAppUpdate.completeFlexibleUpdate().then((_) {}).catchError((e) {
+          print(e.toString());
+        });
+      }
+    }).catchError((e, s) {
+      log(e.toString(), error: e, stackTrace: s);
+    });
+  }
 }
