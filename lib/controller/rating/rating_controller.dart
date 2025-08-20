@@ -18,6 +18,7 @@ class RatingController extends GetxController {
   RxBool isError = false.obs;
   RxBool isPaginationLoading = false.obs;
   RxList<ReviewModel> ratingsList = <ReviewModel>[].obs;
+  RxString ratingCount = "".obs;
 
   // Pagination variables
   ScrollController scrollController = ScrollController();
@@ -29,19 +30,22 @@ class RatingController extends GetxController {
   static RatingController get to => Get.find();
 
   Rx<DashBoardItemModel> acceptance = DashBoardItemModel(
-      icon: Icon(Icons.check, color: AppColors.white),
-      value: '0.0',
-      text: 'Acceptance').obs;
+          icon: Icon(Icons.check, color: AppColors.white),
+          value: '0.0',
+          text: 'Acceptance')
+      .obs;
 
   Rx<DashBoardItemModel> rating = DashBoardItemModel(
-      icon: Icon(Icons.star, color: AppColors.white),
-      value: '0.0',
-      text: 'Rating').obs;
+          icon: Icon(Icons.star, color: AppColors.white),
+          value: '0.0',
+          text: 'Rating')
+      .obs;
 
   Rx<DashBoardItemModel> cancellation = DashBoardItemModel(
-      icon: Icon(Icons.close, color: AppColors.white),
-      value: '0.0',
-      text: 'Cancellation').obs;
+          icon: Icon(Icons.close, color: AppColors.white),
+          value: '0.0',
+          text: 'Cancellation')
+      .obs;
 
   @override
   void onInit() async {
@@ -53,10 +57,7 @@ class RatingController extends GetxController {
   Future<void> _loadInitialData() async {
     try {
       isLoading.value = true;
-      await Future.wait([
-        getReviews(isInitial: true),
-        getReviewsStatus()
-      ]);
+      await Future.wait([getReviews(isInitial: true), getReviewsStatus()]);
       isError.value = false;
     } catch (error, s) {
       log(error.toString(), error: error, stackTrace: s);
@@ -89,7 +90,8 @@ class RatingController extends GetxController {
         isPaginationLoading.value = true;
       }
 
-      GetReviewResponseModel response = await ApiServices.getReviewsWithPagination(
+      GetReviewResponseModel response =
+          await ApiServices.getReviewsWithPagination(
         offset: currentOffset,
         limit: limit,
       );
@@ -99,6 +101,8 @@ class RatingController extends GetxController {
 
         // Update pagination state
         String? nextUrl = response.data?.next;
+        ratingCount.value = response.data!.count.toString();
+
         hasMoreData = nextUrl != null && nextUrl.isNotEmpty;
 
         if (hasMoreData) {
@@ -129,27 +133,24 @@ class RatingController extends GetxController {
 
   Future<void> getReviewsStatus() async {
     try {
-      GetReviewStatusResponseModel response = await ApiServices.getReviewsStatus();
+      GetReviewStatusResponseModel response =
+          await ApiServices.getReviewsStatus();
 
       // Update the dashboard items
       acceptance.value = DashBoardItemModel(
           icon: Icon(Icons.check, color: AppColors.white),
           value: "${response.data?.acceptance ?? 0.0}",
-          text: 'Acceptance'
-      );
+          text: 'Acceptance');
 
       rating.value = DashBoardItemModel(
           icon: Icon(Icons.star, color: AppColors.white),
           value: "${response.data?.rating ?? 0.0}",
-          text: 'Rating'
-      );
+          text: 'Rating');
 
       cancellation.value = DashBoardItemModel(
           icon: Icon(Icons.close, color: AppColors.white),
           value: "${response.data?.cancellation ?? 0.0}",
-          text: 'Cancellation'
-      );
-
+          text: 'Cancellation');
     } catch (error, s) {
       // Handle error appropriately
       print('Error fetching review status: $error');
@@ -158,20 +159,17 @@ class RatingController extends GetxController {
       acceptance.value = DashBoardItemModel(
           icon: Icon(Icons.check, color: AppColors.white),
           value: "0.0",
-          text: 'Acceptance'
-      );
+          text: 'Acceptance');
 
       rating.value = DashBoardItemModel(
           icon: Icon(Icons.star, color: AppColors.white),
           value: "0.0",
-          text: 'Rating'
-      );
+          text: 'Rating');
 
       cancellation.value = DashBoardItemModel(
           icon: Icon(Icons.close, color: AppColors.white),
           value: "0.0",
-          text: 'Cancellation'
-      );
+          text: 'Cancellation');
 
       AppConstants.handleError(error, s: s);
     }

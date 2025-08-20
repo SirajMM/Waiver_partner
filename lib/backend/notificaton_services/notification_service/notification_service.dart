@@ -108,6 +108,8 @@ class NotificationService {
         HomeController.to.rideIsActive = true;
         await HomeController.to.getRidePayment();
         HomeController.to.driverState.value = DriverState.completed;
+        HomeController.to.driverState.value = DriverState.idle;
+        HomeController.to.confirmedPayment();
         break;
 
       default:

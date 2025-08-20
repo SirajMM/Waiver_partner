@@ -27,8 +27,8 @@ class RatingScreen extends StatelessWidget {
 
           if (controller.isError.value && controller.ratingsList.isEmpty) {
             return ErrorPage(
-              // onRetry: () => controller.refreshReviews(),
-            );
+                // onRetry: () => controller.refreshReviews(),
+                );
           }
 
           if (controller.ratingsList.isEmpty && !controller.isLoading.value) {
@@ -47,15 +47,17 @@ class RatingScreen extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Obx(() => DashBoardItem(item: controller.acceptance.value)),
+                      Obx(() =>
+                          DashBoardItem(item: controller.acceptance.value)),
                       Obx(() => DashBoardItem(item: controller.rating.value)),
-                      Obx(() => DashBoardItem(item: controller.cancellation.value)),
+                      Obx(() =>
+                          DashBoardItem(item: controller.cancellation.value)),
                     ],
                   ),
                 ),
                 SizedBox(height: 20.sp),
                 Text(
-                  "Ratings (${controller.ratingsList.length})",
+                  "Ratings (${controller.ratingCount.value})",
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.w600,
@@ -67,18 +69,20 @@ class RatingScreen extends StatelessWidget {
                     .map((rating) => RatingContainer(review: rating)),
 
                 // Pagination loading indicator
-                Obx(() => controller.isPaginationLoading.value
-                    ? Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.sp),
-                  child: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                )
-                    : const SizedBox.shrink(),
+                Obx(
+                  () => controller.isPaginationLoading.value
+                      ? Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.sp),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
                 ),
 
                 // End of list indicator
-                if (!controller.hasMoreData && controller.ratingsList.isNotEmpty)
+                if (!controller.hasMoreData &&
+                    controller.ratingsList.isNotEmpty)
                   Padding(
                     padding: EdgeInsets.symmetric(vertical: 16.sp),
                     child: Center(
@@ -130,16 +134,16 @@ class LoadMoreButton extends StatelessWidget {
           ),
           child: isLoading
               ? SizedBox(
-            height: 20.sp,
-            width: 20.sp,
-            child: const CircularProgressIndicator(
-              strokeWidth: 2,
-            ),
-          )
+                  height: 20.sp,
+                  width: 20.sp,
+                  child: const CircularProgressIndicator(
+                    strokeWidth: 2,
+                  ),
+                )
               : Text(
-            "Load More",
-            style: TextStyle(fontSize: 14.sp),
-          ),
+                  "Load More",
+                  style: TextStyle(fontSize: 14.sp),
+                ),
         ),
       ),
     );
@@ -330,7 +334,8 @@ class StarPainter extends CustomPainter {
     if (fillPercent > 0) {
       canvas.save();
       // Clip to the filled percentage
-      Rect clipRect = Rect.fromLTWH(0, 0, size.width * fillPercent, size.height);
+      Rect clipRect =
+          Rect.fromLTWH(0, 0, size.width * fillPercent, size.height);
       canvas.clipRect(clipRect);
 
       paint.color = filledColor;

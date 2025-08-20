@@ -28,6 +28,7 @@ class LocationTrackingService extends GetxController {
   void onInit() {
     super.onInit();
     _setup();
+    log("LocationTrackingService#######################");
     _initializePortListener();
   }
 
@@ -159,57 +160,57 @@ class LocationTrackingService extends GetxController {
     // Create notification channel BEFORE configuring service
     await createNotificationChannel();
 
-    //   await service.configure(
-    //     androidConfiguration: AndroidConfiguration(
-    //       autoStart: false,
-    //       isForegroundMode: true,
-    //       notificationChannelId: 'bg_service_channel',
-    //       initialNotificationTitle: 'Location Tracking Active',
-    //       initialNotificationContent: 'Tracking your location in background',
-    //       foregroundServiceNotificationId: 888,
-    //       onStart: onStart,
-    //       autoStartOnBoot: false,
-    //     ),
-    //     iosConfiguration: IosConfiguration(
-    //       autoStart: false,
-    //       onForeground: onStart,
-    //       onBackground: onIosBackground,
-    //     ),
-    //   );
-    // }
-    // await AwesomeNotifications().initialize(
-    //     null,
-    //     [
-    //       NotificationChannel(
-    //         channelKey: 'basic_notification_channel',
-    //         channelName: 'Foreground Location Service',
-    //         channelDescription:
-    //             'Notification for location tracking in background',
-    //         importance: NotificationImportance.Low,
-    //         defaultColor: const Color(0xFF9D50DD),
-    //         ledColor: Colors.white,
-    //         locked: true,
-    //         channelShowBadge: false,
-    //       ),
-    //     ],
-    //     debug: true);
+    await service.configure(
+      androidConfiguration: AndroidConfiguration(
+        autoStart: false,
+        isForegroundMode: true,
+        notificationChannelId: 'bg_service_channel',
+        initialNotificationTitle: 'Location Tracking Active',
+        initialNotificationContent: 'Tracking your location in background',
+        foregroundServiceNotificationId: 888,
+        onStart: onStart,
+        autoStartOnBoot: false,
+      ),
+      iosConfiguration: IosConfiguration(
+        autoStart: false,
+        onForeground: onStart,
+        onBackground: onIosBackground,
+      ),
+    );
 
-    // if (!await AwesomeNotifications().isNotificationAllowed()) {
-    //   // await AwesomeNotifications().requestPermissionToSendNotifications();
-    // }
+    await AwesomeNotifications().initialize(
+        null,
+        [
+          NotificationChannel(
+            channelKey: 'basic_notification_channel',
+            channelName: 'Foreground Location Service',
+            channelDescription:
+                'Notification for location tracking in background',
+            importance: NotificationImportance.Low,
+            defaultColor: const Color(0xFF9D50DD),
+            ledColor: Colors.white,
+            locked: true,
+            channelShowBadge: false,
+          ),
+        ],
+        debug: true);
 
-    // await service.configure(
-    //   androidConfiguration: AndroidConfiguration(
-    //     onStart: onStart,
-    //     autoStart: true,
-    //     isForegroundMode: true,
-    //     // notificationChannelId: 'basic_notification_channel',
-    //     initialNotificationTitle: 'Tracking',
-    //     initialNotificationContent: 'Tracking your location',
-    //     foregroundServiceNotificationId: 888,
-    //   ),
-    //   iosConfiguration: IosConfiguration(),
-    // );
+    if (!await AwesomeNotifications().isNotificationAllowed()) {
+      // await AwesomeNotifications().requestPermissionToSendNotifications();
+    }
+
+    await service.configure(
+      androidConfiguration: AndroidConfiguration(
+        onStart: onStart,
+        autoStart: true,
+        isForegroundMode: true,
+        // notificationChannelId: 'basic_notification_channel',
+        initialNotificationTitle: 'Tracking',
+        initialNotificationContent: 'Tracking your location',
+        foregroundServiceNotificationId: 888,
+      ),
+      iosConfiguration: IosConfiguration(),
+    );
   }
 
   Future<void> startService({
@@ -390,38 +391,39 @@ Future<void> createNotificationChannel() async {
   final service = FlutterBackgroundService();
 
   if (Platform.isAndroid) {
-    // await AwesomeNotifications().initialize(
-    //     null,
-    //     [
-    //       NotificationChannel(
-    //         channelKey: 'basic_notification_channel',
-    //         channelName: 'Foreground Location Service',
-    //         channelDescription: 'Notification for location tracking in background',
-    //         importance: NotificationImportance.Low,
-    //         defaultColor: const Color(0xFF9D50DD),
-    //         ledColor: Colors.white,
-    //         locked: true,
-    //         channelShowBadge: false,
-    //       ),
-    //     ],
-    //     debug: true);
+    await AwesomeNotifications().initialize(
+        null,
+        [
+          NotificationChannel(
+            channelKey: 'basic_notification_channel',
+            channelName: 'Foreground Location Service',
+            channelDescription:
+                'Notification for location tracking in background',
+            importance: NotificationImportance.Low,
+            defaultColor: const Color(0xFF9D50DD),
+            ledColor: Colors.white,
+            locked: true,
+            channelShowBadge: false,
+          ),
+        ],
+        debug: true);
 
     if (!await AwesomeNotifications().isNotificationAllowed()) {
       // await AwesomeNotifications().requestPermissionToSendNotifications();
     }
 
-    // await service.configure(
-    //   androidConfiguration: AndroidConfiguration(
-    //     onStart: onStart,
-    //     autoStart: true,
-    //     isForegroundMode: true,
-    //     // notificationChannelId: 'basic_notification_channel',
-    //     initialNotificationTitle: 'Tracking',
-    //     initialNotificationContent: 'Tracking your location',
-    //     foregroundServiceNotificationId: 888,
-    //   ),
-    //   iosConfiguration: IosConfiguration(),
-    // );
+    await service.configure(
+      androidConfiguration: AndroidConfiguration(
+        onStart: onStart,
+        autoStart: true,
+        isForegroundMode: true,
+        // notificationChannelId: 'basic_notification_channel',
+        initialNotificationTitle: 'Tracking',
+        initialNotificationContent: 'Tracking your location',
+        foregroundServiceNotificationId: 888,
+      ),
+      iosConfiguration: IosConfiguration(),
+    );
   }
 }
 
@@ -624,11 +626,10 @@ class BackgroundLocationService {
   // Helper method to update notification with proper type checking
   void _updateNotification(Position position) {
     if (Platform.isAndroid && service is AndroidServiceInstance) {
-      // (service as AndroidServiceInstance).setForegroundNotificationInfo(
-      //   title: "Location Tracking Active",
-      //   content:
-      //       "Last updated: ${_formatDateTime(DateTime.now())}\nLat: ${position.latitude.toStringAsFixed(4)}, Lon: ${position.longitude.toStringAsFixed(4)}",
-      // );
+      (service as AndroidServiceInstance).setForegroundNotificationInfo(
+        title: "Location Tracking Active",
+        content: 'Live location updates running...',
+      );
       AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 888,

@@ -43,7 +43,18 @@ class HomeScreen extends StatelessWidget {
         HomeController homeController = Get.find();
 
         if (homeController.driverState.value == DriverState.idle) {
-          exit(0);
+          Get.defaultDialog(
+              middleText: "Are you sure you want to exit",
+              confirm: BlueButton(
+                text: "Yes",
+                width: 100.sp,
+                onTap: () => exit(0),
+              ),
+              cancel: WhiteButton(
+                width: 100.sp,
+                text: "No",
+                onTap: Get.back,
+              ));
         } else if (homeController.driverState.value ==
                 DriverState.paymentInitiated ||
             homeController.driverState.value == DriverState.completed) {
@@ -94,7 +105,9 @@ class HomeScreen extends StatelessWidget {
                           orderStatus: RideStatus.reachedDropOff);
 
                     case DriverState.paymentInitiated:
-                      return DashBoardData();
+                    // return HomeController.to.rideIsActive
+                    //     ? const MakingPaymentBottomSheet(isPay: true)
+                    //     : const SizedBox();
 
                     /*      case DriverState.paymentInitiated:
                     //   return box.read(BoxKeys.paymentType) == "CSH"
