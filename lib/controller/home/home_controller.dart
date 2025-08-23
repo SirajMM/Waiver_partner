@@ -1192,6 +1192,7 @@
 
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 import 'dart:math' as math;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -1257,8 +1258,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       final result = await Future.wait(apis);
 
       if (currentPosition.value == null) {
-        currentPosition.value =
-            convertToPosition(result[3] as loc.LocationData);
+        currentPosition.value = convertToPosition(result[3] as loc.LocationData);
         saveLocationData(result[3] as loc.LocationData);
       }
       isLoading.value = false;
@@ -1276,9 +1276,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           longitude: Rx(currentPosition.value?.longitude),
           name: "".obs);
 
-      getLocationDetails(
-              currentPosition.value!.latitude, currentPosition.value!.longitude)
-          .then(
+      getLocationDetails(currentPosition.value!.latitude, currentPosition.value!.longitude).then(
         (value) => pickUpLocation1?.name.value = value ?? '',
       );
       recenter();
@@ -1316,12 +1314,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       saveLocationData(convertPositionToLocationData(position));
       if (isOnline.value) {
         WebSocketServices.sendLiveLocation(body: {
-          "passenger_id": driverState.value == DriverState.idle
-              ? RiderStatus.save
-              : passengerId ?? "placeholder",
-          "msg_type": driverState.value == DriverState.idle
-              ? RiderStatus.save
-              : RiderStatus.ride,
+          "passenger_id":
+              driverState.value == DriverState.idle ? RiderStatus.save : passengerId ?? "placeholder",
+          "msg_type": driverState.value == DriverState.idle ? RiderStatus.save : RiderStatus.ride,
           "ride_status": driverState.value.toString(),
           "current_loc_long": position.longitude,
           "current_loc_lat": position.latitude,
@@ -1485,15 +1480,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           passengerId: passengerId,
         );
 
-        await MobilityFeatures()
-            .startListening(Geolocator.getPositionStream().map((location) {
+        await MobilityFeatures().startListening(Geolocator.getPositionStream().map((location) {
           log("mobility features");
           log("${mobilityContext?.distanceTraveled}");
           log(location.toString());
           log(location.longitude.toString());
-          return LocationSample(
-              GeoLocation(location.latitude, location.longitude),
-              DateTime.now());
+          return LocationSample(GeoLocation(location.latitude, location.longitude), DateTime.now());
         }));
       }
     } finally {
@@ -1582,8 +1574,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       if (Get.isBottomSheetOpen ?? false) {
         Get.back();
       }
-      ChangeRideStatusModel response =
-          await ApiServices.changeRideStatus(body: {
+      ChangeRideStatusModel response = await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.cancelled,
       });
@@ -1603,9 +1594,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           recenter();
         }
 
-        Get.defaultDialog(
-            middleText:
-                "This order has expired or transferred to another driver");
+        Get.defaultDialog(middleText: "This order has expired or transferred to another driver");
       }
     } finally {
       driverState.value = DriverState.idle;
@@ -1693,16 +1682,13 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     var p = 0.017453292519943295;
     var c = math.cos;
-    var a = 0.5 -
-        c((lat2 - lat1) * p) / 2 +
-        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    var a = 0.5 - c((lat2 - lat1) * p) / 2 + c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
     return 12742 * math.asin(math.sqrt(a));
   }
 
   Future<void> getDriverOnlineStatus() async {
     try {
-      GetOnlineStatusResponseModel response =
-          await ApiServices.getOnlineStatus();
+      GetOnlineStatusResponseModel response = await ApiServices.getOnlineStatus();
       if (response.status == 200) {
         isOnline.value = response.data?.isOnline ?? false;
       }
@@ -1722,8 +1708,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   Future<void> latestActiveRide() async {
     try {
-      GetRideDetailsResponseModel response =
-          await ApiServices.latestActiveRide();
+      GetRideDetailsResponseModel response = await ApiServices.latestActiveRide();
       if ((response.data?.id ?? "").isNotEmpty) {
         rideIsActive = true;
         getOrderDetails(response: response);
@@ -1745,17 +1730,11 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   RxBool isOnlineButtonLoading = false.obs;
 
   DashBoardItemModel acceptance = DashBoardItemModel(
-      icon: Icon(Icons.check, color: AppColors.white),
-      value: '0 %',
-      text: 'Acceptance');
-  DashBoardItemModel rating = DashBoardItemModel(
-      icon: Icon(Icons.star, color: AppColors.white),
-      value: '2.5',
-      text: 'Rating');
+      icon: Icon(Icons.check, color: AppColors.white), value: '0 %', text: 'Acceptance');
+  DashBoardItemModel rating =
+      DashBoardItemModel(icon: Icon(Icons.star, color: AppColors.white), value: '2.5', text: 'Rating');
   DashBoardItemModel cancellation = DashBoardItemModel(
-      icon: Icon(Icons.close, color: AppColors.white),
-      value: '0%',
-      text: 'Cancellation');
+      icon: Icon(Icons.close, color: AppColors.white), value: '0%', text: 'Cancellation');
 
   double? startLocationLat;
   double? startLocationLong;
@@ -1773,14 +1752,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   String? pickUpLocation;
   String? dropOffLocation;
   String? passengerName;
-  TripsLocations? pickUpLocation1 =
-      TripsLocations(name: "".obs, latitude: 0.0.obs, longitude: 0.0.obs);
+  TripsLocations? pickUpLocation1 = TripsLocations(name: "".obs, latitude: 0.0.obs, longitude: 0.0.obs);
 
   // Keep all your existing methods like getAndShowOrderDetails, getOrderDetails, etc.
   // ... (rest of your existing methods remain unchanged)
 
-  Future<void> getAndShowOrderDetails(
-      {required String id, bool? fromBackGroundCall}) async {
+  Future<void> getAndShowOrderDetails({required String id, bool? fromBackGroundCall}) async {
     player.play(AssetSource(AppAudio.notification));
     GetRideDetailsResponseModel response =
         await ApiServices.rideOrderDetails(queryParameters: {"ride_id": id});
@@ -1803,10 +1780,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   void getOrderDetails({required GetRideDetailsResponseModel response}) {
     startLocationLat = double.parse(response.data?.startLocationLat ?? "0.0");
     startLocationLong = double.parse(response.data?.startLocationLong ?? "0.0");
-    startLocationLatMarker =
-        double.parse(response.data?.startLocationLat ?? "0.0");
-    startLocationLongMarker =
-        double.parse(response.data?.startLocationLong ?? "0.0");
+    startLocationLatMarker = double.parse(response.data?.startLocationLat ?? "0.0");
+    startLocationLongMarker = double.parse(response.data?.startLocationLong ?? "0.0");
     log("################### passenger latitude ##########################");
     log("################### Isonline ##########################");
     log(isOnline.value.toString());
@@ -1894,8 +1869,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     if (permission == LocationPermission.deniedForever) {
       throw Exception('Location permissions are permanently denied');
     }
-    return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
+    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
   }
 
   Future<void> makePhoneCall() async {
@@ -1913,8 +1887,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       WalletResponse response = await ApiServices.getPartnerWallet();
 
       if (response.status == 200) {
-        walletBalance.value =
-            double.tryParse(response.data.amount ?? '') ?? 0.0;
+        walletBalance.value = double.tryParse(response.data.amount ?? '') ?? 0.0;
         isRefreshingWallet.value = false;
       } else {
         isRefreshingWallet.value = false;
@@ -2037,8 +2010,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     try {
       driverState.value = DriverState.loading;
       await getFinalDropLocation();
-      ChangeRideStatusModel response =
-          await ApiServices.changeRideStatus(body: {
+      ChangeRideStatusModel response = await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.reachedDropOff,
         "location": finalDropLocation,
@@ -2061,8 +2033,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<String?> getLocationDetails(double latitude, double longitude) async {
-    GoogleLocationResponse response =
-        await ApiServices.getCurrentLocation(latitude, longitude);
+    GoogleLocationResponse response = await ApiServices.getCurrentLocation(latitude, longitude);
 
     for (var result in response.results ?? []) {
       for (var addressComponent in result.addressComponents ?? []) {
@@ -2098,42 +2069,31 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   Future<String?> getLocationDetails1() async {
     if (driverState.value == DriverState.idle) {
       GoogleLocationResponse response = await ApiServices.getCurrentLocation(
-          pickUpLocation1?.latitude.value ?? 0.0,
-          pickUpLocation1?.longitude.value ?? 0.0);
+          pickUpLocation1?.latitude.value ?? 0.0, pickUpLocation1?.longitude.value ?? 0.0);
 
       String? neighborhood = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("neighborhood")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("neighborhood")))
           ?.longName;
 
       String? political = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("political")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("political")))
           ?.longName;
       String? sublocality = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("sublocality")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("sublocality")))
           ?.longName;
       String? locality = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("locality")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("locality")))
           ?.longName;
       String? postalCode = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("postal_code")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("postal_code")))
           ?.longName;
       String? premise = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull(
-              (address) => ((address.types ?? []).contains("premise")))
+          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("premise")))
           ?.longName;
-      return ({
-        premise,
-        neighborhood,
-        political,
-        sublocality,
-        locality,
-        postalCode
-      }.toList().where((name) => name != null).join(","));
+      return ({premise, neighborhood, political, sublocality, locality, postalCode}
+          .toList()
+          .where((name) => name != null)
+          .join(","));
     } else {
       return "";
     }
@@ -2144,8 +2104,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     log("mobilityContext?.stops");
     log("${mobilityContext?.stops}");
     try {
-      ChangeRideStatusModel response =
-          await ApiServices.changeRideStatus(body: {
+      ChangeRideStatusModel response = await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.paymentInitiated,
         "stops": mobilityContext?.stops,
@@ -2221,13 +2180,11 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   Future<void> getFinalDropLocation() async {
     finalDropLocation = (await getLocationDetails(
-            currentPosition.value?.latitude ?? 0.0,
-            currentPosition.value?.longitude ?? 0.0)) ??
+            currentPosition.value?.latitude ?? 0.0, currentPosition.value?.longitude ?? 0.0)) ??
         "";
   }
 
-  Future<void> openMap(
-      {required double? latitude, required double? longitude}) async {
+  Future<void> openMap({required double? latitude, required double? longitude}) async {
     var uri = Uri.parse("google.navigation:q=$latitude,$longitude&mode=d");
     if (await canLaunch(uri.toString())) {
       await launch(uri.toString());
@@ -2277,17 +2234,19 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> checkForUpdate() async {
-    print('checking for Update');
-    await InAppUpdate.checkForUpdate().then((info) async {
-      if (info.updateAvailability == UpdateAvailability.updateAvailable) {
-        print('update available');
-        await InAppUpdate.startFlexibleUpdate();
-        InAppUpdate.completeFlexibleUpdate().then((_) {}).catchError((e) {
-          print(e.toString());
+    try {
+      if (Platform.isAndroid) {
+        await InAppUpdate.checkForUpdate().then((info) async {
+          if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+            await InAppUpdate.startFlexibleUpdate();
+            InAppUpdate.completeFlexibleUpdate();
+          }
+        }).catchError((e, s) {
+          log(e.toString(), error: e, stackTrace: s);
         });
       }
-    }).catchError((e, s) {
-      log(e.toString(), error: e, stackTrace: s);
-    });
+    } catch (e) {
+      log(e.toString());
+    }
   }
 }

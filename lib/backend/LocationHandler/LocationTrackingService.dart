@@ -62,8 +62,7 @@ class LocationTrackingService extends GetxController {
 
     // Save WebSocket configuration from your existing service
     await prefs.setString('websocket_base_url', WebSocketUrl.base);
-    await prefs.setString(
-        'websocket_live_location_path', WebSocketUrl.liveLocation);
+    await prefs.setString('websocket_live_location_path', WebSocketUrl.liveLocation);
 
     // Get token from your box
     final token = box.read(BoxKeys.token) ?? '';
@@ -118,25 +117,6 @@ class LocationTrackingService extends GetxController {
   //   }
   // }
 
-  Future<void> _requestPermissions() async {
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      throw Exception('Location permissions are permanently denied');
-    }
-
-    if (Platform.isAndroid) {
-      // Request notification permission for Android 13+
-      await Permission.notification.request();
-
-      // Also request the specific permissions
-      await Permission.locationAlways.request();
-    }
-  }
-
   // Future<void> _initializeService() async {
   //   await service.configure(
   //     androidConfiguration: AndroidConfiguration(
@@ -184,8 +164,7 @@ class LocationTrackingService extends GetxController {
           NotificationChannel(
             channelKey: 'basic_notification_channel',
             channelName: 'Foreground Location Service',
-            channelDescription:
-                'Notification for location tracking in background',
+            channelDescription: 'Notification for location tracking in background',
             importance: NotificationImportance.Low,
             defaultColor: const Color(0xFF9D50DD),
             ledColor: Colors.white,
@@ -209,7 +188,8 @@ class LocationTrackingService extends GetxController {
         initialNotificationContent: 'Tracking your location',
         foregroundServiceNotificationId: 888,
       ),
-      iosConfiguration: IosConfiguration(),
+      iosConfiguration:
+          IosConfiguration(autoStart: true, onForeground: onStart, onBackground: onIosBackground),
     );
   }
 
@@ -247,8 +227,7 @@ class LocationTrackingService extends GetxController {
       if (await service.isRunning()) {
         service.on('stopService').listen((event) {});
         service.invoke("stop_service");
-        await Future.delayed(
-            Duration(milliseconds: 500)); // Give time to process
+        await Future.delayed(Duration(milliseconds: 500)); // Give time to process
         isRunning.value = await service.isRunning();
       }
       log('🛑 Location tracking service stopped');
@@ -258,8 +237,7 @@ class LocationTrackingService extends GetxController {
   }
 
   // Method to update driver state from main app
-  Future<void> updateDriverState(String driverState,
-      {String? passengerId}) async {
+  Future<void> updateDriverState(String driverState, {String? passengerId}) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('driver_state', driverState);
     if (passengerId != null) {
@@ -354,8 +332,7 @@ void onStart(ServiceInstance service) async {
   );
 
   // Initialize background WebSocket and location tracking
-  final backgroundLocationService =
-      BackgroundLocationService(service, sendPort);
+  final backgroundLocationService = BackgroundLocationService(service, sendPort);
   await backgroundLocationService.initialize();
 
   // Listen for commands from main isolate
@@ -397,8 +374,7 @@ Future<void> createNotificationChannel() async {
           NotificationChannel(
             channelKey: 'basic_notification_channel',
             channelName: 'Foreground Location Service',
-            channelDescription:
-                'Notification for location tracking in background',
+            channelDescription: 'Notification for location tracking in background',
             importance: NotificationImportance.Low,
             defaultColor: const Color(0xFF9D50DD),
             ledColor: Colors.white,
@@ -543,14 +519,10 @@ class BackgroundLocationService {
       _isOnline = prefs.getBool('is_online') ?? false;
 
       final baseUrl = prefs.getString('websocket_base_url') ?? '';
-      final liveLocationPath =
-          prefs.getString('websocket_live_location_path') ?? '';
+      final liveLocationPath = prefs.getString('websocket_live_location_path') ?? '';
       final token = prefs.getString('auth_token') ?? '';
 
-      if (_isOnline &&
-          baseUrl.isNotEmpty &&
-          liveLocationPath.isNotEmpty &&
-          token.isNotEmpty) {
+      if (_isOnline && baseUrl.isNotEmpty && liveLocationPath.isNotEmpty && token.isNotEmpty) {
         _webSocketService.initialize(baseUrl, liveLocationPath, token);
 
         sendPort?.send({
@@ -651,8 +623,7 @@ class BackgroundLocationService {
     if (Platform.isAndroid && service is AndroidServiceInstance) {
       (service as AndroidServiceInstance).setForegroundNotificationInfo(
         title: "Location Tracking - Error",
-        content:
-            "Error: ${error.length > 50 ? error.substring(0, 50) + '...' : error}",
+        content: "Error: ${error.length > 50 ? error.substring(0, 50) + '...' : error}",
       );
     }
   }

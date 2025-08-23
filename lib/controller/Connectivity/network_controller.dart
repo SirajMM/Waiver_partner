@@ -13,12 +13,19 @@ import '../../core/constants/get_storage_constants.dart';
 class NetworkController extends GetxService {
   final Connectivity _connectivity = Connectivity();
   @override
-  void onInit() {
+  void onInit() async {
     super.onInit();
     _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     Geolocator.getServiceStatusStream().listen(_requestPermission);
     checkForInReview();
-    Location().getLocation().then((value) => AppConstants.locationData = value);
+    try {
+      final perMissionStatus = await Location().hasPermission();
+      if (perMissionStatus == PermissionStatus.granted) {
+        Location().getLocation().then((value) => AppConstants.locationData = value);
+      }
+    } catch (e) {
+      log('Error getting location: $e');
+    }
   }
 
   RxBool inReview = false.obs;
@@ -91,7 +98,8 @@ class NetworkController extends GetxService {
   }
 
   Future<void> _requestPermission(ServiceStatus status) async {
-    if (status == ServiceStatus.disabled) {
+    final perMissionStatus = await Location().hasPermission();
+    if (status == ServiceStatus.disabled && perMissionStatus == PermissionStatus.granted) {
       bool isEnabled = await Location().requestService();
       if (!isEnabled) _requestPermission(status);
     }
