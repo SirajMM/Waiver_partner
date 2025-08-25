@@ -100,7 +100,7 @@ class TypeOfServices extends StatelessWidget {
                   GestureDetector(
                     onTap: () async {
                       final Uri whatsapp =
-                          Uri.parse('https://wa.me/message/DDC362JXDWX7D1');
+                          Uri.parse('https://wa.me/+918714034112');
                       launchUrl(whatsapp);
                     },
                     child: Container(

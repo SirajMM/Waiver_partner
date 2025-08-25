@@ -115,7 +115,15 @@ class HomeScreen extends StatelessWidget {
                         return const MakingPaymentBottomSheet(isPay: false,);*/
                     case DriverState.completed:
                       return HomeController.to.rideIsActive
-                          ? const MakingPaymentBottomSheet(isPay: true)
+                          ? box.read(BoxKeys.paymentType) == "CSH"
+                              ? const MakingPaymentBottomSheet(
+                                  isPay: true,
+                                  paymentType: "Cash payment",
+                                )
+                              : const MakingPaymentBottomSheet(
+                                  isPay: true,
+                                  paymentType: "Online payment",
+                                )
                           : const SizedBox();
                     /*         case DriverState.completed:
                     return HomeController.to.rideIsActive
@@ -184,8 +192,10 @@ class HomeScreen extends StatelessWidget {
 
 class MakingPaymentBottomSheet extends StatelessWidget {
   final bool isPay;
+  final String paymentType;
 
-  const MakingPaymentBottomSheet({super.key, required this.isPay});
+  const MakingPaymentBottomSheet(
+      {super.key, required this.isPay, required this.paymentType});
 
   @override
   Widget build(BuildContext context) {
@@ -203,20 +213,27 @@ class MakingPaymentBottomSheet extends StatelessWidget {
                     spreadRadius: 5)
               ],
               borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(10.sp),
-                  topLeft: Radius.circular(10.sp))),
+                  topRight: Radius.circular(13.sp),
+                  topLeft: Radius.circular(13.sp))),
           width: Get.width,
           child: ListView(
             padding: EdgeInsets.all(20.sp),
             shrinkWrap: true,
             children: [
-              SizedBox(
-                height: 10.sp,
-              ),
+              // SizedBox(
+              //   height: 5.sp,
+              // ),
               Container(
-                margin: EdgeInsets.symmetric(vertical: 16.sp),
+                // margin: EdgeInsets.symmetric(vertical: 0.sp),
                 color: AppColors.grey249,
                 height: 1.sp,
+              ),
+              Center(
+                child: Text(
+                  paymentType ?? "",
+                  style:
+                      TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w300),
+                ),
               ),
               Center(
                 child: Text(
@@ -343,13 +360,15 @@ class EnterOtpBottomSheet extends StatelessWidget {
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         children: [
-          Row(
-            children: [
-              IconButton(
-                  onPressed: () => Get.bottomSheet(CancelOrder()),
-                  icon: Icon(Icons.close))
-            ],
-          ),
+          orderStatus == RideStatus.reachedPickUp
+              ? Row(
+                  children: [
+                    IconButton(
+                        onPressed: () => Get.bottomSheet(CancelOrder()),
+                        icon: Icon(Icons.close))
+                  ],
+                )
+              : SizedBox(),
           Text(
             "Enter OTP",
             style: TextStyle(
