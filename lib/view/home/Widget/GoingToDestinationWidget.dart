@@ -83,9 +83,18 @@ class GoingToDestinationWidget extends StatelessWidget {
                           padding: EdgeInsets.all(8.sp),
                           child: Image.asset(AppIcons.navigation)),
                       text: "Navigate",
-                      onTap: () => HomeController.to.openMap(
-                          latitude: HomeController.to.endLocationLat,
-                          longitude: HomeController.to.endLocationLong),
+                      onTap: () => HomeController.to.rideType == "RND"
+                          ? HomeController.to.openRoundTripMap(
+                              startLatitude: HomeController.to.startLocationLat,
+                              startLongitude:
+                                  HomeController.to.startLocationLong,
+                              destinationLatitude:
+                                  HomeController.to.endLocationLat,
+                              destinationLongitude:
+                                  HomeController.to.endLocationLong)
+                          : HomeController.to.openMap(
+                              latitude: HomeController.to.endLocationLat,
+                              longitude: HomeController.to.endLocationLong),
                     ),
                     SizedBox(
                       width: 40.sp,
@@ -130,8 +139,7 @@ class GoingToDestinationWidget extends StatelessWidget {
                           width: 100.sp,
                           text: "No",
                           onTap: Get.back,
-                        )
-                        );
+                        ));
                   },
                 ),
               ],

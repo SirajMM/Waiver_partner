@@ -1893,6 +1893,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   String? pickUpLocation;
   String? dropOffLocation;
   String? passengerName;
+  String? rideType;
   TripsLocations? pickUpLocation1 =
       TripsLocations(name: "".obs, latitude: 0.0.obs, longitude: 0.0.obs);
 
@@ -1943,6 +1944,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     passengerName = response.data?.passengerName;
     pickUpLocation = response.data?.startLocation;
     dropOffLocation = response.data?.endLocation;
+    rideType = response.data?.rideType;
 
     if (response.data?.rideStatus == RideStatus.accepted) {
       driverState.value = DriverState.goingToPickUp;
@@ -2359,6 +2361,26 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   Future<void> openMap(
       {required double? latitude, required double? longitude}) async {
     var uri = Uri.parse("google.navigation:q=$latitude,$longitude&mode=d");
+    if (await canLaunch(uri.toString())) {
+      await launch(uri.toString());
+    } else {
+      throw 'Could not launch ${uri.toString()}';
+    }
+  }
+
+  Future<void> openRoundTripMap({
+    required double? startLatitude,
+    required double? startLongitude,
+    required double? destinationLatitude,
+    required double? destinationLongitude,
+  }) async {
+    log("round trip@@@@@@@@@@@@$rideType");
+    // Create a round trip by adding the starting point as the final waypoint
+    var uri = Uri.parse(
+        "google.navigation:q=$destinationLatitude,$destinationLongitude"
+        "&waypoints=$startLatitude,$startLongitude"
+        "&mode=d");
+
     if (await canLaunch(uri.toString())) {
       await launch(uri.toString());
     } else {

@@ -166,120 +166,121 @@ class AadharCardController extends GetxController {
   //   Get.back();
   // }
   // In your AadharCardController
-final RxBool isUploading = false.obs;
+  final RxBool isUploading = false.obs;
 
-uploadPhoto({required ImageSource source}) async {
-  // Set loading state to true at the beginning
-  isUploading.value = true;
-  
-  try {
-    XFile? imageFile = await ImagePicker().pickImage(source: source);
+  uploadPhoto({required ImageSource source}) async {
+    // Set loading state to true at the beginning
+    isUploading.value = true;
 
-    if (imageFile != null) {
-      final File file1 = File(imageFile.path);
-      final int fileSize = await file1.length();
-      print("******************* File size before cropping: ${fileSize} bytes");
-      
-      CroppedFile? cropperImage = await ImageCropper().cropImage(
-        sourcePath: imageFile.path,
-        aspectRatio: aspectRatio,
-        compressQuality: 50,
-        maxWidth: 300,
-        maxHeight: 300,
-        uiSettings: [
-          AndroidUiSettings(
-            cropStyle: CropStyle.rectangle,
-            toolbarTitle: '',
-            hideBottomControls: true,
-            lockAspectRatio: true,
-            showCropGrid: false,
-            toolbarColor: AppColors.black,
-            toolbarWidgetColor: AppColors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            cropFrameColor: AppColors.white,
-            cropFrameStrokeWidth: 5,
-            aspectRatioPresets: [
-              CropAspectRatioPreset.original,
-              CropAspectRatioPreset.square,
-              CropAspectRatioPreset.ratio4x3,
-              CropAspectRatioPresetCustom(),
-            ],
-          ),
-          IOSUiSettings(
-            title: 'Cropper',
-          ),
-        ],
-      );
-      
-      // Exit if user cancels cropping
-      if (cropperImage == null) {
-        isUploading.value = false;
-        Get.back();
-        return;
-      }
-      
-      http.MultipartFile file = await http.MultipartFile.fromPath(
-        "file",
-        cropperImage.path,
-      );
-      
-      // final File file2 = File(cropperImage.path);
-      // final int fileSize1 = await file1.length();
-      // print("******************* File size After cropping: ${fileSize} bytes");
-      
-      try {
-        // Attempt to upload the file
-        UploadFileResponseModel response =
-            await ApiServices.uploadFile(files: file, fields: fields);
+    try {
+      XFile? imageFile = await ImagePicker().pickImage(source: source);
 
-        // Check if response contains valid data
-        if (response.data != null) {
-          String imagePath = response.data?.file ?? "";
-          imagePathShow.value = imagePath;
-          imageList.insert(0, FileElement(file: imagePath));
-        } else {
-          // Handle case where response doesn't contain expected data
-          print("Upload successful but no file data returned");
-          throw Exception("No file data in response");
+      if (imageFile != null) {
+        final File file1 = File(imageFile.path);
+        final int fileSize = await file1.length();
+        print(
+            "******************* File size before cropping: ${fileSize} bytes");
+
+        CroppedFile? cropperImage = await ImageCropper().cropImage(
+          sourcePath: imageFile.path,
+          aspectRatio: aspectRatio,
+          compressQuality: 85, // Increased from 50 to 85 for better quality
+          maxWidth: 1200, // Increased from 300 to 1200
+          maxHeight: 1200,
+          uiSettings: [
+            AndroidUiSettings(
+              cropStyle: CropStyle.rectangle,
+              toolbarTitle: '',
+              hideBottomControls: true,
+              lockAspectRatio: true,
+              showCropGrid: false,
+              toolbarColor: AppColors.black,
+              toolbarWidgetColor: AppColors.white,
+              initAspectRatio: CropAspectRatioPreset.original,
+              cropFrameColor: AppColors.white,
+              cropFrameStrokeWidth: 5,
+              aspectRatioPresets: [
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPresetCustom(),
+              ],
+            ),
+            IOSUiSettings(
+              title: 'Cropper',
+            ),
+          ],
+        );
+
+        // Exit if user cancels cropping
+        if (cropperImage == null) {
+          isUploading.value = false;
+          Get.back();
+          return;
         }
-      } catch (uploadError) {
-        // Log the error for debugging
-        print("Error during file upload process: $uploadError");
 
-        // Handle the error appropriately
-        Future.delayed(Duration(milliseconds: 100), () {
-          Get.snackbar(
-            "Upload Failed",
-            "Unable to upload image facing Some issues. Please try again later.",
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: AppColors.red176,
-            colorText: AppColors.white,
-          );
-        });
-        
-        isUploading.value = false;
-        return;
+        http.MultipartFile file = await http.MultipartFile.fromPath(
+          "file",
+          cropperImage.path,
+        );
+
+        // final File file2 = File(cropperImage.path);
+        // final int fileSize1 = await file1.length();
+        // print("******************* File size After cropping: ${fileSize} bytes");
+
+        try {
+          // Attempt to upload the file
+          UploadFileResponseModel response =
+              await ApiServices.uploadFile(files: file, fields: fields);
+
+          // Check if response contains valid data
+          if (response.data != null) {
+            String imagePath = response.data?.file ?? "";
+            imagePathShow.value = imagePath;
+            imageList.insert(0, FileElement(file: imagePath));
+          } else {
+            // Handle case where response doesn't contain expected data
+            print("Upload successful but no file data returned");
+            throw Exception("No file data in response");
+          }
+        } catch (uploadError) {
+          // Log the error for debugging
+          print("Error during file upload process: $uploadError");
+
+          // Handle the error appropriately
+          Future.delayed(Duration(milliseconds: 100), () {
+            Get.snackbar(
+              "Upload Failed",
+              "Unable to upload image facing Some issues. Please try again later.",
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: AppColors.red176,
+              colorText: AppColors.white,
+            );
+          });
+
+          isUploading.value = false;
+          return;
+        }
       }
+
+      // Clear loading state
+      isUploading.value = false;
+      Get.back();
+    } catch (e) {
+      // Handle any unexpected errors
+      print("Unexpected error in uploadPhoto: $e");
+      isUploading.value = false;
+
+      // Show error message
+      Get.snackbar(
+        "Error",
+        "An unexpected error occurred. Please try again.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.red176,
+        colorText: AppColors.white,
+      );
     }
-    
-    // Clear loading state
-    isUploading.value = false;
-    Get.back();
-  } catch (e) {
-    // Handle any unexpected errors
-    print("Unexpected error in uploadPhoto: $e");
-    isUploading.value = false;
-    
-    // Show error message
-    Get.snackbar(
-      "Error",
-      "An unexpected error occurred. Please try again.",
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: AppColors.red176,
-      colorText: AppColors.white,
-    );
   }
-}
 
   documentRejectionResponse() {
     ApiServices.documentRejectionResponse(body: {

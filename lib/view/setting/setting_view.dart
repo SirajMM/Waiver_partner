@@ -23,8 +23,7 @@ class SettingScreen extends StatelessWidget {
         appBar: appBar(title: "Settings", actions: [
           GestureDetector(
               onTap: () async {
-                final Uri whatsapp = Uri.parse(
-                    'https://wa.me/message/DDC362JXDWX7D1');
+                final Uri whatsapp = Uri.parse('https://wa.me/+918714034112');
                 launchUrl(whatsapp);
               },
               child: Container(

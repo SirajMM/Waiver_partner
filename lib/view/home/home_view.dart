@@ -42,7 +42,10 @@ class HomeScreen extends StatelessWidget {
       onPopInvokedWithResult: (didPop, result) {
         HomeController homeController = Get.find();
 
-        if (homeController.driverState.value == DriverState.idle) {
+        if (homeController.driverState.value == DriverState.paymentInitiated ||
+            homeController.driverState.value == DriverState.completed) {
+          Get.defaultDialog(middleText: "Confirm the payment !!!");
+        } else if (homeController.driverState.value == DriverState.idle) {
           Get.defaultDialog(
               middleText: "Are you sure you want to exit",
               confirm: BlueButton(
@@ -55,25 +58,31 @@ class HomeScreen extends StatelessWidget {
                 text: "No",
                 onTap: Get.back,
               ));
-        } else if (homeController.driverState.value ==
-                DriverState.paymentInitiated ||
-            homeController.driverState.value == DriverState.completed) {
-          Get.defaultDialog(middleText: "Confirm the payment !!!");
         } else {
           Get.defaultDialog(
-              middleText: " Your can't exit the app with active order, "
-                  "Are you sure you want to cancel this order ?",
-              confirm: BlueButton(
-                text: "Yes",
-                width: 100.sp,
-                onTap: () => Get.bottomSheet(CancelOrder()),
-              ),
-              cancel: WhiteButton(
-                width: 100.sp,
-                text: "No",
-                onTap: Get.back,
-              ));
+            middleText: " Your can't exit the app with active ride, ",
+            confirm: BlueButton(
+              text: "Go back",
+              width: 100.sp,
+              onTap: Get.back,
+            ),
+          );
         }
+        // else {
+        //   Get.defaultDialog(
+        //       middleText: " Your can't exit the app with active order, "
+        //           "Are you sure you want to cancel this order ?",
+        //       confirm: BlueButton(
+        //         text: "Yes",
+        //         width: 100.sp,
+        //         onTap: () => Get.bottomSheet(CancelOrder()),
+        //       ),
+        //       cancel: WhiteButton(
+        //         width: 100.sp,
+        //         text: "No",
+        //         onTap: Get.back,
+        //       ));
+        // }
       },
       child: GetX<HomeController>(builder: (controller) {
         return controller.isLoading.value

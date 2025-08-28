@@ -469,7 +469,7 @@ class EarningController extends GetxController
     isPaymentProcessing.value = true;
 
     Map<String, dynamic> options = {
-      'key': ' rzp_live_MRZpT7fffrAY3F',
+      'key': ' rzp_live_RAQZCEedNkxXEj',
       'order_id': '',
       'amount': amount,
       'name': 'waiver',
