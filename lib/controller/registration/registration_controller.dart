@@ -149,9 +149,9 @@ class RegistrationController extends GetxController {
       } else {
         districtDropDownState.value = DropDownState.loaded;
       }
-    } catch (error,s) {
+    } catch (error, s) {
       print(error);
-       AppConstants.handleError(error, s: s);
+      AppConstants.handleError(error, s: s);
       districtDropDownState.value = DropDownState.hidden;
     }
   }
@@ -165,6 +165,12 @@ class RegistrationController extends GetxController {
           (previousValue, element) =>
               previousValue || (element.isSelected?.value ?? false))) {
         showVehicleTypeError.value = true;
+      }
+      if (!transmissionTypes.fold(
+          false,
+          (previousValue, element) =>
+              previousValue || (element.isSelected?.value ?? false))) {
+        showTransmissionTypeError.value = true;
       }
 
       if (registrationFormKey.currentState?.validate() ?? false) {

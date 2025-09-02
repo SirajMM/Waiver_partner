@@ -38,7 +38,7 @@ class EarningScreen extends StatelessWidget {
                   dividerColor: Colors.transparent,
                   labelColor: AppColors.white,
                   labelStyle:
-                  TextStyle(fontWeight: FontWeight.w600, fontSize: 16.sp),
+                      TextStyle(fontWeight: FontWeight.w600, fontSize: 16.sp),
                   indicator: BoxDecoration(
                       borderRadius: BorderRadius.circular(50),
                       color: AppColors.blue),
@@ -49,7 +49,7 @@ class EarningScreen extends StatelessWidget {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
                             border:
-                            Border.all(color: AppColors.blue, width: 1.sp)),
+                                Border.all(color: AppColors.blue, width: 1.sp)),
                         child: const Text("TODAY"),
                       ),
                     ),
@@ -69,9 +69,9 @@ class EarningScreen extends StatelessWidget {
               ),
               const Expanded(
                   child: TabBarView(children: [
-                    TodayTab(),
-                    WeeklyTab(),
-                  ]))
+                TodayTab(),
+                WeeklyTab(),
+              ]))
             ],
           ),
         ));
@@ -88,22 +88,21 @@ class EarningGraph extends StatelessWidget {
       child: GetX<EarningController>(builder: (controller) {
         return controller.isGraphLoading.value
             ? LoadingBarsAnimation(
-          height: 140.sp,
-        )
+                height: 140.sp,
+              )
             : controller.noDataForGraph.value
-            ? EmptyPage(
-          text: "Data Earnings available",
-        )
-            : Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: controller.graphValues
-              .map((graphValue) =>
-              EarningGraphBar(
-                graphValue: graphValue,
-              ))
-              .toList(),
-        );
+                ? EmptyPage(
+                    text: "Data Earnings available",
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: controller.graphValues
+                        .map((graphValue) => EarningGraphBar(
+                              graphValue: graphValue,
+                            ))
+                        .toList(),
+                  );
       }),
     );
   }
@@ -143,7 +142,7 @@ class EarningGraphBar extends StatelessWidget {
                     topRight: Radius.circular(8.sp),
                   )),
               height:
-              (graphValue?.total ?? 0) * (110 / controller.maxValue.value),
+                  (graphValue?.total ?? 0) * (110 / controller.maxValue.value),
               width: ((Get.width - 60.sp) / 8) - 5.sp,
             ),
             SizedBox(
@@ -208,38 +207,38 @@ class TodayTab extends StatelessWidget {
       return controller.isLoading.value
           ? const LoadingBarsAnimation()
           : controller.isError.value
-          ? const ErrorPage()
-          : ListView(
-        padding:
-        EdgeInsets.symmetric(horizontal: 15.sp, vertical: 25.sp),
-        shrinkWrap: true,
-        children: [
-          const EarningSummaryToday(),
-          SizedBox(
-            height: 15.sp,
-          ),
-          const BalanceAmountToday(),
-          SizedBox(
-            height: 25.sp,
-          ),
-          // controller.weeklyEarningList.isEmpty
-          //     ? EmptyPage(
-          //         text: "No Earning found",
-          //       )
-          //     : Column(
-          //         children: controller.todayEarningList
-          //             .map((earning) => EarningListingItem(
-          //                   earning: earning,
-          //                 ))
-          //             .toList(),
-          //       ),
-          GetX<EarningController>(builder: (controller) {
-            return controller.isTodayEarningsIsListCompleted.value
-                ? const LoadingBarsAnimation()
-                : const SizedBox();
-          }),
-        ],
-      );
+              ? const ErrorPage()
+              : ListView(
+                  padding:
+                      EdgeInsets.symmetric(horizontal: 15.sp, vertical: 25.sp),
+                  shrinkWrap: true,
+                  children: [
+                    const EarningSummaryToday(),
+                    SizedBox(
+                      height: 15.sp,
+                    ),
+                    const BalanceAmountToday(),
+                    SizedBox(
+                      height: 25.sp,
+                    ),
+                    // controller.weeklyEarningList.isEmpty
+                    //     ? EmptyPage(
+                    //         text: "No Earning found",
+                    //       )
+                    //     : Column(
+                    //         children: controller.todayEarningList
+                    //             .map((earning) => EarningListingItem(
+                    //                   earning: earning,
+                    //                 ))
+                    //             .toList(),
+                    //       ),
+                    GetX<EarningController>(builder: (controller) {
+                      return controller.isTodayEarningsIsListCompleted.value
+                          ? const LoadingBarsAnimation()
+                          : const SizedBox();
+                    }),
+                  ],
+                );
     });
   }
 }
@@ -285,16 +284,16 @@ class EarningListingItem extends StatelessWidget {
                         ? "Trip Fare Added"
                         : "Referal Erning added",
                     style:
-                    TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
+                        TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
                   ),
                   earning.paidTime != null
                       ? Text(
-                    DateFormat("EEE dd MMM yyyy 'at' hh mm a")
-                        .format(earning.paidTime!),
-                    style: TextStyle(
-                      fontSize: 12.sp,
-                    ),
-                  )
+                          DateFormat("EEE dd MMM yyyy 'at' hh mm a")
+                              .format(earning.paidTime!),
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                          ),
+                        )
                       : const SizedBox()
                 ],
               ),
@@ -311,8 +310,7 @@ class EarningListingItem extends StatelessWidget {
 }
 
 class BalanceAmountToday extends StatelessWidget {
-  const
-  BalanceAmountToday({super.key});
+  const BalanceAmountToday({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -322,8 +320,7 @@ class BalanceAmountToday extends StatelessWidget {
       decoration: BoxDecoration(
           color: Get.theme.indicatorColor.withOpacity(.05),
           borderRadius: BorderRadius.circular(8.sp)),
-      child: Obx(() =>
-          Row(
+      child: Obx(() => Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
@@ -335,12 +332,13 @@ class BalanceAmountToday extends StatelessWidget {
                   ),
                   Text(
                     "₹ ${controller.todayBalanceAmount.value ?? "0"}",
-                    style: TextStyle(fontSize: 23.sp, fontWeight: FontWeight.w600),
+                    style:
+                        TextStyle(fontSize: 23.sp, fontWeight: FontWeight.w600),
                   ),
                   Text(
-                    "Payout scheduled: ${DateFormat("dd MMMM").format(
-                        controller.payOutDate.value)}",
-                    style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
+                    "Payout scheduled: ${DateFormat("dd MMMM").format(controller.payOutDate.value)}",
+                    style:
+                        TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -358,16 +356,14 @@ class BalanceAmountToday extends StatelessWidget {
                     text: controller.isPaymentProcessing.value
                         ? 'Processing...'
                         : controller.isPaymentSuccessful.value
-                        ? 'Payment Completed'
-                        : controller.todayBalanceAmount.value == 0
-                        ? 'No Amount Due'
-                        : 'Pay Now',
+                            ? 'Payment Completed'
+                            : controller.todayBalanceAmount.value == 0
+                                ? 'No Amount Due'
+                                : 'Pay Now',
                     onTap: shouldDisable
                         ? () {} // Empty function to prevent action
-                        : () =>
-                        controller.checkOut(
-                            controller.todayBalanceAmount.value.toString()
-                        ),
+                        : () => controller.createOrder(
+                            controller.todayBalanceAmount.value.toString()),
                   ),
                 );
               })
@@ -405,8 +401,7 @@ class BalanceAmount extends StatelessWidget {
                 style: TextStyle(fontSize: 23.sp, fontWeight: FontWeight.w600),
               ),
               Text(
-                "Payout scheduled: ${DateFormat("dd MMMM").format(
-                    controller.payOutDate.value)}",
+                "Payout scheduled: ${DateFormat("dd MMMM").format(controller.payOutDate.value)}",
                 style: TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w500),
               ),
             ],
@@ -425,16 +420,14 @@ class BalanceAmount extends StatelessWidget {
                 text: controller.isPaymentProcessing.value
                     ? 'Processing...'
                     : controller.isPaymentSuccessful.value
-                    ? 'Payment Completed'
-                    : controller.weeklyBalanceAmount.value == 0
-                    ? 'No Amount Due'
-                    : 'Pay Now',
+                        ? 'Payment Completed'
+                        : controller.weeklyBalanceAmount.value == 0
+                            ? 'No Amount Due'
+                            : 'Pay Now',
                 onTap: shouldDisable
                     ? () {} // Empty function to prevent action
-                    : () =>
-                    controller.checkOut(
-                        controller.weeklyBalanceAmount.value.toString()
-                    ),
+                    : () => controller.createOrder(
+                        controller.weeklyBalanceAmount.value.toString()),
               ),
             );
           })
@@ -480,32 +473,29 @@ class DateForGraphWeekly extends StatelessWidget {
       children: [
         GetX<EarningController>(builder: (controller) {
           return controller.weeklyDateEnd.value.changeDateFormat() ==
-              DateTime.now()
-                  .subtract(const Duration(days: 7 * 10))
-                  .changeDateFormat()
+                  DateTime.now()
+                      .subtract(const Duration(days: 7 * 10))
+                      .changeDateFormat()
               ? const SizedBox()
               : const PreviousWeek();
         }),
         GetX<EarningController>(builder: (controller) {
           return controller.selectGraphValue.value?.day == null
               ? Text(
-              "${controller.weeklyDateEnd.value.subtract(
-                  const Duration(days: 7)).changeDateFormat(
-                  format: "EEE dd MMM yyyy")} to ${controller.weeklyDateEnd
-                  .value.changeDateFormat(format: "EEE dd MMM yyyy")}",
-              style: TextStyle(
-                  color: Get.theme.indicatorColor.withOpacity(0.5),
-                  fontSize: 14.sp))
+                  "${controller.weeklyDateEnd.value.subtract(const Duration(days: 7)).changeDateFormat(format: "EEE dd MMM yyyy")} to ${controller.weeklyDateEnd.value.changeDateFormat(format: "EEE dd MMM yyyy")}",
+                  style: TextStyle(
+                      color: Get.theme.indicatorColor.withOpacity(0.5),
+                      fontSize: 14.sp))
               : Text(
-              DateFormat("EEE dd MMM yyyy").format(
-                  controller.selectGraphValue.value?.day ?? DateTime.now()),
-              style: TextStyle(
-                  color: Get.theme.indicatorColor.withOpacity(.05),
-                  fontSize: 14.sp));
+                  DateFormat("EEE dd MMM yyyy").format(
+                      controller.selectGraphValue.value?.day ?? DateTime.now()),
+                  style: TextStyle(
+                      color: Get.theme.indicatorColor.withOpacity(.05),
+                      fontSize: 14.sp));
         }),
         GetX<EarningController>(builder: (controller) {
           return controller.weeklyDateEnd.value.changeDateFormat() ==
-              DateTime.now().changeDateFormat()
+                  DateTime.now().changeDateFormat()
               ? const SizedBox()
               : const NextWeek();
         }),
@@ -557,42 +547,42 @@ class EarningSummaryWeekly extends StatelessWidget {
             return controller.isGraphLoading.value
                 ? LoadingAnimationDots()
                 : ExpansionTile(
-              shape: const Border(),
-              tilePadding: EdgeInsets.zero,
-              childrenPadding: EdgeInsets.zero,
-              title: const Text(
-                "Details",
-                style:
-                TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              ),
-              children: [
-                Obx(() {
-                  return DetailsItemView(
-                    text: "Your earnings",
-                    value: "₹ ${controller.weeklyTripFare.value}",
+                    shape: const Border(),
+                    tilePadding: EdgeInsets.zero,
+                    childrenPadding: EdgeInsets.zero,
+                    title: const Text(
+                      "Details",
+                      style:
+                          TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                    ),
+                    children: [
+                      Obx(() {
+                        return DetailsItemView(
+                          text: "Your earnings",
+                          value: "₹ ${controller.weeklyTripFare.value}",
+                        );
+                      }),
+                      // DetailsItemView(
+                      //   text: "Waiver Charge",
+                      //   value: "- ₹ ${controller.weeklyWaiverCharge}",
+                      // ),
+                      // DetailsItemView(
+                      //   text: "Tax",
+                      //   value: "- ₹ ${controller.weeklyTax}",
+                      // ),
+                      DetailsItemView(
+                        text: "Incentives",
+                        value: "- ₹ ${controller.weeklyIncentives}",
+                      ),
+                      DetailsItemView(
+                        text: "Refer Earnings",
+                        value: "₹ ${controller.weeklyReferEarnings}",
+                      ),
+                      SizedBox(
+                        height: 10.sp,
+                      ),
+                    ],
                   );
-                }),
-                // DetailsItemView(
-                //   text: "Waiver Charge",
-                //   value: "- ₹ ${controller.weeklyWaiverCharge}",
-                // ),
-                // DetailsItemView(
-                //   text: "Tax",
-                //   value: "- ₹ ${controller.weeklyTax}",
-                // ),
-                DetailsItemView(
-                  text: "Incentives",
-                  value: "- ₹ ${controller.weeklyIncentives}",
-                ),
-                DetailsItemView(
-                  text: "Refer Earnings",
-                  value: "₹ ${controller.weeklyReferEarnings}",
-                ),
-                SizedBox(
-                  height: 10.sp,
-                ),
-              ],
-            );
           }),
           Divider(
             height: 1.5.sp,
@@ -611,7 +601,7 @@ class EarningSummaryWeekly extends StatelessWidget {
                 return Text(
                   "₹ ${controller.weeklyTripFare ?? 0.0}",
                   style:
-                  TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
+                      TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
                 );
               }),
             ],
@@ -690,8 +680,7 @@ class EarningItem extends StatelessWidget {
             height: 10.sp,
           ),
           // This is the main issue - using Obx and accessing value.value correctly
-          Obx(() =>
-              Text(
+          Obx(() => Text(
                 "${item.value.value}",
                 style: TextStyle(
                     fontSize: 14.sp,
@@ -736,8 +725,7 @@ class EarningItemDistance extends StatelessWidget {
             height: 10.sp,
           ),
           // This is the main issue - using Obx and accessing value.value correctly
-          Obx(() =>
-              Container(
+          Obx(() => Container(
                 child: Text(
                   "${(item.value.value)}Km",
                   style: TextStyle(
@@ -784,10 +772,8 @@ class EarningItemHours extends StatelessWidget {
             height: 10.sp,
           ),
           // This is the main issue - using Obx and accessing value.value correctly
-          Obx(() =>
-              Text(
-                "${AppConstants.formatSecondsToHrAndMinForDouble(
-                    item.value.value)}",
+          Obx(() => Text(
+                "${AppConstants.formatSecondsToHrAndMinForDouble(item.value.value)}",
                 style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w500,
@@ -915,8 +901,7 @@ class EarningSummaryToday extends StatelessWidget {
               style: TextStyle(fontSize: 14.sp)),
 
           // Wrap only the specific widget that needs to be updated
-          Obx(() =>
-              Text(
+          Obx(() => Text(
                 "₹ ${controller.todayEarning.value ?? 0}",
                 style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22.sp),
               )),
@@ -945,8 +930,7 @@ class EarningSummaryToday extends StatelessWidget {
             ),
             children: [
               // Each detail item should have its own Obx
-              Obx(() =>
-                  DetailsItemView(
+              Obx(() => DetailsItemView(
                     text: "Your earnings",
                     value: "₹ ${controller.todayTripFare.value ?? 0.0}",
                   )),
@@ -958,13 +942,11 @@ class EarningSummaryToday extends StatelessWidget {
               //       text: "Tax",
               //       value: "- ₹ ${controller.todayTax.value ?? 0.0}",
               //     )),
-              Obx(() =>
-                  DetailsItemView(
+              Obx(() => DetailsItemView(
                     text: "Incentives",
                     value: "- ₹ ${controller.todayIncentives.value ?? 0.0}",
                   )),
-              Obx(() =>
-                  DetailsItemView(
+              Obx(() => DetailsItemView(
                     text: "Refer Earnings",
                     value: "₹ ${controller.todayReferEarnings.value ?? 0.0}",
                   )),
@@ -983,19 +965,18 @@ class EarningSummaryToday extends StatelessWidget {
           ),
 
           // Wrap this specific row for the payment information
-          Obx(() =>
-              Row(
+          Obx(() => Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
                     "Payment",
                     style:
-                    TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
+                        TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
                   ),
                   Text(
                     "₹ ${controller.todayTripFare.value ?? 0.0}",
                     style:
-                    TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
+                        TextStyle(fontSize: 14.sp, fontWeight: FontWeight.w600),
                   ),
                 ],
               ))

@@ -33,6 +33,7 @@ import '../../model/chauffeur_proof/chauffeur_proof_model.dart';
 import '../../model/earning/earning_model.dart';
 import '../../model/login/login_model.dart';
 import '../../model/otp/otp_model.dart';
+import '../../model/payment';
 import '../../model/profile_photo/profile_photo_model.dart';
 import '../../model/registration/registration_model.dart';
 
@@ -573,8 +574,6 @@ class ApiServices {
     }
   }
 
-
-
   static Future<GetReviewResponseModel> verifyRideOtp(
       {required Map<String, dynamic> body}) async {
     https.Response response = await https.post(
@@ -594,7 +593,8 @@ class ApiServices {
     }
   }
 
-  static Future<GetReviewResponseModel> getReviewsWithPagination({int? offset, int? limit}) async {
+  static Future<GetReviewResponseModel> getReviewsWithPagination(
+      {int? offset, int? limit}) async {
     Map<String, String> queryParams = {};
     if (offset != null) queryParams['offset'] = offset.toString();
     if (limit != null) queryParams['limit'] = limit.toString();
@@ -616,7 +616,6 @@ class ApiServices {
       throw HttpException(response.body);
     }
   }
-
 
   static Future<GetRidesResponseModel> getRides() async {
     https.Response response = await Interceptor().get(
@@ -977,6 +976,82 @@ class ApiServices {
       return logoutResponseModelFromJson(response.body);
     } else {
       throw HttpException(response.body);
+    }
+  }
+
+  static Future<PaymentResponse> createOrder() async {
+    try {
+      https.Response response = await https.get(
+        Uri.https(
+          AppUrls.base, // host
+          AppUrls.paymentCreateOrder, // path
+        ),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': getToken(), // same as your other call
+        },
+      );
+
+      // log("➡️ Request Body: ${json.encode(body)}");
+      log("➡️ Request URL: ${Uri.https("api.waiverapp.in", "/api/v2/payment-to-waiver/order/")}");
+      log("⬅️ Response Code: ${response.statusCode}");
+      log("⬅️ Response Body: ${response.body}");
+
+      if (response.statusCode == 200 || response.statusCode == 400) {
+        // ✅ both success and failed order return your model structure
+        return PaymentResponse.fromJson(json.decode(response.body));
+      } else {
+        throw HttpException(
+          "Error ${response.statusCode}: ${response.body}",
+        );
+      }
+    } catch (e) {
+      log("❌ API error: $e");
+      rethrow;
+    }
+  }
+
+  static Future<String> confirmPayment({
+    required String razorpayOrderId,
+    required String razorpayPaymentId,
+    required String razorpaySignature,
+  }) async {
+    final url = Uri.https(
+      AppUrls.base,
+      AppUrls.paymentSuccess,
+    );
+
+    final body = {
+      "razorpay_order_id": razorpayOrderId,
+      "razorpay_payment_id": razorpayPaymentId,
+      "razorpay_signature": razorpaySignature,
+    };
+
+    try {
+      final response = await https.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": getToken(), // 👈 same as other APIs
+        },
+        body: json.encode(body),
+      );
+
+      log("➡️ API Request URL: $url");
+      log("➡️ API Request Body: ${json.encode(body)}");
+      log("⬅️ API Response Code: ${response.statusCode}");
+      log("⬅️ API Response Body: ${response.body}");
+
+      if (response.statusCode == 200) {
+        return "✅ Payment confirmed successfully!";
+      } else {
+        throw HttpException(
+          "Error ${response.statusCode}: ${response.body}",
+        );
+      }
+    } catch (e) {
+      log("❌ API call failed: $e");
+      rethrow;
     }
   }
 

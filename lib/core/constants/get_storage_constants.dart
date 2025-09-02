@@ -35,6 +35,7 @@ class BoxKeys {
   static String buildNumber = "buildNumber";
   static String version = "version";
   static String isTaken = "isAssinged";
+  static const String isOnline = 'is_online';
 }
 
 class UserType {
@@ -113,25 +114,25 @@ class AppConstants {
   static Position? currentPosition;
 
   static Color getColor() {
-    String user = box.read(BoxKeys.userTypeCode)??'none';
+    String user = box.read(BoxKeys.userTypeCode) ?? 'none';
     if (user == UserTypeCode.driver) {
       return AppColors.orange;
     } else if (user == UserTypeCode.chauffeur) {
       return AppColors.blue;
-    } else if(user == UserTypeCode.fleet) {
+    } else if (user == UserTypeCode.fleet) {
       return AppColors.yellow;
-    } else{
-        return AppColors.blue;
+    } else {
+      return AppColors.blue;
     }
   }
 
   static Color getButtonTextColor() {
-    String user = box.read(BoxKeys.userTypeCode)??"none";
+    String user = box.read(BoxKeys.userTypeCode) ?? "none";
     if (user == UserTypeCode.fleet) {
       return AppColors.black;
-    } else if(user == UserTypeCode.chauffeur|| user == UserTypeCode.driver) {
+    } else if (user == UserTypeCode.chauffeur || user == UserTypeCode.driver) {
       return AppColors.white;
-    }else {
+    } else {
       return AppColors.white;
     }
   }

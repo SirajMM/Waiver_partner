@@ -181,7 +181,7 @@ class EarningController extends GetxController
       weeklyIncentives = response.data?.earnings?.incentives ?? 0;
       weeklyReferEarnings = response.data?.earnings?.referrals ?? 0;
       weeklyPayment.value = response.data?.earnings?.total ?? 0;
-      weeklyBalanceAmount.value= response.data?.earnings?.balanceAmount ?? 0;
+      weeklyBalanceAmount.value = response.data?.earnings?.balanceAmount ?? 0;
       print(weeklyTripFare.value);
     } catch (error, s) {
       AppConstants.handleError(error, s: s);
@@ -307,7 +307,7 @@ class EarningController extends GetxController
   Rx<double?> todayTripFare = Rx<double?>(null);
   RxDouble weeklyTripFare = 0.0.obs;
   Rx<double?> todayWaiverCharge = Rx<double?>(null);
-  Rx<double?> weeklyWaiverCharge= Rx<double?>(null);
+  Rx<double?> weeklyWaiverCharge = Rx<double?>(null);
   Rx<double?> todayTax = Rx<double?>(null);
   double? weeklyTax;
   Rx<double?> todayIncentives = Rx<double?>(null);
@@ -316,7 +316,7 @@ class EarningController extends GetxController
   Rx<double?> todayReferEarnings = Rx<double?>(null);
   Rx<double?> weeklyPayment = Rx<double?>(null);
   Rx<double?> todayPayment = Rx<double?>(null);
-  Rx<double?> weeklyBalanceAmount= Rx<double?>(null);
+  Rx<double?> weeklyBalanceAmount = Rx<double?>(null);
   Rx<double?> todayBalanceAmount = Rx<double?>(null);
   RxList<EarningListItem> todayEarningList = <EarningListItem>[].obs;
   // RxList<EarningListItem> weeklyEarningList = <EarningListItem>[].obs;
@@ -402,13 +402,21 @@ class EarningController extends GetxController
       value: 0.0.obs,
       text: 'Distance');
 
-  Future<void> handlePaymentSuccess(PaymentSuccessResponse response) async {
-    // Set payment successful and stop processing
-    isPaymentSuccessful.value = true;
-    isPaymentProcessing.value = false;
+  void handlePaymentSuccess(PaymentSuccessResponse response) async {
+    try {
+      final message = await ApiServices.confirmPayment(
+        razorpayOrderId: response.orderId!,
+        razorpayPaymentId: response.paymentId!,
+        razorpaySignature: response.signature!,
+      );
 
-    // Add your success handling logic here
-    // For example: update UI, save payment info, etc.
+      print(message); // ✅ Payment confirmed successfully!
+      isPaymentSuccessful.value = true;
+      isPaymentProcessing.value = false;
+    } catch (e) {
+      print("❌ Payment confirmation failed: $e");
+      isPaymentProcessing.value = false;
+    }
   }
 
   void handlePaymentError(PaymentFailureResponse response) {
@@ -419,7 +427,8 @@ class EarningController extends GetxController
     //   message: response.message ?? '',
     // ));
   }
-
+  RxString razorpayOrderId = "".obs;
+  RxInt razorpayAmount = 0.obs;
   void handlePaymentExternalWallet(ExternalWalletResponse response) {
     isPaymentProcessing.value = false;
     log(response.toString());
@@ -429,6 +438,30 @@ class EarningController extends GetxController
     // ));
   }
 
+  Future<void> createOrder(String amount) async {
+    try {
+      final response = await ApiServices.createOrder();
+
+      razorpayOrderId.value = response.data.razorpayOrderId ?? "";
+      razorpayAmount.value = response.data.amount ?? 0;
+      print("✅ Order Created Successfully");
+      print("Status: ${response.status}");
+      print("Order ID: ${razorpayOrderId.value}");
+      print("Amount: ${response.data.amount}");
+
+      if (razorpayOrderId.value.isNotEmpty) {
+        // Step 2: Call Razorpay checkout with new order_id
+        checkOut(razorpayAmount.value.toString());
+      } else {
+        throw Exception("Order ID not generated");
+      }
+    } catch (e, s) {
+      print("❌ Error creating order: $e");
+      AppConstants.handleError(e, s: s);
+      isPaymentProcessing.value = false;
+    }
+  }
+
   RxBool isPaymentSuccessful = false.obs;
   RxBool isPaymentProcessing = false.obs;
   void checkOut(String amount) {
@@ -436,7 +469,7 @@ class EarningController extends GetxController
     isPaymentProcessing.value = true;
 
     Map<String, dynamic> options = {
-      'key': 'rrzp_live_MRZpT7fffrAY3F',
+      'key': ' rzp_live_RAQZCEedNkxXEj',
       'order_id': '',
       'amount': amount,
       'name': 'waiver',

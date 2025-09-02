@@ -1192,7 +1192,6 @@
 
 import 'dart:async';
 import 'dart:developer';
-import 'dart:io';
 import 'dart:math' as math;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
@@ -1229,17 +1228,74 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   static HomeController get to => Get.find();
 
-  // Add LocationTrackingService instance
-  late LocationTrackingService locationTrackingService;
+  LocationTrackingService? locationTrackingService;
+
+  // RxString appState = "Active".obs;
+
+  // @override
+  // void onInit() async {
+  //   super.onInit();
+
+  //   // Initialize location tracking service
+  //   locationTrackingService = Get.put(LocationTrackingService());
+
+  //   currentPosition.value = convertToPosition(AppConstants.locationData);
+  //   WidgetsBinding.instance.addObserver(this);
+  //   _initializeHive();
+
+  //   loc.Location location = loc.Location();
+  //   try {
+  //     List<Future> apis = [
+  //       getDriverOnlineStatus(),
+  //       fetchWalletBalance(),
+  //       latestActiveRide(),
+  //     ];
+  //     if (currentPosition.value == null) apis.add(location.getLocation());
+  //     isLoading.value = true;
+
+  //     final result = await Future.wait(apis);
+
+  //     if (currentPosition.value == null) {
+  //       currentPosition.value =
+  //           convertToPosition(result[3] as loc.LocationData);
+  //       saveLocationData(result[3] as loc.LocationData);
+  //     }
+  //     isLoading.value = false;
+  //     checkForUpdate();
+  //     // Start location tracking instead of old sendLiveLocation
+  //     sendLiveLocation();
+  //     await startLocationTracking();
+
+  //     getVersionInfo();
+  //     ProfileController.to.getProfile();
+  //     isAssinged.value = await hasAssigned();
+  //     log("******************${isAssinged.value}@@@@@@@@@@@@@@@@@@@@@@@@@@");
+  //     pickUpLocation1 = TripsLocations(
+  //         latitude: Rx(currentPosition.value?.latitude),
+  //         longitude: Rx(currentPosition.value?.longitude),
+  //         name: "".obs);
+
+  //     getLocationDetails(
+  //             currentPosition.value!.latitude, currentPosition.value!.longitude)
+  //         .then(
+  //       (value) => pickUpLocation1?.name.value = value ?? '',
+  //     );
+  //     recenter();
+
+  //     isError.value = false;
+  //   } catch (error) {
+  //     isError.value = false;
+  //     log(error.toString());
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
 
   RxString appState = "Active".obs;
 
   @override
   void onInit() async {
     super.onInit();
-
-    // Initialize location tracking service
-    locationTrackingService = Get.put(LocationTrackingService());
 
     currentPosition.value = convertToPosition(AppConstants.locationData);
     WidgetsBinding.instance.addObserver(this);
@@ -1258,25 +1314,31 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       final result = await Future.wait(apis);
 
       if (currentPosition.value == null) {
-        currentPosition.value = convertToPosition(result[3] as loc.LocationData);
+        currentPosition.value =
+            convertToPosition(result[3] as loc.LocationData);
         saveLocationData(result[3] as loc.LocationData);
       }
       isLoading.value = false;
       checkForUpdate();
-      // Start location tracking instead of old sendLiveLocation
+
+      // Initialize location tracking service only when needed
+      await _initializeLocationTrackingIfNeeded();
+
+      // Continue with regular location stream (for UI updates)
       sendLiveLocation();
-      await startLocationTracking();
 
       getVersionInfo();
       ProfileController.to.getProfile();
       isAssinged.value = await hasAssigned();
-      log("******************${isAssinged.value}@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
       pickUpLocation1 = TripsLocations(
           latitude: Rx(currentPosition.value?.latitude),
           longitude: Rx(currentPosition.value?.longitude),
           name: "".obs);
 
-      getLocationDetails(currentPosition.value!.latitude, currentPosition.value!.longitude).then(
+      getLocationDetails(
+              currentPosition.value!.latitude, currentPosition.value!.longitude)
+          .then(
         (value) => pickUpLocation1?.name.value = value ?? '',
       );
       recenter();
@@ -1290,19 +1352,36 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  @override
   void onClose() {
     WidgetsBinding.instance.removeObserver(this);
-    // Stop location tracking when controller is disposed
     stopLocationTracking();
     super.onClose();
   }
 
   @override
   void dispose() {
-    // Stop location tracking on dispose
     stopLocationTracking();
     super.dispose();
+  }
+
+  // Initialize location tracking service only when needed
+  Future<void> _initializeLocationTrackingIfNeeded() async {
+    try {
+      // Only initialize if user is online or has been online before
+      final savedOnlineStatus = box.read(BoxKeys.isOnline) ?? false;
+
+      if (savedOnlineStatus || isOnline.value) {
+        locationTrackingService = Get.put(LocationTrackingService());
+        log('LocationTrackingService initialized');
+
+        // Start tracking if currently online
+        if (isOnline.value) {
+          await startLocationTracking();
+        }
+      }
+    } catch (e) {
+      log('Error initializing location tracking service: $e');
+    }
   }
 
   StreamSubscription<MobilityContext>? mobilitySubscription;
@@ -1314,9 +1393,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       saveLocationData(convertPositionToLocationData(position));
       if (isOnline.value) {
         WebSocketServices.sendLiveLocation(body: {
-          "passenger_id":
-              driverState.value == DriverState.idle ? RiderStatus.save : passengerId ?? "placeholder",
-          "msg_type": driverState.value == DriverState.idle ? RiderStatus.save : RiderStatus.ride,
+          "passenger_id": driverState.value == DriverState.idle
+              ? RiderStatus.save
+              : passengerId ?? "placeholder",
+          "msg_type": driverState.value == DriverState.idle
+              ? RiderStatus.save
+              : RiderStatus.ride,
           "ride_status": driverState.value.toString(),
           "current_loc_long": position.longitude,
           "current_loc_lat": position.latitude,
@@ -1325,40 +1407,46 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     });
   }
 
-  // Replace the old sendLiveLocation() method with this:
+  // Update startLocationTracking method:
   Future<void> startLocationTracking() async {
     try {
+      // Initialize service if not already done
+      locationTrackingService ??= Get.put(LocationTrackingService());
+
       // Save initial data for background service
-      await locationTrackingService.saveInitialData(
+      await locationTrackingService!.saveInitialData(
         driverState: driverState.value.toString(),
         passengerId: passengerId,
         isOnline: isOnline.value,
       );
 
-      // Start the background location service
-      await locationTrackingService.startService(
-        driverState: driverState.value.toString(),
-        passengerId: passengerId,
-        isOnline: isOnline.value,
-      );
-
-      log('✅ Location tracking started successfully');
+      // Start the background location service only if online
+      if (isOnline.value) {
+        await locationTrackingService!.startService(
+          driverState: driverState.value.toString(),
+          passengerId: passengerId,
+          isOnline: isOnline.value,
+        );
+        log('Location tracking started successfully');
+      }
     } catch (e) {
-      log('❌ Failed to start location tracking: $e');
+      log('Failed to start location tracking: $e');
     }
   }
 
-  // Method to stop location tracking
+  // Updated method to stop location tracking
   Future<void> stopLocationTracking() async {
     try {
-      await locationTrackingService.stopService();
-      log('🛑 Location tracking stopped');
+      if (locationTrackingService != null) {
+        await locationTrackingService!.stopService();
+        log('Location tracking stopped');
+      }
     } catch (e) {
-      log('❌ Error stopping location tracking: $e');
+      log('Error stopping location tracking: $e');
     }
   }
 
-  // Update the changeDriverOnlineStatus method
+// Then update your changeDriverOnlineStatus method:
   Future<void> changeDriverOnlineStatus() async {
     try {
       if (isOnlineButtonLoading.value) return;
@@ -1369,21 +1457,24 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           "is_online": isOnline.value ? 0 : 1,
         },
       );
-      log("#####################${isOnline.value}#####################");
 
       if (response.status == 200) {
         isOnline.value = !isOnline.value;
-        log("#####################${isOnline.value}#####################");
 
-        // Update the background service with new online status
-        await locationTrackingService.updateOnlineStatus(isOnline.value);
+        // Save the online status
+        box.write(BoxKeys.isOnline, isOnline.value);
 
         if (isOnline.value) {
-          // Start location tracking when going online
+          // Going online - initialize service if needed and start tracking
+          locationTrackingService ??= Get.put(LocationTrackingService());
+          await locationTrackingService!.updateOnlineStatus(true);
           await startLocationTracking();
         } else {
-          // Stop location tracking when going offline
-          await stopLocationTracking();
+          // Going offline - stop tracking
+          if (locationTrackingService != null) {
+            await locationTrackingService!.updateOnlineStatus(false);
+            await stopLocationTracking();
+          }
         }
       }
     } catch (error, s) {
@@ -1394,7 +1485,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  // Update acceptOrder method to notify background service
+  // ... rest of your existing methods remain the same ...
+
   Future<void> acceptOrder() async {
     try {
       isButtonLoading.value = true;
@@ -1403,39 +1495,43 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       ChangeRideStatusModel response = await ApiServices.changeRideStatus(
           body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
       if (response.status == 200) {
-        log(isButtonLoading.toString());
         rideIsActive = true;
         Get.back();
         driverState.value = DriverState.goingToPickUp;
 
         // Update background service with new driver state and passenger
-        await locationTrackingService.updateDriverState(
-          driverState.value.toString(),
-          passengerId: passengerId,
-        );
+        if (locationTrackingService != null) {
+          await locationTrackingService!.updateDriverState(
+            driverState.value.toString(),
+            passengerId: passengerId,
+          );
+        }
       }
     } catch (error) {
-      Get.back();
-      Get.showSnackbar(
-        const GetSnackBar(
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.zero,
-          messageText: AppSnackBar(
-            text: "OOPS Something went wrong",
-          ),
-        ),
-      );
-      startLocationLongMarker = 0.0;
-      startLocationLatMarker = 0.0;
-      recenter();
+      _handleRideError();
     } finally {
       isButtonLoading.value = false;
       recenter();
     }
   }
 
-  // Update other ride status change methods
+  void _handleRideError() {
+    Get.back();
+    Get.showSnackbar(
+      const GetSnackBar(
+        duration: Duration(seconds: 5),
+        backgroundColor: Colors.transparent,
+        padding: EdgeInsets.zero,
+        messageText: AppSnackBar(
+          text: "OOPS Something went wrong",
+        ),
+      ),
+    );
+    startLocationLongMarker = 0.0;
+    startLocationLatMarker = 0.0;
+    recenter();
+  }
+
   Future<void> reachedPickUpLocation() async {
     try {
       driverState.value = DriverState.loading;
@@ -1446,10 +1542,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         driverState.value = DriverState.arrivedAtPickUp;
 
         // Update background service
-        await locationTrackingService.updateDriverState(
-          driverState.value.toString(),
-          passengerId: passengerId,
-        );
+        if (locationTrackingService != null) {
+          await locationTrackingService!.updateDriverState(
+            driverState.value.toString(),
+            passengerId: passengerId,
+          );
+        }
       }
     } catch (error) {
       Get.back();
@@ -1475,17 +1573,22 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         driverState.value = DriverState.readyToGoToDestination;
 
         // Update background service
-        await locationTrackingService.updateDriverState(
-          driverState.value.toString(),
-          passengerId: passengerId,
-        );
+        if (locationTrackingService != null) {
+          await locationTrackingService!.updateDriverState(
+            driverState.value.toString(),
+            passengerId: passengerId,
+          );
+        }
 
-        await MobilityFeatures().startListening(Geolocator.getPositionStream().map((location) {
+        await MobilityFeatures()
+            .startListening(Geolocator.getPositionStream().map((location) {
           log("mobility features");
           log("${mobilityContext?.distanceTraveled}");
           log(location.toString());
           log(location.longitude.toString());
-          return LocationSample(GeoLocation(location.latitude, location.longitude), DateTime.now());
+          return LocationSample(
+              GeoLocation(location.latitude, location.longitude),
+              DateTime.now());
         }));
       }
     } finally {
@@ -1503,10 +1606,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       driverState.value = DriverState.idle;
 
       // Update background service back to idle state
-      await locationTrackingService.updateDriverState(
-        driverState.value.toString(),
-        passengerId: null, // Clear passenger when ride is completed
-      );
+      if (locationTrackingService != null) {
+        await locationTrackingService!.updateDriverState(
+          driverState.value.toString(),
+          passengerId: passengerId,
+        );
+      }
 
       fetchWalletBalance();
     }
@@ -1544,10 +1649,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         }
 
         // Update background service with new state
-        await locationTrackingService.updateDriverState(
-          driverState.value.toString(),
-          passengerId: passengerId,
-        );
+        if (locationTrackingService != null) {
+          await locationTrackingService!.updateDriverState(
+            driverState.value.toString(),
+            passengerId: passengerId,
+          );
+        }
 
         code = " ";
       } else {
@@ -1574,7 +1681,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       if (Get.isBottomSheetOpen ?? false) {
         Get.back();
       }
-      ChangeRideStatusModel response = await ApiServices.changeRideStatus(body: {
+      ChangeRideStatusModel response =
+          await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.cancelled,
       });
@@ -1583,10 +1691,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         driverState.value = DriverState.idle;
 
         // Update background service back to idle
-        await locationTrackingService.updateDriverState(
-          driverState.value.toString(),
-          passengerId: null,
-        );
+        if (locationTrackingService != null) {
+          await locationTrackingService!.updateDriverState(
+            driverState.value.toString(),
+            passengerId: passengerId,
+          );
+        }
 
         if (driverState.value == DriverState.idle) {
           startLocationLongMarker = 0.0;
@@ -1594,7 +1704,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           recenter();
         }
 
-        Get.defaultDialog(middleText: "This order has expired or transferred to another driver");
+        Get.defaultDialog(
+            middleText:
+                "This order has expired or transferred to another driver");
       }
     } finally {
       driverState.value = DriverState.idle;
@@ -1609,50 +1721,68 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused) {
       appState.value = "Background";
-      log("🔴 App in Background - Background service will continue location tracking");
-      // Background service automatically continues tracking
+      log("App in Background - Background service will continue location tracking");
     } else if (state == AppLifecycleState.resumed) {
       appState.value = "Active";
-      log("🟢 App Resumed - Background service is already running");
-      // Background service was already running, nothing needed
+      log("App Resumed - Background service is already running");
     } else if (state == AppLifecycleState.detached) {
       appState.value = "Terminated";
-      stopLocationTrackingFromBackground();
-      stopLocationTracking();
-      setDriverOfflineOnTermination();
-      log("⚠️ App Terminated - Background service will continue");
-      // Background service continues even when app is terminated
+      _handleAppTermination();
+      log("App Terminated - Handling cleanup");
     }
   }
 
-  // Method to update auth token (call when token refreshes)
+  // Handle app termination
+  Future<void> _handleAppTermination() async {
+    try {
+      // Stop location tracking service
+      await stopLocationTracking();
+
+      // Set driver offline
+      await setDriverOfflineOnTermination();
+
+      log('App termination cleanup completed');
+    } catch (e) {
+      log('Error during app termination cleanup: $e');
+    }
+  }
+
   Future<void> updateAuthToken(String newToken) async {
     try {
-      await locationTrackingService.updateAuthToken(newToken);
-      log('✅ Auth token updated in background service');
+      if (locationTrackingService != null) {
+        await locationTrackingService!.updateAuthToken(newToken);
+        log('✅ Auth token updated in background service');
+      }
     } catch (e) {
       log('❌ Failed to update auth token: $e');
     }
   }
 
   // Method to check if location service is running
+  // Example for isLocationServiceRunning:
   Future<bool> isLocationServiceRunning() async {
-    return await locationTrackingService.getServiceStatus();
+    if (locationTrackingService != null) {
+      return await locationTrackingService!.getServiceStatus();
+    }
+    return false;
   }
 
   Future<void> setDriverOfflineOnTermination() async {
     try {
-      // Call your API to set driver offline
-      await ApiServices.changeOnlineStatus(
-        body: {"is_online": 0},
-      );
+      // Only set offline if currently online
+      if (isOnline.value) {
+        await ApiServices.changeOnlineStatus(
+          body: {"is_online": 0},
+        );
 
-      // Update local state
-      isOnline.value = false;
+        // Update local state
+        isOnline.value = false;
+        box.write(BoxKeys.isOnline, false);
 
-      log('✅ Driver set to offline due to app termination');
+        log('Driver set to offline due to app termination');
+      }
     } catch (e) {
-      log('❌ Error setting driver offline on termination: $e');
+      log('Error setting driver offline on termination: $e');
     }
   }
 
@@ -1682,13 +1812,16 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     var p = 0.017453292519943295;
     var c = math.cos;
-    var a = 0.5 - c((lat2 - lat1) * p) / 2 + c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
     return 12742 * math.asin(math.sqrt(a));
   }
 
   Future<void> getDriverOnlineStatus() async {
     try {
-      GetOnlineStatusResponseModel response = await ApiServices.getOnlineStatus();
+      GetOnlineStatusResponseModel response =
+          await ApiServices.getOnlineStatus();
       if (response.status == 200) {
         isOnline.value = response.data?.isOnline ?? false;
       }
@@ -1708,7 +1841,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   Future<void> latestActiveRide() async {
     try {
-      GetRideDetailsResponseModel response = await ApiServices.latestActiveRide();
+      GetRideDetailsResponseModel response =
+          await ApiServices.latestActiveRide();
       if ((response.data?.id ?? "").isNotEmpty) {
         rideIsActive = true;
         getOrderDetails(response: response);
@@ -1717,6 +1851,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       }
     } catch (error, s) {
       log('last active ride $error', error: error, stackTrace: s);
+      AppConstants.handleError(error, s: s);
     }
   }
 
@@ -1730,11 +1865,17 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   RxBool isOnlineButtonLoading = false.obs;
 
   DashBoardItemModel acceptance = DashBoardItemModel(
-      icon: Icon(Icons.check, color: AppColors.white), value: '0 %', text: 'Acceptance');
-  DashBoardItemModel rating =
-      DashBoardItemModel(icon: Icon(Icons.star, color: AppColors.white), value: '2.5', text: 'Rating');
+      icon: Icon(Icons.check, color: AppColors.white),
+      value: '0 %',
+      text: 'Acceptance');
+  DashBoardItemModel rating = DashBoardItemModel(
+      icon: Icon(Icons.star, color: AppColors.white),
+      value: '2.5',
+      text: 'Rating');
   DashBoardItemModel cancellation = DashBoardItemModel(
-      icon: Icon(Icons.close, color: AppColors.white), value: '0%', text: 'Cancellation');
+      icon: Icon(Icons.close, color: AppColors.white),
+      value: '0%',
+      text: 'Cancellation');
 
   double? startLocationLat;
   double? startLocationLong;
@@ -1752,12 +1893,15 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   String? pickUpLocation;
   String? dropOffLocation;
   String? passengerName;
-  TripsLocations? pickUpLocation1 = TripsLocations(name: "".obs, latitude: 0.0.obs, longitude: 0.0.obs);
+  String? rideType;
+  TripsLocations? pickUpLocation1 =
+      TripsLocations(name: "".obs, latitude: 0.0.obs, longitude: 0.0.obs);
 
   // Keep all your existing methods like getAndShowOrderDetails, getOrderDetails, etc.
   // ... (rest of your existing methods remain unchanged)
 
-  Future<void> getAndShowOrderDetails({required String id, bool? fromBackGroundCall}) async {
+  Future<void> getAndShowOrderDetails(
+      {required String id, bool? fromBackGroundCall}) async {
     player.play(AssetSource(AppAudio.notification));
     GetRideDetailsResponseModel response =
         await ApiServices.rideOrderDetails(queryParameters: {"ride_id": id});
@@ -1780,8 +1924,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   void getOrderDetails({required GetRideDetailsResponseModel response}) {
     startLocationLat = double.parse(response.data?.startLocationLat ?? "0.0");
     startLocationLong = double.parse(response.data?.startLocationLong ?? "0.0");
-    startLocationLatMarker = double.parse(response.data?.startLocationLat ?? "0.0");
-    startLocationLongMarker = double.parse(response.data?.startLocationLong ?? "0.0");
+    startLocationLatMarker =
+        double.parse(response.data?.startLocationLat ?? "0.0");
+    startLocationLongMarker =
+        double.parse(response.data?.startLocationLong ?? "0.0");
     log("################### passenger latitude ##########################");
     log("################### Isonline ##########################");
     log(isOnline.value.toString());
@@ -1798,6 +1944,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     passengerName = response.data?.passengerName;
     pickUpLocation = response.data?.startLocation;
     dropOffLocation = response.data?.endLocation;
+    rideType = response.data?.rideType;
 
     if (response.data?.rideStatus == RideStatus.accepted) {
       driverState.value = DriverState.goingToPickUp;
@@ -1813,10 +1960,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     }
 
     // Update background service with new passenger and state
-    locationTrackingService.updateDriverState(
-      driverState.value.toString(),
-      passengerId: passengerId,
-    );
+    if (locationTrackingService != null) {
+      locationTrackingService!.updateDriverState(
+        driverState.value.toString(),
+        passengerId: passengerId,
+      );
+    }
   }
 
   // ... Keep all your other existing methods unchanged ...
@@ -1869,7 +2018,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     if (permission == LocationPermission.deniedForever) {
       throw Exception('Location permissions are permanently denied');
     }
-    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
   }
 
   Future<void> makePhoneCall() async {
@@ -1887,7 +2037,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       WalletResponse response = await ApiServices.getPartnerWallet();
 
       if (response.status == 200) {
-        walletBalance.value = double.tryParse(response.data.amount ?? '') ?? 0.0;
+        walletBalance.value =
+            double.tryParse(response.data.amount ?? '') ?? 0.0;
         isRefreshingWallet.value = false;
       } else {
         isRefreshingWallet.value = false;
@@ -2010,7 +2161,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     try {
       driverState.value = DriverState.loading;
       await getFinalDropLocation();
-      ChangeRideStatusModel response = await ApiServices.changeRideStatus(body: {
+      ChangeRideStatusModel response =
+          await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.reachedDropOff,
         "location": finalDropLocation,
@@ -2022,10 +2174,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         isTracking = false;
 
         // Update background service
-        await locationTrackingService.updateDriverState(
-          driverState.value.toString(),
-          passengerId: passengerId,
-        );
+        if (locationTrackingService != null) {
+          await locationTrackingService!.updateDriverState(
+            driverState.value.toString(),
+            passengerId: passengerId,
+          );
+        }
       }
     } finally {
       driverState.value = DriverState.reachedDestination;
@@ -2033,7 +2187,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<String?> getLocationDetails(double latitude, double longitude) async {
-    GoogleLocationResponse response = await ApiServices.getCurrentLocation(latitude, longitude);
+    GoogleLocationResponse response =
+        await ApiServices.getCurrentLocation(latitude, longitude);
 
     for (var result in response.results ?? []) {
       for (var addressComponent in result.addressComponents ?? []) {
@@ -2069,31 +2224,42 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   Future<String?> getLocationDetails1() async {
     if (driverState.value == DriverState.idle) {
       GoogleLocationResponse response = await ApiServices.getCurrentLocation(
-          pickUpLocation1?.latitude.value ?? 0.0, pickUpLocation1?.longitude.value ?? 0.0);
+          pickUpLocation1?.latitude.value ?? 0.0,
+          pickUpLocation1?.longitude.value ?? 0.0);
 
       String? neighborhood = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("neighborhood")))
+          ?.firstWhereOrNull(
+              (address) => ((address.types ?? []).contains("neighborhood")))
           ?.longName;
 
       String? political = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("political")))
+          ?.firstWhereOrNull(
+              (address) => ((address.types ?? []).contains("political")))
           ?.longName;
       String? sublocality = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("sublocality")))
+          ?.firstWhereOrNull(
+              (address) => ((address.types ?? []).contains("sublocality")))
           ?.longName;
       String? locality = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("locality")))
+          ?.firstWhereOrNull(
+              (address) => ((address.types ?? []).contains("locality")))
           ?.longName;
       String? postalCode = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("postal_code")))
+          ?.firstWhereOrNull(
+              (address) => ((address.types ?? []).contains("postal_code")))
           ?.longName;
       String? premise = response.results?.firstOrNull?.addressComponents
-          ?.firstWhereOrNull((address) => ((address.types ?? []).contains("premise")))
+          ?.firstWhereOrNull(
+              (address) => ((address.types ?? []).contains("premise")))
           ?.longName;
-      return ({premise, neighborhood, political, sublocality, locality, postalCode}
-          .toList()
-          .where((name) => name != null)
-          .join(","));
+      return ({
+        premise,
+        neighborhood,
+        political,
+        sublocality,
+        locality,
+        postalCode
+      }.toList().where((name) => name != null).join(","));
     } else {
       return "";
     }
@@ -2104,7 +2270,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     log("mobilityContext?.stops");
     log("${mobilityContext?.stops}");
     try {
-      ChangeRideStatusModel response = await ApiServices.changeRideStatus(body: {
+      ChangeRideStatusModel response =
+          await ApiServices.changeRideStatus(body: {
         "ride_id": rideId,
         "ride_status": RideStatus.paymentInitiated,
         "stops": mobilityContext?.stops,
@@ -2118,10 +2285,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         resetDistance();
 
         // Update background service
-        await locationTrackingService.updateDriverState(
-          driverState.value.toString(),
-          passengerId: passengerId,
-        );
+        if (locationTrackingService != null) {
+          await locationTrackingService!.updateDriverState(
+            driverState.value.toString(),
+            passengerId: passengerId,
+          );
+        }
       }
     } catch (error, s) {
       AppConstants.handleError(error, s: s);
@@ -2147,10 +2316,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       paymentType = response.data?.paymentType;
       waiverCharge = response.data?.waiverCharge;
       driverState.value = DriverState.completed;
-      await locationTrackingService.updateDriverState(
-        driverState.value.toString(),
-        passengerId: null,
-      );
+      if (locationTrackingService != null) {
+        await locationTrackingService!.updateDriverState(
+          driverState.value.toString(),
+          passengerId: null,
+        );
+      }
       Get.back();
     }
   }
@@ -2162,10 +2333,12 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       driverState.value = DriverState.idle;
 
       // Update background service back to idle
-      await locationTrackingService.updateDriverState(
-        driverState.value.toString(),
-        passengerId: null,
-      );
+      if (locationTrackingService != null) {
+        await locationTrackingService!.updateDriverState(
+          driverState.value.toString(),
+          passengerId: null,
+        );
+      }
     }
   }
 
@@ -2180,12 +2353,34 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   Future<void> getFinalDropLocation() async {
     finalDropLocation = (await getLocationDetails(
-            currentPosition.value?.latitude ?? 0.0, currentPosition.value?.longitude ?? 0.0)) ??
+            currentPosition.value?.latitude ?? 0.0,
+            currentPosition.value?.longitude ?? 0.0)) ??
         "";
   }
 
-  Future<void> openMap({required double? latitude, required double? longitude}) async {
+  Future<void> openMap(
+      {required double? latitude, required double? longitude}) async {
     var uri = Uri.parse("google.navigation:q=$latitude,$longitude&mode=d");
+    if (await canLaunch(uri.toString())) {
+      await launch(uri.toString());
+    } else {
+      throw 'Could not launch ${uri.toString()}';
+    }
+  }
+
+  Future<void> openRoundTripMap({
+    required double? startLatitude,
+    required double? startLongitude,
+    required double? destinationLatitude,
+    required double? destinationLongitude,
+  }) async {
+    log("round trip@@@@@@@@@@@@$rideType");
+    // Create a round trip by adding the starting point as the final waypoint
+    var uri = Uri.parse(
+        "google.navigation:q=$destinationLatitude,$destinationLongitude"
+        "&waypoints=$startLatitude,$startLongitude"
+        "&mode=d");
+
     if (await canLaunch(uri.toString())) {
       await launch(uri.toString());
     } else {
@@ -2234,19 +2429,17 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<void> checkForUpdate() async {
-    try {
-      if (Platform.isAndroid) {
-        await InAppUpdate.checkForUpdate().then((info) async {
-          if (info.updateAvailability == UpdateAvailability.updateAvailable) {
-            await InAppUpdate.startFlexibleUpdate();
-            InAppUpdate.completeFlexibleUpdate();
-          }
-        }).catchError((e, s) {
-          log(e.toString(), error: e, stackTrace: s);
+    print('checking for Update');
+    await InAppUpdate.checkForUpdate().then((info) async {
+      if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+        print('update available');
+        await InAppUpdate.startFlexibleUpdate();
+        InAppUpdate.completeFlexibleUpdate().then((_) {}).catchError((e) {
+          print(e.toString());
         });
       }
-    } catch (e) {
-      log(e.toString());
-    }
+    }).catchError((e, s) {
+      log(e.toString(), error: e, stackTrace: s);
+    });
   }
 }

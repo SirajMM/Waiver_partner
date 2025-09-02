@@ -81,7 +81,7 @@ class LeftMenuFleet extends StatelessWidget {
           LeftMenuItem(
             item: LeftMenuControllerFleet.to.help,
             onTap: () async {
-              final Uri whatsapp = Uri.parse('https://api.whatsapp.com/send?phone=918943099085&text=Hi');
+              final Uri whatsapp = Uri.parse('https://wa.me/+918714034112');
               launchUrl(whatsapp);
             },
           ),

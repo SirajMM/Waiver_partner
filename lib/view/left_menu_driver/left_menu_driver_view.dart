@@ -112,8 +112,7 @@ class LeftMenuDriver extends StatelessWidget {
           LeftMenuItem(
               item: LeftMenuControllerDriver.to.help,
               onTap: () async {
-                final Uri whatsapp = Uri.parse(
-                    'https://wa.me/message/DDC362JXDWX7D1');
+                final Uri whatsapp = Uri.parse('https://wa.me/+918714034112');
                 launchUrl(whatsapp);
               }),
           const Divider().cPadSymmetric(v: 20.sp),
@@ -171,7 +170,7 @@ class LeftMenuDriver extends StatelessWidget {
 }
 
 class LeftMenuProfileItem extends StatelessWidget {
-  const   LeftMenuProfileItem({super.key});
+  const LeftMenuProfileItem({super.key});
 
   @override
   Widget build(BuildContext context) {
