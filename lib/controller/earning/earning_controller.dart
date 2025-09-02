@@ -274,6 +274,7 @@ class EarningController extends GetxController
       todayReferEarnings.value = response.data?.earnings?.referrals ?? 0;
       todayPayment.value = response.data?.earnings?.total ?? 0;
       todayBalanceAmount.value = response.data?.earnings?.balanceAmount ?? 0;
+      update();
     } catch (error, s) {
       print('Error fetching today\'s earning status: $error');
 
@@ -426,9 +427,12 @@ class EarningController extends GetxController
     //   isSuccess: false,
     //   message: response.message ?? '',
     // ));
+    isPaymentProcessing.value = false;
   }
+
   RxString razorpayOrderId = "".obs;
-  RxInt razorpayAmount = 0.obs;
+  RxDouble razorpayAmount = 0.0.obs;
+
   void handlePaymentExternalWallet(ExternalWalletResponse response) {
     isPaymentProcessing.value = false;
     log(response.toString());
@@ -442,12 +446,15 @@ class EarningController extends GetxController
     try {
       final response = await ApiServices.createOrder();
 
-      razorpayOrderId.value = response.data.razorpayOrderId ?? "";
-      razorpayAmount.value = response.data.amount ?? 0;
+      razorpayOrderId.value = response.data?.razorpayOrderId ?? "";
+
+      // Fix the assignment - ensure proper type handling
+      razorpayAmount.value = (response.data?.amount ?? 0.0).toDouble();
+
       print("✅ Order Created Successfully");
       print("Status: ${response.status}");
       print("Order ID: ${razorpayOrderId.value}");
-      print("Amount: ${response.data.amount}");
+      print("Amount: ${response.data?.amount}");
 
       if (razorpayOrderId.value.isNotEmpty) {
         // Step 2: Call Razorpay checkout with new order_id
@@ -464,20 +471,23 @@ class EarningController extends GetxController
 
   RxBool isPaymentSuccessful = false.obs;
   RxBool isPaymentProcessing = false.obs;
+
   void checkOut(String amount) {
     // Set payment processing to true
     isPaymentProcessing.value = true;
 
     Map<String, dynamic> options = {
-      'key': ' rzp_live_RAQZCEedNkxXEj',
-      'order_id': '',
-      'amount': amount,
+      'key': 'rzp_live_RAQZCEedNkxXEj', // Removed extra space
+      'order_id': razorpayOrderId.value, // Add the actual order ID
+      'amount': (double.parse(amount) * 100)
+          .toInt(), // Convert to paisa (smallest unit)
       'name': 'waiver',
       'prefill': {'contact': '123245', 'email': 'jho@gmail.com'},
       'external': {
         'wallets': ['paytm']
       }
     };
+
     try {
       razorpay.open(options);
     } catch (e, stackTrace) {

@@ -232,11 +232,18 @@ class MakingPaymentBottomSheet extends StatelessWidget {
               // SizedBox(
               //   height: 5.sp,
               // ),
-              Container(
-                // margin: EdgeInsets.symmetric(vertical: 0.sp),
-                color: AppColors.grey249,
-                height: 1.sp,
-              ),
+              // box.read(BoxKeys.paymentType) == "ONL"
+              //     ? Row(
+              //         children: [
+              //           IconButton(
+              //             onPressed: () {
+              //               Get.back();
+              //             },
+              //             icon: Icon(Icons.close),
+              //           ),
+              //         ],
+              //       )
+              //     : SizedBox(),
               Center(
                 child: Text(
                   paymentType ?? "",
@@ -244,6 +251,11 @@ class MakingPaymentBottomSheet extends StatelessWidget {
                       TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w300),
                 ),
               ),
+              // Container(
+              //   // margin: EdgeInsets.symmetric(vertical: 0.sp),
+              //   color: AppColors.grey249,
+              //   height: 1.sp,
+              // ),
               Center(
                 child: Text(
                   HomeController.to.total ?? "",
@@ -293,20 +305,33 @@ class MakingPaymentBottomSheet extends StatelessWidget {
               SizedBox(
                 height: 15.sp,
               ),
-              isPay
+              isPay && box.read(BoxKeys.paymentType) == "CSH"
                   ? BlueButton(
                       text: "Confirm",
                       onTap: () {
-                        Get.back();
+                        // Get.back();
                         // HomeController.to.completeRide();
-                        box.read(BoxKeys.paymentType) == "CSH"
-                            ? HomeController.to.confirmedPayment()
-                            : {
-                                HomeController.to.driverState.value =
-                                    DriverState.idle,
-                                HomeController.to.fetchWalletBalance()
-                              };
-                        // HomeController.to.isButtonLoading.value= false;
+                        Get.defaultDialog(
+                            middleText: "Are you sure to confirm",
+                            confirm: BlueButton(
+                              text: "Yes",
+                              width: 100.sp,
+                              onTap: () {
+                                box.read(BoxKeys.paymentType) == "CSH"
+                                    ? HomeController.to.confirmedPayment()
+                                    : {
+                                        HomeController.to.driverState.value =
+                                            DriverState.idle,
+                                        HomeController.to.fetchWalletBalance()
+                                      };
+                                // HomeController.to.isButtonLoading.value= false;
+                              },
+                            ),
+                            cancel: WhiteButton(
+                              width: 100.sp,
+                              text: "No",
+                              onTap: Get.back,
+                            ));
                       },
                     )
                   : SizedBox(),
@@ -401,7 +426,7 @@ class EnterOtpBottomSheet extends StatelessWidget {
             margin: EdgeInsets.symmetric(
               horizontal: 55.sp,
             ),
-            height: 55.sp,
+            height: 58.sp,
             child: TextFieldPinAutoFill(
               decoration: InputDecoration(
                 border: OutlineInputBorder(
