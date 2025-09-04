@@ -1,6 +1,6 @@
 class PaymentResponse {
-  final int status;
-  final PaymentData data;
+   int? status;
+   PaymentData? data;
 
   PaymentResponse({
     required this.status,
@@ -9,22 +9,22 @@ class PaymentResponse {
 
   factory PaymentResponse.fromJson(Map<String, dynamic> json) {
     return PaymentResponse(
-      status: json['status'] as int,
-      data: PaymentData.fromJson(json['data']),
+      status: json['status'] as int?,
+      data: json['data'] != null ? PaymentData.fromJson(json['data']) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'status': status,
-      'data': data.toJson(),
+      'data': data?.toJson(), // Use null-aware operator
     };
   }
 }
 
 class PaymentData {
   final String? razorpayOrderId;
-  final int amount;
+  final double amount;
 
   PaymentData({
     this.razorpayOrderId,
@@ -34,7 +34,7 @@ class PaymentData {
   factory PaymentData.fromJson(Map<String, dynamic> json) {
     return PaymentData(
       razorpayOrderId: json['razorpay_order_id'] as String?,
-      amount: json['amount'] as int,
+      amount: (json['amount'] as num).toDouble(), // Handle both int and double
     );
   }
 
