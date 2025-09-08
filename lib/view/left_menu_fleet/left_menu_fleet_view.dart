@@ -9,6 +9,7 @@ import 'package:waiver_driver/core/themes/assets/icons.dart';
 import '../../backend/api/api_services/api_services.dart';
 import '../../backend/model/left_menu_driver/left_menu_driver_model.dart';
 
+import '../../controller/left_menu_driver/left_menu_driver_controller.dart';
 import '../../controller/left_menu_fleet/left_menu_fleet_controller.dart';
 import '../../core/constants/get_storage_constants.dart';
 import '../../core/widgets/app_buttons/app_buttons.dart';
@@ -106,6 +107,23 @@ class LeftMenuFleet extends StatelessWidget {
             item: LeftMenuControllerFleet.to.logOut,
             onTap: () => Get.bottomSheet(LogoutBottomSheet()),
           ),
+          SizedBox(
+            height: 100.sp,
+          ),
+          Center(
+            child: Obx(() => Text(
+                  'Version: ${LeftMenuControllerDriver.to.version.value}+${LeftMenuControllerDriver.to.buildNumber.value}',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black
+                        .withOpacity(0.3), // Makes the text semi-transparent
+                    fontWeight: FontWeight
+                        .w300, // Lighter font weight for subtle appearance
+                    letterSpacing:
+                        0.3, // Slight letter spacing for a refined look
+                  ),
+                )),
+          )
         ],
       ),
     );

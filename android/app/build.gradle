@@ -22,8 +22,8 @@ def flutterVersionName = localProperties.getProperty('flutter.versionName', '1.0
 
 android {
     namespace "com.waiver.driver"
-    compileSdkVersion 35
-    ndkVersion "27.2.12479018"
+    compileSdkVersion flutter.compileSdkVersion
+    ndkVersion "28.0.12433566"
     compileOptions {
         coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -40,10 +40,10 @@ android {
 
     defaultConfig {
         applicationId "com.waiver.driver"
-        minSdkVersion 24
-        targetSdkVersion 35
-        versionCode 47
-        versionName "3.1.2"
+        minSdkVersion 23
+        targetSdkVersion flutter.targetSdkVersion
+        versionCode flutter.versionCode
+        versionName flutter.versionName
     }
 
     signingConfigs {

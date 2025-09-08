@@ -7,12 +7,14 @@ import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 import 'package:waiver_driver/backend/model/earning/earning_model.dart';
 import 'package:waiver_driver/backend/parser/Earning/earningscreen_parser.dart';
+import 'package:waiver_driver/controller/home/home_controller.dart';
 import 'package:waiver_driver/core/themes/assets/icons.dart';
 import 'package:waiver_driver/helper/validator/app_extensions/app_extensions.dart';
 
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/colors/app_colors.dart';
 import '../../core/constants/get_storage_constants.dart';
+import '../../core/widgets/PaymentDialog/payment_dialoag.dart';
 import '../../core/widgets/circle_with_gradient/circle_with_gradient.dart';
 import '../../helper/router/app_routes/route.dart';
 
@@ -403,13 +405,33 @@ class EarningController extends GetxController
       value: 0.0.obs,
       text: 'Distance');
 
+  String? razorpayPaymentId;
+  String? razorpaySignature;
   void handlePaymentSuccess(PaymentSuccessResponse response) async {
+    print(response.data);
+    razorpayPaymentId = response.paymentId ?? "";
+    razorpaySignature = response.signature ?? "";
+
+    Get.dialog(PaymentDialog(
+      isSuccess: true,
+      message: response.paymentId ?? '',
+    )).then(
+      (value) async {
+        await paymentSuccessful();
+      },
+    );
+  }
+
+  Future<void> paymentSuccessful() async {
     try {
       final message = await ApiServices.confirmPayment(
-        razorpayOrderId: response.orderId!,
-        razorpayPaymentId: response.paymentId!,
-        razorpaySignature: response.signature!,
+        razorpayOrderId: razorpayOrderId.value,
+        razorpayPaymentId: razorpayPaymentId!,
+        razorpaySignature: razorpaySignature!,
       );
+      getEarningStatusToday();
+      getEarningStatusWeekly();
+      HomeController.to.refreshWalletBalance();
 
       print(message); // ✅ Payment confirmed successfully!
       isPaymentSuccessful.value = true;
@@ -423,11 +445,14 @@ class EarningController extends GetxController
   void handlePaymentError(PaymentFailureResponse response) {
     // getRidePayment(rideID.value);
     // print(response.message);
-    // Get.dialog(PaymentDialog(
-    //   isSuccess: false,
-    //   message: response.message ?? '',
-    // ));
+    Get.dialog(PaymentDialog(
+      isSuccess: false,
+      message: response.message ?? '',
+    ));
     isPaymentProcessing.value = false;
+    getEarningStatusToday();
+    getEarningStatusWeekly();
+    HomeController.to.refreshWalletBalance();
   }
 
   RxString razorpayOrderId = "".obs;

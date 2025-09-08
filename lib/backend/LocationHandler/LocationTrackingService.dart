@@ -915,7 +915,9 @@ class LocationTrackingService extends GetxController {
           isRunning.value = true;
           log('✅ Location tracking service started successfully');
         } else {
-          throw Exception('Service failed to start');
+          debugPrint("Service failed to start");
+          log("Service failed to start");
+          // throw Exception('Service failed to start');
         }
       } else {
         log('⚠️ Service is already running');
@@ -930,38 +932,28 @@ class LocationTrackingService extends GetxController {
 
   Future<void> stopService() async {
     try {
+      // Set offline state immediately to stop location tracking
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('is_online', false);
+      await prefs.setString('driver_state', 'offline');
+
+      // Update local state immediately
+      isRunning.value = false;
+
       if (await service.isRunning()) {
-        // Set offline state before stopping
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('is_online', false);
+        log('🛑 Stopping location tracking service...');
 
-        service.on('stopService').listen((event) {});
+        // Send stop command to background service (non-blocking)
         service.invoke("stop_service");
-        await Future.delayed(Duration(milliseconds: 500));
 
-        // Force stop if still running
-        bool stillRunning = await service.isRunning();
-        if (stillRunning) {
-          // Additional cleanup
-          await service.configure(
-            androidConfiguration: AndroidConfiguration(
-              autoStart: false,
-              isForegroundMode: false,
-              onStart: onStart,
-            ),
-            iosConfiguration: IosConfiguration(
-              autoStart: false,
-              onForeground: onStart,
-              onBackground: onIosBackground,
-            ),
-          );
-        }
-
-        isRunning.value = await service.isRunning();
+        log('✅ Stop command sent to background service');
+      } else {
+        log('✅ Location tracking service was not running');
       }
-      log('🛑 Location tracking service stopped');
     } catch (e) {
       log('❌ Error stopping service: $e');
+      // Still update the local state
+      isRunning.value = false;
     }
   }
 
@@ -1313,9 +1305,34 @@ class BackgroundLocationService {
 
   void _startLocationTracking() {
     _locationTimer = Timer.periodic(const Duration(seconds: 15), (timer) async {
+      // Check if service should still be running
       if (!_isServiceRunning || !_isOnline) {
         timer.cancel();
         return;
+      }
+
+      // Additional check: verify driver is still logged in
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final token = prefs.getString('auth_token') ?? '';
+        final driverState = prefs.getString('driver_state') ?? 'offline';
+        final isOnlineCheck = prefs.getBool('is_online') ?? false;
+
+        // Stop if no token (logged out) or explicitly offline
+        if (token.isEmpty || !isOnlineCheck || driverState == 'offline') {
+          log('🛑 Driver logged out or offline, stopping location tracking');
+          _isServiceRunning = false;
+          _webSocketService.dispose();
+          timer.cancel();
+          service.stopSelf();
+          return;
+        }
+
+        // Update local state from preferences (in case it changed)
+        _isOnline = isOnlineCheck;
+        _driverState = driverState;
+      } catch (e) {
+        log('❌ Error checking login status: $e');
       }
 
       try {
