@@ -1479,7 +1479,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       }
     } catch (error, s) {
       debugPrint("Error in changeDriverOnlineStatus: $error");
-      AppConstants.handleError(error, s: s);
+      AppConstants.handleError("error", s: s);
     } finally {
       isOnlineButtonLoading.value = false;
     }

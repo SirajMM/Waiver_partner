@@ -791,8 +791,7 @@ class ApiServices {
     }
   }
 
-  static Future<LogoutResponseModel> logout(
-      {required Map<String, String> body}) async {
+  static Future<void> logout({required Map<String, String> body}) async {
     https.Response response = await https.post(
       Uri.https(
         AppUrls.base,
@@ -806,7 +805,7 @@ class ApiServices {
     log("${Uri.https(AppUrls.base, AppUrls.logout)}===============>${response.statusCode}");
     log("${Uri.https(AppUrls.base, AppUrls.logout)}===============>${response.body}");
     if (response.statusCode == 200) {
-      return logoutResponseModelFromJson(response.body);
+      // return logoutResponseModelFromJson(response.body);
     } else {
       throw HttpException(response.body);
     }
