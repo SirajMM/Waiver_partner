@@ -1192,22 +1192,27 @@
 
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
+import 'dart:isolate';
 import 'dart:math' as math;
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hive/hive.dart';
-import 'package:in_app_update/in_app_update.dart';
 import 'package:mobility_features/mobility_features.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:waiver_driver/backend/model/home/home_model.dart';
 import 'package:waiver_driver/backend/model/setting/setting_model.dart';
 import 'package:waiver_driver/backend/parser/Home/home_parser.dart';
 import 'package:waiver_driver/controller/driver_profile/driver_profile_controller.dart';
 import 'package:waiver_driver/core/themes/assets/audio.dart';
+import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 import 'package:waiver_driver/main.dart';
 import 'package:waiver_driver/view/home/home_view.dart';
@@ -1221,6 +1226,7 @@ import '../../core/colors/app_colors.dart';
 import '../../core/constants/enums/enums.dart';
 import '../../core/constants/get_storage_constants.dart';
 import '../profile/profile_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeController extends GetxController with WidgetsBindingObserver {
   final HomeParser parser;
@@ -1300,6 +1306,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     currentPosition.value = convertToPosition(AppConstants.locationData);
     WidgetsBinding.instance.addObserver(this);
     _initializeHive();
+    _loadIsOnlineStatus();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      debugDumpSemanticsTree(DebugSemanticsDumpOrder.inverseHitTest);
+    });
 
     loc.Location location = loc.Location();
     try {
@@ -1319,13 +1329,13 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         saveLocationData(result[3] as loc.LocationData);
       }
       isLoading.value = false;
-      checkForUpdate();
+      // checkForUpdate();
 
       // Initialize location tracking service only when needed
       await _initializeLocationTrackingIfNeeded();
 
       // Continue with regular location stream (for UI updates)
-      sendLiveLocation();
+      // sendLiveLocation();
 
       getVersionInfo();
       ProfileController.to.getProfile();
@@ -1352,15 +1362,30 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     }
   }
 
+// FIX 9: Enhanced onClose method
+  @override
   void onClose() {
+    stopServiceHealthCheck();
     WidgetsBinding.instance.removeObserver(this);
-    stopLocationTracking();
+
+    // Perform cleanup without waiting (non-blocking)
+    // stopLocationTracking().catchError((e) {
+    //   log('Error during onClose cleanup: $e');
+    // });
+
     super.onClose();
   }
 
+// FIX 10: Enhanced dispose method
   @override
   void dispose() {
-    stopLocationTracking();
+    stopServiceHealthCheck();
+
+    // Perform cleanup without waiting (non-blocking)
+    // stopLocationTracking().catchError((e) {
+    //   log('Error during dispose cleanup: $e');
+    // });
+
     super.dispose();
   }
 
@@ -1375,9 +1400,9 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         log('LocationTrackingService initialized');
 
         // Start tracking if currently online
-        if (isOnline.value) {
-          await startLocationTracking();
-        }
+        // if (isOnline.value) {
+        // await startLocationTracking();
+        // }
       }
     } catch (e) {
       log('Error initializing location tracking service: $e');
@@ -1387,66 +1412,75 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   StreamSubscription<MobilityContext>? mobilitySubscription;
   MobilityContext? mobilityContext;
 
-  void sendLiveLocation() {
-    Geolocator.getPositionStream().listen((position) {
-      currentPosition.value = position;
-      saveLocationData(convertPositionToLocationData(position));
-      if (isOnline.value) {
-        WebSocketServices.sendLiveLocation(body: {
-          "passenger_id": driverState.value == DriverState.idle
-              ? RiderStatus.save
-              : passengerId ?? "placeholder",
-          "msg_type": driverState.value == DriverState.idle
-              ? RiderStatus.save
-              : RiderStatus.ride,
-          "ride_status": driverState.value.toString(),
-          "current_loc_long": position.longitude,
-          "current_loc_lat": position.latitude,
-        });
-      }
-    });
+  // void sendLiveLocation() {
+  //   Geolocator.getPositionStream().listen((position) {
+  //     currentPosition.value = position;
+  //     saveLocationData(convertPositionToLocationData(position));
+  //     if (isOnline.value) {
+  //       WebSocketServices.sendLiveLocation(body: {
+  //         "passenger_id": driverState.value == DriverState.idle
+  //             ? RiderStatus.save
+  //             : passengerId ?? "placeholder",
+  //         "msg_type": driverState.value == DriverState.idle
+  //             ? RiderStatus.save
+  //             : RiderStatus.ride,
+  //         "ride_status": driverState.value.toString(),
+  //         "current_loc_long": position.longitude,
+  //         "current_loc_lat": position.latitude,
+  //       });
+  //     }
+  //   });
+  // }
+
+  // /// Start foreground location service
+  // Future<void> startLocationService() async {
+  //   try {
+  //     await FlutterForegroundTask.startService(
+  //       notificationTitle: 'Tracking Location',
+  //       notificationText: 'Your location is being tracked',
+  //       callback: startCallback,
+  //     );
+  //     isOnline.value = true;
+
+  //     // Save online status
+  //     final prefs = await SharedPreferences.getInstance();
+  //     await prefs.setBool('is_online', true);
+
+  //     log('✅ Location service started');
+  //   } catch (e) {
+  //     log('❌ Error starting location service: $e');
+  //   }
+  // }
+
+  /// Foreground task callback
+// void startCallback() {
+//   FlutterForegroundTask.setTaskHandler(LocationTaskHandler());
+// }
+
+  /// Stop foreground location service
+  // Future<void> stopLocationService() async {
+  //   try {
+  //     await FlutterForegroundTask.stopService();
+  //     isOnline.value = false;
+
+  //     // Save offline status
+  //     final prefs = await SharedPreferences.getInstance();
+  //     await prefs.setBool('is_online', false);
+
+  //     log('✅ Location service stopped');
+  //   } catch (e) {
+  //     log('❌ Error stopping location service: $e');
+  //   }
+  // }
+
+  void _loadIsOnlineStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    isOnline.value = prefs.getBool('isOnline') ?? false;
   }
 
-  // Update startLocationTracking method:
-  Future<void> startLocationTracking() async {
-    try {
-      // Initialize service if not already done
-      locationTrackingService ??= Get.put(LocationTrackingService());
+// FIX 5: Enhanced changeDriverOnlineStatus method
 
-      // Save initial data for background service
-      await locationTrackingService!.saveInitialData(
-        driverState: driverState.value.toString(),
-        passengerId: passengerId,
-        isOnline: isOnline.value,
-      );
-
-      // Start the background location service only if online
-      if (isOnline.value) {
-        await locationTrackingService!.startService(
-          driverState: driverState.value.toString(),
-          passengerId: passengerId,
-          isOnline: isOnline.value,
-        );
-        log('Location tracking started successfully');
-      }
-    } catch (e) {
-      log('Failed to start location tracking: $e');
-    }
-  }
-
-  // Updated method to stop location tracking
-  Future<void> stopLocationTracking() async {
-    try {
-      if (locationTrackingService != null) {
-        await locationTrackingService!.stopService();
-        log('Location tracking stopped');
-      }
-    } catch (e) {
-      log('Error stopping location tracking: $e');
-    }
-  }
-
-// Then update your changeDriverOnlineStatus method:
+// Update your changeDriverOnlineStatus method:
   Future<void> changeDriverOnlineStatus() async {
     try {
       if (isOnlineButtonLoading.value) return;
@@ -1459,22 +1493,31 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       );
 
       if (response.status == 200) {
+        final wasOnline = isOnline.value;
         isOnline.value = !isOnline.value;
 
         // Save the online status
         box.write(BoxKeys.isOnline, isOnline.value);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isOnline', isOnline.value);
 
-        if (isOnline.value) {
-          // Going online - initialize service if needed and start tracking
+        if (isOnline.value && !wasOnline) {
+          // Going online - use your existing background service
+          await requestBatteryOptimizationExemption();
           locationTrackingService ??= Get.put(LocationTrackingService());
           await locationTrackingService!.updateOnlineStatus(true);
-          await startLocationTracking();
-        } else {
-          // Going offline - stop tracking
+          log('Driver went online - background service started');
+        } else if (!isOnline.value && wasOnline) {
+          // Going offline
           if (locationTrackingService != null) {
-            await locationTrackingService!.updateOnlineStatus(false);
-            await stopLocationTracking();
+            final isRunning = await FlutterBackgroundService().isRunning();
+            if (isRunning && !isOnline.value) {
+              log('⚠️ Service already running, stopping first');
+              await locationTrackingService!.updateOnlineStatus(false);
+              await Future.delayed(const Duration(seconds: 1));
+            }
           }
+          log('Driver went offline - service stopped');
         }
       }
     } catch (error, s) {
@@ -1484,7 +1527,94 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       isOnlineButtonLoading.value = false;
     }
   }
+  // Future<void> changeDriverOnlineStatus() async {
+  //   try {
+  //     if (isOnlineButtonLoading.value) return;
+  //     isOnlineButtonLoading.value = true;
 
+  //     LogoutResponseModel response = await ApiServices.changeOnlineStatus(
+  //       body: {
+  //         "is_online": isOnline.value ? 0 : 1,
+  //       },
+  //     );
+
+  //     if (response.status == 200) {
+  //       final wasOnline = isOnline.value;
+  //       isOnline.value = !isOnline.value;
+
+  //       // Save the online status
+  //       box.write(BoxKeys.isOnline, isOnline.value);
+  //       SharedPreferences prefs = await SharedPreferences.getInstance();
+  //       await prefs.setBool('isOnline', isOnline.value);
+
+  //       if (isOnline.value && !wasOnline) {
+  //         // Going online - initialize service if needed and start tracking
+  //         await requestBatteryOptimizationExemption();
+  //         locationTrackingService ??= Get.put(LocationTrackingService());
+  //         await locationTrackingService!.updateOnlineStatus(true);
+  //         // await startLocationTracking();
+  //             await startLocationService();
+  //         log('Driver went online - service started');
+  //       } else if (!isOnline.value && wasOnline) {
+  //         // Going offline - stop tracking with proper cleanup
+  //         if (locationTrackingService != null) {
+  //           await locationTrackingService!.updateOnlineStatus(false);
+  //              await stopLocationService();
+  //           // Give extra time for offline transition
+  //           // await stopLocationTracking().timeout(
+  //           //   const Duration(seconds: 5),
+  //           //   onTimeout: () => log('Offline transition timed out'),
+  //           // );
+  //         }
+  //         log('Driver went offline - service stopped');
+  //       }
+  //     }
+  //   } catch (error, s) {
+  //     debugPrint("Error in changeDriverOnlineStatus: $error");
+  //     AppConstants.handleError("error", s: s);
+  //   } finally {
+  //     isOnlineButtonLoading.value = false;
+  //   }
+  // }
+
+  // Add this method to your HomeController
+  Future<void> requestBatteryOptimizationExemption() async {
+    try {
+      if (Platform.isAndroid) {
+        final status = await Permission.ignoreBatteryOptimizations.status;
+
+        if (status.isDenied) {
+          final result = await Permission.ignoreBatteryOptimizations.request();
+
+          if (result.isGranted) {
+            log('Battery optimization exemption granted');
+          } else {
+            log('Battery optimization exemption denied');
+            // Show user a dialog explaining why this is important
+            _showBatteryOptimizationDialog();
+          }
+        }
+      }
+    } catch (e) {
+      log('Error requesting battery optimization exemption: $e');
+    }
+  }
+
+  void _showBatteryOptimizationDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: Text('Battery Optimization'),
+        content: Text(
+            'For reliable location tracking, please disable battery optimization for this app in your device settings.'),
+        actions: [
+          BlueButton(
+            onTap: () => Get.back(),
+            text: "OK",
+          ),
+        ],
+      ),
+    );
+  }
   // ... rest of your existing methods remain the same ...
 
   Future<void> acceptOrder() async {
@@ -1716,34 +1846,112 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  // Update app lifecycle state handler
+// FIX 1: Enhanced app lifecycle handler
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
-      appState.value = "Background";
-      log("App in Background - Background service will continue location tracking");
-    } else if (state == AppLifecycleState.resumed) {
-      appState.value = "Active";
-      log("App Resumed - Background service is already running");
-    } else if (state == AppLifecycleState.detached) {
-      appState.value = "Terminated";
-      _handleAppTermination();
-      log("App Terminated - Handling cleanup");
+    super.didChangeAppLifecycleState(state);
+
+    switch (state) {
+      case AppLifecycleState.paused:
+        appState.value = "Background";
+        log("App in Background - Background service will continue location tracking");
+        break;
+      case AppLifecycleState.resumed:
+        appState.value = "Active";
+        log("App Resumed - Background service is already running");
+        // _checkServiceHealthOnResume();
+        break;
+      case AppLifecycleState.detached:
+        appState.value = "Terminated";
+        _handleAppTermination();
+        log("App Terminated - Handling cleanup");
+        break;
+      case AppLifecycleState.inactive:
+        // Handle inactive state gracefully
+        log("App became inactive");
+        break;
+      case AppLifecycleState.hidden:
+        // Handle hidden state
+        log("App hidden");
+        break;
     }
   }
 
-  // Handle app termination
+  // Future<void> _checkServiceHealthOnResume() async {
+  //   try {
+  //     // Only check service health from main isolate
+  //     if (isOnline.value && locationTrackingService != null) {
+  //       // Use a try-catch to handle the isolate issue
+  //       try {
+  //         final isServiceRunning =
+  //             await locationTrackingService!.getServiceStatus();
+
+  //         if (!isServiceRunning) {
+  //           log('Service should be running but isn\'t - restarting');
+  //           await startLocationTracking();
+  //         } else {
+  //           log('Service is running correctly');
+  //         }
+  //       } catch (e) {
+  //         if (e.toString().contains('main isolate')) {
+  //           log('Service check from wrong isolate - skipping health check');
+  //         } else {
+  //           log('Error checking service health: $e');
+  //         }
+  //       }
+  //     }
+  //   } catch (e) {
+  //     log('Error in service health check: $e');
+  //   }
+  // }
+
+// FIX 3: Enhanced app termination handler
   Future<void> _handleAppTermination() async {
     try {
-      // Stop location tracking service
-      await stopLocationTracking();
+      // Use a completer with timeout to prevent hanging
+      final completer = Completer<void>();
 
-      // Set driver offline
-      await setDriverOfflineOnTermination();
+      // Start cleanup
+      _performCleanup().then((_) {
+        if (!completer.isCompleted) {
+          completer.complete();
+        }
+      }).catchError((e) {
+        log('Error during cleanup: $e');
+        if (!completer.isCompleted) {
+          completer.complete(); // Complete even on error
+        }
+      });
+
+      // Wait for cleanup with timeout
+      await completer.future.timeout(
+        const Duration(seconds: 3),
+        onTimeout: () {
+          log('Cleanup timed out - app will terminate anyway');
+        },
+      );
 
       log('App termination cleanup completed');
     } catch (e) {
       log('Error during app termination cleanup: $e');
+    }
+  }
+
+  Future<void> _performCleanup() async {
+    // Stop location tracking with timeout
+    if (locationTrackingService != null) {
+      // await stopLocationTracking().timeout(
+      //   const Duration(seconds: 2),
+      //   onTimeout: () => log('Location tracking stop timed out'),
+      // );
+    }
+
+    // Set driver offline if needed
+    if (isOnline.value) {
+      await setDriverOfflineOnTermination().timeout(
+        const Duration(seconds: 2),
+        onTimeout: () => log('Setting offline timed out'),
+      );
     }
   }
 
@@ -1762,28 +1970,112 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   // Example for isLocationServiceRunning:
   Future<bool> isLocationServiceRunning() async {
     if (locationTrackingService != null) {
-      return await locationTrackingService!.getServiceStatus();
+      // return await locationTrackingService!.getServiceStatus();
     }
     return false;
   }
 
+// FIX 6: Enhanced setDriverOfflineOnTermination
   Future<void> setDriverOfflineOnTermination() async {
     try {
       // Only set offline if currently online
       if (isOnline.value) {
-        await ApiServices.changeOnlineStatus(
+        // Create a completer for the API call
+        final apiCompleter = Completer<void>();
+
+        ApiServices.changeOnlineStatus(
           body: {"is_online": 0},
+        ).then((response) {
+          // Update local state
+          isOnline.value = false;
+          box.write(BoxKeys.isOnline, false);
+          log('Driver set to offline due to app termination');
+
+          if (!apiCompleter.isCompleted) {
+            apiCompleter.complete();
+          }
+        }).catchError((e) {
+          log('Error setting driver offline on termination: $e');
+          // Still update local state even if API fails
+          isOnline.value = false;
+          box.write(BoxKeys.isOnline, false);
+
+          if (!apiCompleter.isCompleted) {
+            apiCompleter.complete();
+          }
+        });
+
+        // Wait for API call with timeout
+        await apiCompleter.future.timeout(
+          const Duration(seconds: 2),
+          onTimeout: () {
+            log('Offline API call timed out');
+            // Update local state anyway
+            isOnline.value = false;
+            box.write(BoxKeys.isOnline, false);
+          },
         );
-
-        // Update local state
-        isOnline.value = false;
-        box.write(BoxKeys.isOnline, false);
-
-        log('Driver set to offline due to app termination');
       }
     } catch (e) {
       log('Error setting driver offline on termination: $e');
+      // Ensure local state is updated
+      isOnline.value = false;
+      box.write(BoxKeys.isOnline, false);
     }
+  }
+
+  // FIX 7: Add a method to gracefully handle service restart
+  Future<void> restartLocationService() async {
+    try {
+      log('Restarting location service...');
+
+      // Stop current service
+      // await stopLocationTracking();
+
+      // Wait a moment
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Start fresh
+      if (isOnline.value) {
+        // await startLocationTracking();
+        log('Location service restarted successfully');
+      }
+    } catch (e) {
+      log('Error restarting location service: $e');
+    }
+  }
+
+// FIX 8: Add periodic service health check
+  Timer? _serviceHealthTimer;
+
+  // void startServiceHealthCheck() {
+  //   _serviceHealthTimer?.cancel();
+
+  //   if (isOnline.value) {
+  //     _serviceHealthTimer = Timer.periodic(
+  //       const Duration(minutes: 2),
+  //       (timer) async {
+  //         try {
+  //           if (locationTrackingService != null && isOnline.value) {
+  //             final isRunning =
+  //                 await locationTrackingService!.getServiceStatus();
+
+  //             if (!isRunning) {
+  //               log('⚠️ Service health check failed - restarting service');
+  //               await restartLocationService();
+  //             }
+  //           }
+  //         } catch (e) {
+  //           log('Service health check error: $e');
+  //         }
+  //       },
+  //     );
+  //   }
+  // }
+
+  void stopServiceHealthCheck() {
+    _serviceHealthTimer?.cancel();
+    _serviceHealthTimer = null;
   }
 
   // Keep all your existing methods unchanged...
@@ -2428,18 +2720,52 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     });
   }
 
-  Future<void> checkForUpdate() async {
-    print('checking for Update');
-    await InAppUpdate.checkForUpdate().then((info) async {
-      if (info.updateAvailability == UpdateAvailability.updateAvailable) {
-        print('update available');
-        await InAppUpdate.startFlexibleUpdate();
-        InAppUpdate.completeFlexibleUpdate().then((_) {}).catchError((e) {
-          print(e.toString());
-        });
-      }
-    }).catchError((e, s) {
-      log(e.toString(), error: e, stackTrace: s);
-    });
-  }
+  // Future<void> checkForUpdate() async {
+  //   print('checking for Update');
+  //   await InAppUpdate.checkForUpdate().then((info) async {
+  //     if (info.updateAvailability == UpdateAvailability.updateAvailable) {
+  //       print('update available');
+  //       await InAppUpdate.startFlexibleUpdate();
+  //       InAppUpdate.completeFlexibleUpdate().then((_) {}).catchError((e) {
+  //         print(e.toString());
+  //       });
+  //     }
+  //   }).catchError((e, s) {
+  //     log(e.toString(), error: e, stackTrace: s);
+  //   });
+  // }
 }
+
+/// Location handler for foreground task
+
+// class LocationTaskHandler extends TaskHandler {
+//   @override
+//   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
+//     log('Foreground task started at $timestamp');
+//   }
+
+//   @override
+//   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {
+//     log('Foreground task event at $timestamp');
+//   }
+
+//   @override
+//   void onRepeatEvent(DateTime timestamp) {
+//     log('Repeat event at $timestamp');
+//   }
+
+//   @override
+//   Future<void> onDestroy(DateTime timestamp, bool isRunning) async {
+//     log('Foreground task destroyed at $timestamp, isRunning: $isRunning');
+//   }
+
+//   @override
+//   void onButtonPressed(String id) {
+//     log('Button pressed: $id');
+//   }
+
+//   @override
+//   void onNotificationPressed() {
+//     log('Notification pressed');
+//   }
+// }

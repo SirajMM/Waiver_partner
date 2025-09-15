@@ -97,75 +97,96 @@ class LeftMenuControllerDriver extends GetxController {
     );
   }
 
+  /// Logout function (corrected for flutter_background_service only)
   Future<void> logout() async {
     try {
       Get.showOverlay(
-          asyncFunction: () async {
+        asyncFunction: () async {
+          try {
+            // Stop location service BEFORE API call
             try {
-              // Stop location tracking service BEFORE making API call (with timeout)
-              try {
-                if (HomeController.to.isOnline.value) {
-                  HomeController.to.changeDriverOnlineStatus();
-                }
-                log("logout isOnline ${HomeController.to.isOnline.value} ");
-                final locationService = Get.find<LocationTrackingService>();
-                await locationService.stopService().timeout(
+              if (HomeController.to.isOnline.value) {
+                await HomeController.to.changeDriverOnlineStatus();
+              }
+              log("logout isOnline ${HomeController.to.isOnline}");
+
+              // Use the correct method from LocationTrackingService
+              if (HomeController.to.locationTrackingService != null) {
+                await HomeController.to.locationTrackingService!
+                    .updateOnlineStatus(false)
+                    .timeout(
                   const Duration(seconds: 3),
                   onTimeout: () {
                     log('⚠️ Location service stop timed out, continuing with logout');
                   },
                 );
-              } catch (e) {
-                log('❌ Error stopping location service: $e');
-                // Don't let this block the logout process
-              }
-
-              // Make API call with timeout
-              try {
-                await ApiServices.logout(body: {}).timeout(
-                  const Duration(seconds: 10),
-                  onTimeout: () {
-                    log('⚠️ Logout API call timed out, continuing with local cleanup');
-                  },
-                );
-                log('✅ Logout API call completed');
-              } catch (e) {
-                log('⚠️ Logout API call failed: $e');
-                // Continue with cleanup even if API fails
               }
             } catch (e) {
-              log('❌ Error in logout API call: $e');
-              // Continue with cleanup even if API call fails
-            } finally {
-              // Always perform cleanup
-              try {
-                await FirebaseMessaging.instance.deleteToken();
-              } catch (e) {
-                log('❌ Error deleting FCM token: $e');
-              }
-
-              await box.erase();
-              Get.offAllNamed(AppRoutes1.getDriverTypeSelectionRoute());
+              log('❌ Error stopping location service: $e');
             }
-          },
-          loadingWidget: LoadingBarsAnimation());
+
+            // API call
+            try {
+              await ApiServices.logout(body: {}).timeout(
+                const Duration(seconds: 10),
+                onTimeout: () {
+                  log('⚠️ Logout API call timed out, continuing with local cleanup');
+                },
+              );
+              log('✅ Logout API call completed');
+            } catch (e) {
+              log('⚠️ Logout API call failed: $e');
+            }
+          } catch (e) {
+            log('❌ Error in logout API call: $e');
+          } finally {
+            // Cleanup
+            try {
+              await FirebaseMessaging.instance.deleteToken();
+            } catch (e) {
+              log('❌ Error deleting FCM token: $e');
+            }
+
+            try {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.remove('auth_token');
+              await prefs.remove('driver_state');
+              await prefs.remove('passenger_id');
+              await prefs.remove('is_online');
+              await prefs.remove('websocket_base_url');
+              await prefs.remove('websocket_live_location_path');
+              await prefs.remove(
+                  'isOnline'); // Also remove this key used in HomeController
+
+              log('✅ SharedPreferences cleared successfully');
+            } catch (e) {
+              log('❌ Error clearing SharedPreferences: $e');
+            }
+
+            await box.erase();
+            Get.offAllNamed(AppRoutes1.getDriverTypeSelectionRoute());
+          }
+        },
+        loadingWidget: LoadingBarsAnimation(),
+      );
     } catch (error) {
       log('❌ Critical error in logout: $error');
       Get.showSnackbar(
         GetSnackBar(
-          duration: 5.cSeconds,
+          duration: 5.seconds, // Fixed: .cSeconds doesn't exist
           backgroundColor: Colors.transparent,
           padding: EdgeInsets.zero,
-          messageText: const AppSnackBar(
-            text: "OOPS Something went wrong",
-          ),
+          messageText: const AppSnackBar(text: "OOPS Something went wrong"),
           onTap: (snack) async {
-            // Force cleanup on error
+            // Emergency cleanup
             try {
-              final locationService = Get.find<LocationTrackingService>();
-              locationService.isRunning.value = false; // Force stop locally
+              if (HomeController.to.locationTrackingService != null) {
+                await HomeController.to.locationTrackingService!
+                    .updateOnlineStatus(false);
+              }
               final prefs = await SharedPreferences.getInstance();
               await prefs.setBool('is_online', false);
+              await prefs.setBool('isOnline', false);
             } catch (e) {
               log('❌ Error in emergency cleanup: $e');
             }

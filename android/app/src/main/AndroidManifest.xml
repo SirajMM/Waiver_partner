@@ -11,12 +11,24 @@
         <intent>
             <action android:name="android.support.customtabs.action.CustomTabsService" />
         </intent>
+        <!-- Add phone call intent for tel: scheme -->
+        <intent>
+            <action android:name="android.intent.action.CALL" />
+            <data android:scheme="tel" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="google.navigation" />
+        </intent>
     </queries>
 
     <!-- Core permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!-- Phone call permissions -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <!-- Overlay / system-level permissions (special permissions) -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -32,11 +44,9 @@
 
     <!-- Foreground service permissions (Android 14 requirement) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
-
-    <!-- For VoIP / call handling (restricted permission) -->
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
 
     <application
@@ -44,25 +54,25 @@
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
         android:allowBackup="false"
-        android:fullBackupOnly="false">
+        android:fullBackupOnly="false"
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true">
 
         <!-- Default Firebase notification icon -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_stat_applogo_removebg_preview" />
 
-        <!-- Your custom service -->
-        <service
-            android:name=".MyService"
-            android:exported="false"
-            android:foregroundServiceType="dataSync" />
-
-        <!-- Flutter background service -->
+        <!-- Flutter background service ONLY -->
         <service
             android:name="id.flutter.flutter_background_service.BackgroundService"
             android:exported="false"
-            android:foregroundServiceType="location|dataSync"
-            tools:replace="android:exported" />
+            android:foregroundServiceType="location"
+            android:stopWithTask="false"
+            android:enabled="true"
+            tools:replace="android:exported,android:foregroundServiceType" />
+
+        <!-- REMOVED: flutter_foreground_task service - this was causing the conflict -->
 
         <!-- Main Activity -->
         <activity
@@ -86,6 +96,15 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Handle deep links if needed -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Add your deep link scheme here if needed -->
+                <!-- <data android:scheme="waiverdriver" /> -->
+            </intent-filter>
         </activity>
 
         <!-- UCrop activity -->
@@ -99,10 +118,28 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
+        <!-- Disable accessibility to prevent crashes -->
+        <meta-data
+            android:name="io.flutter.embedded_views_preview"
+            android:value="true" />
+        <meta-data
+            android:name="flutter.accessibility.enabled"
+            android:value="false" />
+
         <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyC1x7klS50K1WXb6p8D7BcbqkCKm2wrrYU" />
+
+        <!-- Firebase Cloud Messaging -->
+        <service
+            android:name="com.google.firebase.messaging.FirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
 
     </application>
 </manifest>

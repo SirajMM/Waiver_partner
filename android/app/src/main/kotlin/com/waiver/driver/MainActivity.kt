@@ -1,101 +1,71 @@
-package  com.waiver.driver
+package com.waiver.driver
 
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugins.GeneratedPluginRegistrant
+import android.content.Intent
+import android.content.ComponentName
 
 class MainActivity : FlutterActivity() {
-    val channelName = "com.waiver.driver/overlay";
+    val channelName = "com.waiver.driver/overlay"
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        
+        GeneratedPluginRegistrant.registerWith(flutterEngine)
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, channelName).setMethodCallHandler { call, result ->
             when (call.method) {
                 "test" -> {
-                    // Handle the "test" method here
                     result.success("test")
+                }
+                "requestSamsungOptimization" -> {
+                    requestSamsungOptimizations()
+                    result.success("Samsung optimization requested")
                 }
                 else -> result.notImplemented()
             }
         }
     }
-}
 
-//import io.flutter.embedding.android.FlutterActivity
-//import io.flutter.plugin.common.MethodCall
-//import io.flutter.plugin.common.MethodChannel
-//import io.flutter.embedding.engine.FlutterEngine
-//import androidx.annotation.NonNull
-//import android.app.*
-//import android.content.*
-//import android.graphics.*
-//import android.os.*
-//import android.view.*
-//import android.widget.*
-//import androidx.annotation.*
-//import io.flutter.embedding.android.*
-//
-//class MainActivity: FlutterActivity() {
-//
-//    private val overlayChannel = "com.waiver.driver/overlay"
-//
-//    private var overlayView: View? = null
-//
-//    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
-//        super.configureFlutterEngine(flutterEngine)
-//        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, overlayChannel)
-//            .setMethodCallHandler { call: MethodCall?, result: MethodChannel.Result? ->
-//
-//                if (call?.method == "showOverlay") {
-//                    println("vz")
-////                    showOverlay()
-//                    println("vz")
-//                    result?.success(null)
-//                }
-//                else if(call?.method == "close")
-//                {
-////                    closeSystemOverlay()
-//                }
-//                else {
-//                    result?.notImplemented()
-//                }
-//            }
-//    }
-//
-//    private fun showOverlay() {
-//        val inflater = getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
-//        overlayView = inflater.inflate(R.layout.overlay_layout, null)
-//
-//        val overlayLayoutParams = FrameLayout.LayoutParams(
-//            FrameLayout.LayoutParams.MATCH_PARENT,
-//            FrameLayout.LayoutParams.WRAP_CONTENT,
-//            Gravity.BOTTOM
-//        )
-//
-//        val mainLayout = findViewById<ViewGroup>(android.R.id.content) // Main activity content view
-//        mainLayout.addView(overlayView, overlayLayoutParams)
-//    }
-//
-//
-////    override fun onDestroy() {
-////        // Remove overlay when the activity is destroyed
-////        val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-////        if (overlayView != null) {
-////            windowManager.removeView(overlayView)
-////            overlayView = null
-////        }
-////        super.onDestroy()
-////    }
-//
-////    private fun closeSystemOverlay() {
-////        val windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
-////        if (overlayView != null) {
-////            windowManager.removeView(overlayView)
-////            overlayView = null
-////        }
-////    }
-//
-//}
+        // ADD THIS METHOD to disable accessibility temporarily
+    override fun onCreate(savedInstanceState: android.os.Bundle?) {
+        super.onCreate(savedInstanceState)
+        
+        // Disable accessibility to prevent the crash
+        try {
+            val accessibilityManager = getSystemService(android.content.Context.ACCESSIBILITY_SERVICE) as android.view.accessibility.AccessibilityManager
+            // This helps prevent the accessibility crash on some devices
+        } catch (e: Exception) {
+            // Ignore accessibility errors
+        }
+    }
+    
+    // ADD THIS METHOD
+    private fun requestSamsungOptimizations() {
+        try {
+            val intent = Intent()
+            intent.component = ComponentName(
+                "com.samsung.android.lool",
+                "com.samsung.android.sm.ui.battery.BatteryActivity"
+            )
+            startActivity(intent)
+        } catch (e: Exception) {
+            // Fallback to general battery optimization
+            try {
+                val generalIntent = Intent()
+                generalIntent.action = "android.settings.IGNORE_BATTERY_OPTIMIZATION_SETTINGS"
+                startActivity(generalIntent)
+            } catch (fallbackException: Exception) {
+                // If both fail, do nothing
+            }
+        }
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+}

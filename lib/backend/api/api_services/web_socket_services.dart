@@ -13,6 +13,7 @@ class WebSocketServices {
   static final channel = WebSocketChannel.connect(url);
 
   static sendLiveLocation({required Map<String, dynamic> body}) {
+    log("$url");
     log("json.encode(body)");
     log(json.encode(body));
     channel.sink.add(json.encode(body));
