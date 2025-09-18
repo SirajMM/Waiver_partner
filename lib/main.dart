@@ -8,7 +8,6 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -42,7 +41,7 @@ final box = GetStorage();
 Timer? _locationTimer;
 ReceivePort? _receivePort;
 
-// ------------------- ReceivePort -------------------
+/// ------------------- ReceivePort -------------------
 @pragma('vm:entry-point')
 void startReceivePort() {
   IsolateNameServer.removePortNameMapping('main_send_port');
@@ -109,7 +108,7 @@ void _sendLocationNow() {
   }
 }
 
-// ------------------- Background Location Functions -------------------
+/// ------------------- Background Location Functions -------------------
 @pragma('vm:entry-point')
 void sendLocationUpdateFromBackground() {
   final sendPort = IsolateNameServer.lookupPortByName('main_send_port');
@@ -131,7 +130,7 @@ void stopLocationTrackingFromBackground() {
   sendPort?.send({'title': 'stop_location_tracking'});
 }
 
-// ------------------- Firebase Background Handler -------------------
+/// ------------------- Firebase Background Handler -------------------
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -179,11 +178,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
-// ------------------- Main -------------------
+/// ------------------- Main -------------------
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  createNotificationChannel();
-  SemanticsBinding.instance.ensureSemantics().dispose();
+  await createNotificationChannel();
 
   await GetStorage.init();
   await Hive.initFlutter();
@@ -225,25 +223,25 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
-// ------------------- Background Service Configuration -------------------
+/// ------------------- Background Service Configuration -------------------
 Future<void> _configureBackgroundService() async {
   try {
     log('Configuring background service...');
     await FlutterBackgroundService().configure(
       androidConfiguration: AndroidConfiguration(
         onStart: onStart,
-        autoStart: false, // Change to false
+        autoStart: false,
         isForegroundMode: true,
         notificationChannelId: 'bg_service_channel',
         initialNotificationTitle: 'Waiver Driver',
         initialNotificationContent: 'Initializing location service...',
         foregroundServiceNotificationId: 888,
-        autoStartOnBoot: false, // Change to false
+        autoStartOnBoot: false,
       ),
       iosConfiguration: IosConfiguration(
         autoStart: false,
         onForeground: onStart,
-        onBackground: onIosBackground,
+        // onBackground: onIosBackground,
       ),
     );
     log('Background service configured successfully');
@@ -252,7 +250,7 @@ Future<void> _configureBackgroundService() async {
   }
 }
 
-// ------------------- Initialize Location Service -------------------
+/// ------------------- Initialize Location Service -------------------
 Future<void> _initializeLocationServiceIfNeeded() async {
   try {
     final wasOnline = box.read(BoxKeys.isOnline) ?? false;
@@ -260,7 +258,8 @@ Future<void> _initializeLocationServiceIfNeeded() async {
 
     if (wasOnline && hasToken) {
       Get.put(LocationTrackingService());
-      log('LocationTrackingService initialized for returning online user');
+      await FlutterBackgroundService().startService();
+      log('✅ LocationTrackingService initialized & background service started');
     } else {
       log('Skipping LocationTrackingService initialization for new/offline user');
     }
@@ -269,7 +268,7 @@ Future<void> _initializeLocationServiceIfNeeded() async {
   }
 }
 
-// Add this function to main.dart
+/// ------------------- Notification Channel -------------------
 Future<void> createNotificationChannel() async {
   if (Platform.isAndroid) {
     final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -290,11 +289,11 @@ Future<void> createNotificationChannel() async {
             AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
-    log('✅ Early notification channel created');
+    log('✅ Notification channel created');
   }
 }
 
-// ------------------- App Widget -------------------
+/// ------------------- App Widget -------------------
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -314,7 +313,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// ------------------- Permissions -------------------
+/// ------------------- Permissions -------------------
 Future<void> requestPermissions() async {
   try {
     if (Platform.isIOS) {
@@ -341,7 +340,7 @@ Future<void> requestPermissions() async {
   }
 }
 
-// ------------------- HTTP Overrides -------------------
+/// ------------------- HTTP Overrides -------------------
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {

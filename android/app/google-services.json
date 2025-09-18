@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "999943752611",
-    "project_id": "waiver-partner-cdc85",
-    "storage_bucket": "waiver-partner-cdc85.firebasestorage.app"
+    "project_number": "228505798584",
+    "project_id": "driver-b6d28",
+    "storage_bucket": "driver-b6d28.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:999943752611:android:beee42f6ccab6a31f22816",
+        "mobilesdk_app_id": "1:228505798584:android:73121ac840a096a73c714d",
         "android_client_info": {
           "package_name": "com.waiver.driver"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCso01auc8tRp0ATdydKsTcyqybwyolmJ8"
+          "current_key": "AIzaSyCmr71q2N4f84Yh8a49UWFYhcUE9N1JKvE"
         }
       ],
       "services": {

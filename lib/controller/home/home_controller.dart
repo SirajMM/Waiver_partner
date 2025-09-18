@@ -1482,42 +1482,65 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
 // Update your changeDriverOnlineStatus method:
   Future<void> changeDriverOnlineStatus() async {
+    final prefs = await SharedPreferences.getInstance();
     try {
       if (isOnlineButtonLoading.value) return;
       isOnlineButtonLoading.value = true;
 
+      // 🔹 Call API to toggle online/offline
       LogoutResponseModel response = await ApiServices.changeOnlineStatus(
         body: {
           "is_online": isOnline.value ? 0 : 1,
         },
       );
-
+      final token = box.read(BoxKeys.token);
+      await prefs.setString('auth_token', token);
       if (response.status == 200) {
         final wasOnline = isOnline.value;
         isOnline.value = !isOnline.value;
 
-        // Save the online status
+        // 🔹 Persist status
         box.write(BoxKeys.isOnline, isOnline.value);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isOnline', isOnline.value);
 
         if (isOnline.value && !wasOnline) {
-          // Going online - use your existing background service
+          // ---------------- DRIVER GOING ONLINE ----------------
           await requestBatteryOptimizationExemption();
+
+          // Ensure service exists
           locationTrackingService ??= Get.put(LocationTrackingService());
+
+          // Tell service to start
+          log("locationTrackingService!.updateOnlineStatus(true)CALLED isOnline*************");
           await locationTrackingService!.updateOnlineStatus(true);
-          log('Driver went online - background service started');
+
+          final service = FlutterBackgroundService();
+          final isRunning = await service.isRunning();
+
+          if (!isRunning) {
+            await service.startService();
+            log('📡 Background service started');
+          } else {
+            log('⚡ Service already running');
+          }
+
+          log('✅ Driver went online');
         } else if (!isOnline.value && wasOnline) {
-          // Going offline
+          // ---------------- DRIVER GOING OFFLINE ----------------
           if (locationTrackingService != null) {
-            final isRunning = await FlutterBackgroundService().isRunning();
-            if (isRunning && !isOnline.value) {
-              log('⚠️ Service already running, stopping first');
-              await locationTrackingService!.updateOnlineStatus(false);
-              await Future.delayed(const Duration(seconds: 1));
+            await locationTrackingService!.updateOnlineStatus(false);
+
+            final service = FlutterBackgroundService();
+            final isRunning = await service.isRunning();
+
+            if (isRunning) {
+              service.invoke("stopService");
+              log('📴 Background service stopped');
             }
           }
-          log('Driver went offline - service stopped');
+
+          log('✅ Driver went offline');
         }
       }
     } catch (error, s) {
@@ -1527,6 +1550,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       isOnlineButtonLoading.value = false;
     }
   }
+
   // Future<void> changeDriverOnlineStatus() async {
   //   try {
   //     if (isOnlineButtonLoading.value) return;

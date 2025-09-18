@@ -63,6 +63,10 @@
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@mipmap/ic_stat_applogo_removebg_preview" />
 
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false" />
+
         <!-- Flutter background service ONLY -->
         <service
             android:name="id.flutter.flutter_background_service.BackgroundService"

@@ -23,19 +23,16 @@ class LocationTrackingService extends GetxController {
   static const String _portName = 'location_service_port';
   ReceivePort? _receivePort;
 
-  StreamSubscription<Position>? _positionStream;
-
   @override
   void onInit() {
     super.onInit();
     _initializePortListener();
-    log("LocationTrackingService initialized");
+    log("📡 LocationTrackingService initialized");
   }
 
   @override
   void onClose() {
     _receivePort?.close();
-    _positionStream?.cancel();
     super.onClose();
   }
 
@@ -77,13 +74,9 @@ class LocationTrackingService extends GetxController {
 
   Future<void> _stopBackgroundService() async {
     try {
-      _positionStream?.cancel();
-      _positionStream = null;
-
       if (await service.isRunning()) {
         service.invoke("stop_service");
       }
-
       isRunning.value = false;
       log('🛑 Background service stopped');
     } catch (e) {
@@ -94,7 +87,7 @@ class LocationTrackingService extends GetxController {
   Future<void> updateOnlineStatus(bool isOnline) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('is_online', isOnline);
-
+    print("updateOnlineStatus isOnline Called ************ ");
     if (!isOnline) {
       await _stopBackgroundService();
     } else {
@@ -102,7 +95,6 @@ class LocationTrackingService extends GetxController {
     }
   }
 
-  // Add this method to your LocationTrackingService class
   Future<void> createNotificationChannel() async {
     if (Platform.isAndroid) {
       final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -127,8 +119,10 @@ class LocationTrackingService extends GetxController {
     }
   }
 
-  Future<void> updateDriverState(String driverState,
-      {String? passengerId}) async {
+  Future<void> updateDriverState(
+    String driverState, {
+    String? passengerId,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('driver_state', driverState);
     if (passengerId != null) await prefs.setString('passenger_id', passengerId);
@@ -145,6 +139,13 @@ class LocationTrackingService extends GetxController {
 
     service.invoke('update_token', {'token': token});
   }
+
+  /// iOS background handler
+  @pragma('vm:entry-point')
+  Future<bool> onIosBackground(ServiceInstance service) async {
+    log('✅ iOS background fetch executed');
+    return true; // Must return true to keep background fetch alive
+  }
 }
 
 @pragma('vm:entry-point')
@@ -152,95 +153,53 @@ Future<void> onStart(ServiceInstance service) async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
     DartPluginRegistrant.ensureInitialized();
-
-    // Create notification channel FIRST - this is critical
+    print("onStert CALLED **************");
     await _createNotificationChannelInBackground();
 
-    // Check if driver should be online
     final prefs = await SharedPreferences.getInstance();
     final isOnline = prefs.getBool('is_online') ?? false;
 
     if (!isOnline) {
       log('🛑 Driver is offline, stopping service immediately');
-      // Set a brief notification before stopping
       if (Platform.isAndroid && service is AndroidServiceInstance) {
-        try {
-          service.setForegroundNotificationInfo(
-            title: "Waiver Driver",
-            content: "Service stopping - driver offline",
-          );
-        } catch (e) {
-          log('❌ Error setting stop notification: $e');
-        }
+        service.setForegroundNotificationInfo(
+          title: "Waiver Driver",
+          content: "Service stopping - driver offline",
+        );
       }
-      log("🚀 Background service onStart called");
-      // Small delay to allow notification to show
       await Future.delayed(const Duration(milliseconds: 200));
       service.stopSelf();
       return;
     }
 
-    // Set foreground notification AFTER channel creation
     if (Platform.isAndroid && service is AndroidServiceInstance) {
-      try {
-        service.setForegroundNotificationInfo(
-          title: "Waiver Driver",
-          content: "Location tracking is active",
-        );
-        log('✅ Foreground notification set successfully');
-      } catch (e) {
-        log('❌ Error setting foreground notification: $e');
-        // Don't stop service, but log the error
-      }
+      service.setForegroundNotificationInfo(
+        title: "Waiver Driver",
+        content: "Location tracking is active",
+      );
     }
 
-    // Get communication port
     final SendPort? sendPort = IsolateNameServer.lookupPortByName(
       LocationTrackingService._portName,
     );
 
-    // Initialize background services
     final wsService = BackgroundWebSocketService();
-    final locationServiceBackground =
-        BackgroundLocationService(service, sendPort, wsService);
-    final locationService = LocationTrackingService();
-
-    // Initialize location service
+    final locationServiceBackground = BackgroundLocationService(
+      service,
+      sendPort,
+      wsService,
+    );
+    print("before locationServiceBackground.initialize() ++++++++++++++++");
     await locationServiceBackground.initialize();
 
-    // Set up service event listeners
     service.on('stop_service').listen((event) async {
-      log('🛑 Received stop command - cleaning up');
-
-      try {
-        // Update notification to show stopping
-        if (Platform.isAndroid && service is AndroidServiceInstance) {
-          service.setForegroundNotificationInfo(
-            title: "Waiver Driver",
-            content: "Stopping location tracking...",
-          );
-        }
-
-        // Dispose services with timeout
-        await locationServiceBackground.dispose().timeout(
-              const Duration(seconds: 2),
-              onTimeout: () => log('⚠️ Service dispose timed out'),
-            );
-
-        // Small delay for cleanup
-        await Future.delayed(const Duration(milliseconds: 200));
-
-        log('✅ Service cleanup completed, stopping');
-        service.stopSelf();
-      } catch (e) {
-        log('❌ Error during service cleanup: $e');
-        service.stopSelf();
-      }
+      await locationServiceBackground.dispose();
+      service.stopSelf();
     });
 
     service.on('update_state').listen((event) {
       if (event != null && event is Map<String, dynamic>) {
-        locationService.updateDriverState(
+        locationServiceBackground.updateDriverState(
           event['driver_state'] as String,
           passengerId: event['passenger_id'] as String?,
         );
@@ -249,89 +208,37 @@ Future<void> onStart(ServiceInstance service) async {
 
     service.on('update_token').listen((event) {
       if (event != null && event is Map<String, dynamic>) {
-        locationService.updateAuthToken(event['token'] as String);
-      }
-    });
-
-    service.on('update_online_status').listen((event) async {
-      if (event != null && event is Map<String, dynamic>) {
-        final isOnlineUpdate = event['is_online'] as bool;
-        if (!isOnlineUpdate) {
-          log('🛑 Going offline - disposing service');
-          try {
-            await locationServiceBackground.dispose().timeout(
-                  const Duration(seconds: 2),
-                  onTimeout: () => log('⚠️ Dispose timeout on offline'),
-                );
-            await Future.delayed(const Duration(milliseconds: 200));
-            service.stopSelf();
-          } catch (e) {
-            log('❌ Error going offline: $e');
-            service.stopSelf();
-          }
-        } else {
-          locationService.updateOnlineStatus(isOnlineUpdate);
-        }
+        wsService.updateToken(event['token'] as String);
       }
     });
 
     log('✅ Background service started successfully');
   } catch (e) {
     log('❌ Critical error in onStart: $e');
-
-    // Attempt to set error notification
-    try {
-      if (Platform.isAndroid && service is AndroidServiceInstance) {
-        service.setForegroundNotificationInfo(
-          title: "Waiver Driver",
-          content: "Service error - stopping",
-        );
-      }
-      await Future.delayed(const Duration(milliseconds: 200));
-    } catch (notificationError) {
-      log('❌ Error setting error notification: $notificationError');
-    }
-
-    // Stop service on any critical error
     service.stopSelf();
   }
 }
 
-// Helper function to create notification channel in background isolate
 Future<void> _createNotificationChannelInBackground() async {
   if (Platform.isAndroid) {
-    try {
-      final FlutterLocalNotificationsPlugin plugin =
-          FlutterLocalNotificationsPlugin();
+    final FlutterLocalNotificationsPlugin plugin =
+        FlutterLocalNotificationsPlugin();
 
-      const AndroidNotificationChannel channel = AndroidNotificationChannel(
-        'bg_service_channel',
-        'Location Tracking Service',
-        description: 'Background location tracking for rides',
-        importance: Importance.low,
-        enableVibration: false,
-        playSound: false,
-        showBadge: false,
-      );
+    const AndroidNotificationChannel channel = AndroidNotificationChannel(
+      'bg_service_channel',
+      'Location Tracking Service',
+      description: 'Background location tracking for rides',
+      importance: Importance.low,
+      enableVibration: false,
+      playSound: false,
+      showBadge: false,
+    );
 
-      await plugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
-          ?.createNotificationChannel(channel);
-
-      log('✅ Background notification channel created');
-    } catch (e) {
-      log('❌ Error creating notification channel in background: $e');
-    }
+    await plugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
   }
-}
-
-// ----------------- iOS Background -----------------
-@pragma('vm:entry-point')
-Future<bool> onIosBackground(ServiceInstance service) async {
-  // Required for iOS background execution
-  await onStart(service);
-  return true;
 }
 
 class BackgroundLocationService {
@@ -340,53 +247,42 @@ class BackgroundLocationService {
   final BackgroundWebSocketService _webSocketService;
 
   Timer? _locationTimer;
-  bool _isRunning = true;
+  Position? _lastPosition;
+  DateTime _lastSentTime = DateTime.now();
 
   String _driverState = 'idle';
   String _passengerId = 'placeholder';
   bool _isOnline = false;
 
   BackgroundLocationService(
-      this.service, this.sendPort, this._webSocketService);
+    this.service,
+    this.sendPort,
+    this._webSocketService,
+  );
 
   Future<void> initialize() async {
     await _loadConfig();
     if (_isOnline) {
       _startLocationTracking();
-    } else {
-      _stopServiceSafely();
     }
-
-    service.on('stop_service').listen((_) async {
-      await dispose();
-      service.stopSelf();
-    });
-
-    service.on('update_state').listen((event) {
-      if (event != null && event is Map<String, dynamic>) {
-        _driverState = event['driver_state'] ?? _driverState;
-        _passengerId = event['passenger_id'] ?? _passengerId;
-      }
-    });
-
-    service.on('update_token').listen((event) {
-      if (event != null && event is Map<String, dynamic>) {
-        _webSocketService.updateToken(event['token'] ?? '');
-      }
-    });
   }
 
   Future<void> _loadConfig() async {
+    debugPrint(" Called _loadConfig ********************** ");
+    print(" Called _loadConfig ********************** ");
     final prefs = await SharedPreferences.getInstance();
 
-    // Restore SharedPreferences defaults if not already set
     if (prefs.getString('websocket_base_url') == null) {
       prefs.setString('websocket_base_url', WebSocketUrl.base);
     }
     if (prefs.getString('websocket_live_location_path') == null) {
       prefs.setString(
-          'websocket_live_location_path', WebSocketUrl.liveLocation);
+        'websocket_live_location_path',
+        WebSocketUrl.liveLocation,
+      );
     }
+    final tempToken = await prefs.getString('auth_token');
+    print("token $tempToken +++++++++++++++++++++++++++++");
     if (prefs.getString('auth_token') == null) {
       final token = box.read(BoxKeys.token) ?? '';
       await prefs.setString('auth_token', token);
@@ -399,49 +295,41 @@ class BackgroundLocationService {
     final baseUrl = prefs.getString('websocket_base_url')!;
     final path = prefs.getString('websocket_live_location_path')!;
     final token = prefs.getString('auth_token')!;
-
+    debugPrint(" $baseUrl + $path + $token");
+    print(" $baseUrl + $path + $token  +++++++++++++++++++++++++++++");
     if (_isOnline &&
         baseUrl.isNotEmpty &&
         path.isNotEmpty &&
         token.isNotEmpty) {
       _webSocketService.initialize(baseUrl, path, token);
-      sendPort?.send({'type': 'websocket_status', 'status': 'connected'});
     }
-
-    log('📋 Loaded config: driverState=$_driverState, isOnline=$_isOnline');
   }
 
   void _startLocationTracking() {
-    _locationTimer = Timer.periodic(const Duration(seconds: 15), (timer) async {
-      if (!_isRunning || !_isOnline) {
-        timer.cancel();
-        _stopServiceSafely();
-        return;
-      }
-
+    Duration interval = _getIntervalForState(_driverState);
+    LocationAccuracy accuracy = _getAccuracyForState(_driverState);
+    debugPrint("Calling _startLocationTracking funtion");
+    print("Calling _startLocationTracking funtion");
+    log("interval :$interval #################");
+    _locationTimer = Timer.periodic(interval, (timer) async {
       try {
         final position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.high,
+          desiredAccuracy: accuracy,
           timeLimit: const Duration(seconds: 10),
         );
-        log("📍 Got new position: $position");
-        sendPort?.send({
-          'type': 'location_update',
-          'position': {
-            'latitude': position.latitude,
-            'longitude': position.longitude,
-            'accuracy': position.accuracy,
-            'timestamp': position.timestamp?.millisecondsSinceEpoch,
-          }
-        });
 
-        _sendLiveLocation(position);
-
-        if (Platform.isAndroid && service is AndroidServiceInstance) {
-          (service as AndroidServiceInstance).setForegroundNotificationInfo(
-            title: "Waiver Driver - Active",
-            content: "Tracking location for rides...",
-          );
+        final shouldSend = _shouldSendUpdate(position);
+        debugPrint(
+          '$shouldSend _startLocationTracking _shouldSendUpdate **************',
+        );
+        print(
+          '$shouldSend _startLocationTracking _shouldSendUpdate **************',
+        );
+        if (shouldSend) {
+          debugPrint("Calling _sendLiveLocation funtion");
+          _sendLiveLocation(position);
+          _lastPosition = position;
+          _lastSentTime = DateTime.now();
         }
       } catch (e) {
         log('❌ Error in location tracking: $e');
@@ -449,7 +337,26 @@ class BackgroundLocationService {
     });
   }
 
-  Future<void> _sendLiveLocation(Position position) async {
+  bool _shouldSendUpdate(Position position) {
+    if (_lastPosition == null) return true;
+
+    final distance = Geolocator.distanceBetween(
+      _lastPosition!.latitude,
+      _lastPosition!.longitude,
+      position.latitude,
+      position.longitude,
+    );
+
+    final speedKmh = (position.speed) * 3.6;
+    final timeSinceLast = DateTime.now().difference(_lastSentTime);
+
+    return distance > 5 ||
+        speedKmh > 20 ||
+        _driverState == "active" ||
+        timeSinceLast > const Duration(minutes: 2);
+  }
+
+  void _sendLiveLocation(Position position) {
     final locationData = {
       "passenger_id": _driverState == 'idle' ? "save" : _passengerId,
       "msg_type": _driverState == 'idle' ? "save" : "ride",
@@ -457,21 +364,50 @@ class BackgroundLocationService {
       "current_loc_long": position.longitude,
       "current_loc_lat": position.latitude,
     };
-    log("*************_sendLiveLocation: $locationData");
+    debugPrint(
+      "_sendLiveLocation first $locationData ************************",
+    );
+    print("_sendLiveLocation first $locationData ************************");
+    log("_sendLiveLocation first $locationData ************************");
     _webSocketService.sendLiveLocation(body: locationData);
-    sendPort?.send({'type': 'location_sent', 'data': locationData});
   }
 
-  void _stopServiceSafely() {
-    _isRunning = false;
+  Duration _getIntervalForState(String state) {
+    switch (state) {
+      case "idle":
+        return const Duration(seconds: 5);
+      case "waiting":
+        return const Duration(seconds: 10);
+      case "active":
+        return const Duration(seconds: 5);
+      default:
+        return const Duration(seconds: 20);
+    }
+  }
+
+  LocationAccuracy _getAccuracyForState(String state) {
+    switch (state) {
+      case "idle":
+        return LocationAccuracy.medium;
+      case "waiting":
+        return LocationAccuracy.best;
+      case "active":
+        return LocationAccuracy.high;
+      default:
+        return LocationAccuracy.low;
+    }
+  }
+
+  void updateDriverState(String driverState, {String? passengerId}) {
+    _driverState = driverState;
+    if (passengerId != null) _passengerId = passengerId;
     _locationTimer?.cancel();
-    _webSocketService.dispose().catchError((e) {
-      log('❌ WebSocket dispose error: $e');
-    });
+    _startLocationTracking(); // restart with new interval/accuracy
   }
 
   Future<void> dispose() async {
-    _stopServiceSafely();
+    _locationTimer?.cancel();
+    await _webSocketService.dispose();
   }
 }
 
@@ -486,6 +422,7 @@ class BackgroundWebSocketService {
     _baseUrl = baseUrl;
     _path = path;
     _token = token;
+    print("Inside initialize++++++++++++");
     _connect();
   }
 
@@ -493,13 +430,19 @@ class BackgroundWebSocketService {
     if (_baseUrl == null || _path == null || _token == null) return;
 
     final url = Uri.parse("$_baseUrl$_path" + "token=$_token");
+
+    log("Web socket url : $url");
     _channel = WebSocketChannel.connect(url);
     _connected = true;
 
     _channel!.stream.listen(
-      (data) => log('📨 WebSocket received: $data'),
+      (data) {
+        log('📨 WebSocket received: $data');
+        print('📨 WebSocket received: $data');
+      },
       onError: (e) {
         log('❌ WebSocket error: $e');
+        print('❌ WebSocket error: $e');
         _connected = false;
         _reconnect();
       },
@@ -509,8 +452,6 @@ class BackgroundWebSocketService {
         _reconnect();
       },
     );
-
-    log('✅ WebSocket connected to $url');
   }
 
   void _reconnect() {
@@ -521,11 +462,8 @@ class BackgroundWebSocketService {
 
   void sendLiveLocation({required Map<String, dynamic> body}) {
     if (_connected && _channel != null) {
-      log("*************_sendLiveLocation:${_baseUrl}${_path} ${body}");
-      log('📤 Location sent via WebSocket');
-      print("*************_sendLiveLocation:$_baseUrl$_path $body");
-      print('📤 Location sent via WebSocket');
       _channel!.sink.add(json.encode(body));
+      log('📤 Location sent via WebSocket inside &&&&&&&&&&&&&&&');
     }
   }
 
