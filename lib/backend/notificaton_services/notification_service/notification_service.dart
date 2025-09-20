@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 
 import 'package:waiver_driver/backend/model/home/home_model.dart';
 import 'package:waiver_driver/controller/home/home_controller.dart';
@@ -49,6 +50,8 @@ class NotificationService {
         onDismissActionReceivedMethod: onDismissActionReceivedMethod,
         onNotificationCreatedMethod: onNotificationCreatedMethod,
         onNotificationDisplayedMethod: onNotificationDisplayedMethod);
+
+    debugPrint("AwesomeNotifications channel created");
   }
 
   static Future<void> onActionReceivedMethod(ReceivedAction action) async {}

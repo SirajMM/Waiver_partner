@@ -1393,15 +1393,35 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   Future<void> _initializeLocationTrackingIfNeeded() async {
     try {
       // Only initialize if user is online or has been online before
+      final prefs = await SharedPreferences.getInstance();
       final savedOnlineStatus = box.read(BoxKeys.isOnline) ?? false;
+      final token = box.read(BoxKeys.token);
+      await prefs.setString('auth_token', token);
 
       if (savedOnlineStatus || isOnline.value) {
         locationTrackingService = Get.put(LocationTrackingService());
         log('LocationTrackingService initialized');
+        // ---------------- DRIVER GOING ONLINE ----------------
+        await requestBatteryOptimizationExemption();
 
-        // Start tracking if currently online
-        // if (isOnline.value) {
-        // await startLocationTracking();
+        // Ensure service exists
+        locationTrackingService ??= Get.put(LocationTrackingService());
+
+        // Tell service to start
+        log("locationTrackingService!.updateOnlineStatus(true)CALLED isOnline*************");
+        await locationTrackingService!.updateOnlineStatus(true);
+
+        final service = FlutterBackgroundService();
+        final isRunning = await service.isRunning();
+
+        if (!isRunning) {
+          await service.startService();
+          log('📡 Background service started from _initializeLocationTrackingIfNeeded');
+        } else {
+          log('⚡ Service already running');
+        }
+
+        log('✅ Driver went online');
         // }
       }
     } catch (e) {
@@ -1412,25 +1432,25 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   StreamSubscription<MobilityContext>? mobilitySubscription;
   MobilityContext? mobilityContext;
 
-  // void sendLiveLocation() {
-  //   Geolocator.getPositionStream().listen((position) {
-  //     currentPosition.value = position;
-  //     saveLocationData(convertPositionToLocationData(position));
-  //     if (isOnline.value) {
-  //       WebSocketServices.sendLiveLocation(body: {
-  //         "passenger_id": driverState.value == DriverState.idle
-  //             ? RiderStatus.save
-  //             : passengerId ?? "placeholder",
-  //         "msg_type": driverState.value == DriverState.idle
-  //             ? RiderStatus.save
-  //             : RiderStatus.ride,
-  //         "ride_status": driverState.value.toString(),
-  //         "current_loc_long": position.longitude,
-  //         "current_loc_lat": position.latitude,
-  //       });
-  //     }
-  //   });
-  // }
+  void sendLiveLocation() {
+    Geolocator.getPositionStream().listen((position) {
+      currentPosition.value = position;
+      saveLocationData(convertPositionToLocationData(position));
+      if (isOnline.value) {
+        WebSocketServices.sendLiveLocation(body: {
+          "passenger_id": driverState.value == DriverState.idle
+              ? RiderStatus.save
+              : passengerId ?? "placeholder",
+          "msg_type": driverState.value == DriverState.idle
+              ? RiderStatus.save
+              : RiderStatus.ride,
+          "ride_status": driverState.value.toString(),
+          "current_loc_long": position.longitude,
+          "current_loc_lat": position.latitude,
+        });
+      }
+    });
+  }
 
   // /// Start foreground location service
   // Future<void> startLocationService() async {
@@ -1514,6 +1534,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           // Tell service to start
           log("locationTrackingService!.updateOnlineStatus(true)CALLED isOnline*************");
           await locationTrackingService!.updateOnlineStatus(true);
+          // sendLiveLocation();
 
           final service = FlutterBackgroundService();
           final isRunning = await service.isRunning();

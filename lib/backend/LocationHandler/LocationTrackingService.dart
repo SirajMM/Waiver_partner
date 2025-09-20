@@ -250,8 +250,8 @@ class BackgroundLocationService {
   Position? _lastPosition;
   DateTime _lastSentTime = DateTime.now();
 
-  String _driverState = 'idle';
-  String _passengerId = 'placeholder';
+  String _driverState = "idle";
+  String _passengerId = "save";
   bool _isOnline = false;
 
   BackgroundLocationService(
@@ -288,8 +288,8 @@ class BackgroundLocationService {
       await prefs.setString('auth_token', token);
     }
 
-    _driverState = prefs.getString('driver_state') ?? 'idle';
-    _passengerId = prefs.getString('passenger_id') ?? 'placeholder';
+    _driverState = prefs.getString('driver_state') ?? "idle";
+    _passengerId = prefs.getString('passenger_id') ?? "save";
     _isOnline = prefs.getBool('is_online') ?? false;
 
     final baseUrl = prefs.getString('websocket_base_url')!;
@@ -305,34 +305,46 @@ class BackgroundLocationService {
     }
   }
 
-  void _startLocationTracking() {
-    Duration interval = _getIntervalForState(_driverState);
-    LocationAccuracy accuracy = _getAccuracyForState(_driverState);
-    debugPrint("Calling _startLocationTracking funtion");
-    print("Calling _startLocationTracking funtion");
-    log("interval :$interval #################");
-    _locationTimer = Timer.periodic(interval, (timer) async {
-      try {
-        final position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: accuracy,
-          timeLimit: const Duration(seconds: 10),
-        );
+  StreamSubscription<Position>? positionSubscription;
 
+  void _startLocationTracking() {
+    LocationAccuracy accuracy = _getAccuracyForState(_driverState);
+    Duration interval = _getIntervalForState(_driverState);
+
+    debugPrint("Calling _startLocationTracking function with stream");
+    log("interval and driverState : $interval , $_driverState #################");
+
+    // Cancel any previous subscription before starting a new one
+    positionSubscription?.cancel();
+
+    final locationSettings = LocationSettings(
+      accuracy: accuracy,
+      distanceFilter:
+          0, // set >0 if you only want updates after moving certain meters
+      timeLimit: null,
+      // optional: on Android you can also set `intervalDuration`
+      // intervalDuration: interval,
+    );
+
+    positionSubscription = Geolocator.getPositionStream(
+      locationSettings: locationSettings,
+    ).listen((position) {
+      try {
         final shouldSend = _shouldSendUpdate(position);
+
         debugPrint(
-          '$shouldSend _startLocationTracking _shouldSendUpdate **************',
-        );
-        print(
-          '$shouldSend _startLocationTracking _shouldSendUpdate **************',
-        );
-        if (shouldSend) {
-          debugPrint("Calling _sendLiveLocation funtion");
-          _sendLiveLocation(position);
-          _lastPosition = position;
-          _lastSentTime = DateTime.now();
-        }
+            '$shouldSend _startLocationTracking _shouldSendUpdate **************');
+        log('$shouldSend _startLocationTracking _shouldSendUpdate **************');
+
+        // if (shouldSend) {
+        debugPrint("Calling _sendLiveLocation function");
+        log("Calling _sendLiveLocation function");
+        _sendLiveLocation(position);
+        _lastPosition = position;
+        _lastSentTime = DateTime.now();
+        // }
       } catch (e) {
-        log('❌ Error in location tracking: $e');
+        log('❌ Error in location stream: $e');
       }
     });
   }
@@ -351,9 +363,8 @@ class BackgroundLocationService {
     final timeSinceLast = DateTime.now().difference(_lastSentTime);
 
     return distance > 5 ||
-        speedKmh > 20 ||
-        _driverState == "active" ||
-        timeSinceLast > const Duration(minutes: 2);
+        speedKmh > 10 ||
+        timeSinceLast > const Duration(minutes: 1);
   }
 
   void _sendLiveLocation(Position position) {
@@ -379,9 +390,9 @@ class BackgroundLocationService {
       case "waiting":
         return const Duration(seconds: 10);
       case "active":
-        return const Duration(seconds: 5);
+        return const Duration(seconds: 2);
       default:
-        return const Duration(seconds: 20);
+        return const Duration(seconds: 2);
     }
   }
 
@@ -394,7 +405,7 @@ class BackgroundLocationService {
       case "active":
         return LocationAccuracy.high;
       default:
-        return LocationAccuracy.low;
+        return LocationAccuracy.high;
     }
   }
 
@@ -407,6 +418,8 @@ class BackgroundLocationService {
 
   Future<void> dispose() async {
     _locationTimer?.cancel();
+    positionSubscription?.cancel();
+    positionSubscription = null;
     await _webSocketService.dispose();
   }
 }
@@ -463,7 +476,7 @@ class BackgroundWebSocketService {
   void sendLiveLocation({required Map<String, dynamic> body}) {
     if (_connected && _channel != null) {
       _channel!.sink.add(json.encode(body));
-      log('📤 Location sent via WebSocket inside &&&&&&&&&&&&&&&');
+      log('📤 Location sent via WebSocket inside  ${json.encode(body)} &&&&&&&&&&&&&&&');
     }
   }
 

@@ -67,6 +67,7 @@
             android:name="io.flutter.embedding.android.EnableImpeller"
             android:value="false" />
 
+
         <!-- Flutter background service ONLY -->
         <service
             android:name="id.flutter.flutter_background_service.BackgroundService"
