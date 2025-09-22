@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_utils/util/utils.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart' show PackageInfo;
 import 'package:waiver_driver/backend/model/fleet_home_page/fleet_home_page_model.dart';
 import 'package:waiver_driver/backend/model/setting/setting_model.dart';
 import 'package:waiver_driver/backend/parser/FleetHomePage/fleet_home_page_parser.dart';
@@ -8,6 +9,7 @@ import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/constants/get_storage_constants.dart';
+import '../../main.dart';
 
 // class FleetHomePageControllerBinding extends Bindings {
 
@@ -26,9 +28,12 @@ class FleetHomePageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    getVersionInfo();
     getVehicles();
   }
 
+  final RxString version = ''.obs;
+  final RxString buildNumber = ''.obs;
   blockUser({required FleetVehicle vehicle}) async {
     LogoutResponseModel response =
         await ApiServices.blockVehicle(body: {"vehicle_id": vehicle.id});
@@ -43,6 +48,14 @@ class FleetHomePageController extends GetxController {
         text: "${vehicle.name} blocked successfully",
       ),
     ));
+  }
+
+  Future<void> getVersionInfo() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    version.value = info.version;
+    buildNumber.value = info.buildNumber;
+    box.write(BoxKeys.version, version.value);
+    box.write(BoxKeys.buildNumber, buildNumber.value);
   }
 
   // Future<void> getVehicles() async {

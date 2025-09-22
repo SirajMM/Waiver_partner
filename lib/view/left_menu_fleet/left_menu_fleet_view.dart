@@ -108,11 +108,11 @@ class LeftMenuFleet extends StatelessWidget {
             onTap: () => Get.bottomSheet(LogoutBottomSheet()),
           ),
           SizedBox(
-            height: 100.sp,
+            height: 250.sp,
           ),
           Center(
             child: Obx(() => Text(
-                  'Version: ${LeftMenuControllerDriver.to.version.value}+${LeftMenuControllerDriver.to.buildNumber.value}',
+                  'Version: ${LeftMenuControllerFleet.to.version.value}+${LeftMenuControllerFleet.to.buildNumber.value}',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.black
