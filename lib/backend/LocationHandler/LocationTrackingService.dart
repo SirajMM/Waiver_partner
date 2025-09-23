@@ -12,7 +12,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-
+import 'package:location/location.dart' as loc;
+import '../../controller/home/home_controller.dart';
 import '../../core/constants/get_storage_constants.dart';
 import '../../main.dart';
 import '../api/api_services/urls.dart';
@@ -335,7 +336,8 @@ class BackgroundLocationService {
         debugPrint(
             '$shouldSend _startLocationTracking _shouldSendUpdate **************');
         log('$shouldSend _startLocationTracking _shouldSendUpdate **************');
-
+        saveLocationData(convertPositionToLocationData(position));
+        _saveLocationToMemory(position);
         // if (shouldSend) {
         debugPrint("Calling _sendLiveLocation function");
         log("Calling _sendLiveLocation function");
@@ -346,6 +348,37 @@ class BackgroundLocationService {
       } catch (e) {
         log('❌ Error in location stream: $e');
       }
+    });
+  }
+
+  void _saveLocationToMemory(Position position) async {
+  // final box = GetStorage(); // or SharedPreferences
+  await box.write("last_latBG", position.latitude);
+  await box.write("last_lngGB", position.longitude);
+}
+
+  void saveLocationData(loc.LocationData locationData) {
+    box.write(BoxKeys.lastLocation, {
+      'latitude': locationData.latitude,
+      'longitude': locationData.longitude,
+      'accuracy': locationData.accuracy,
+      'altitude': locationData.altitude,
+      'speed': locationData.speed,
+      'speedAccuracy': locationData.speedAccuracy,
+      'heading': locationData.heading,
+      'time': locationData.time,
+    });
+  }
+
+  loc.LocationData convertPositionToLocationData(Position position) {
+    return loc.LocationData.fromMap({
+      "latitude": position.latitude,
+      "longitude": position.longitude,
+      "accuracy": position.accuracy,
+      "altitude": position.altitude,
+      "speed": position.speed,
+      "speed_accuracy": position.speedAccuracy,
+      "heading": position.heading,
     });
   }
 
