@@ -14,7 +14,7 @@ dependencies:
   get_storage: ^2.1.1
   flutter_svg: ^2.0.16
   google_fonts: ^6.2.1
-  google_maps_flutter: ^2.12.1
+  google_maps_flutter: ^2.13.1
   geolocator: ^14.0.1
   sms_autofill: ^2.4.1
   flutter_screenutil: ^5.9.3

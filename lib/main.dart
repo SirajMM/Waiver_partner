@@ -259,7 +259,7 @@ Future<void> main() async {
   HttpOverrides.global = MyHttpOverrides();
 
   // Initialize LocationTrackingService
-  await _initializeLocationServiceIfNeeded();
+  // await _initializeLocationServiceIfNeeded();
 
   // Run App
   runApp(const MyApp());

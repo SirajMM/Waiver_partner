@@ -19,11 +19,13 @@ class NetworkController extends GetxService {
     Geolocator.getServiceStatusStream().listen(_requestPermission);
     checkForInReview();
     Location().getLocation().then((value) => AppConstants.locationData = value);
+    log("AppConstants.locationData $AppConstants.locationData >>>>>>>");
   }
 
   RxBool inReview = false.obs;
 
-  Future<void> _updateConnectionStatus(List<ConnectivityResult> connectivityResult) async {
+  Future<void> _updateConnectionStatus(
+      List<ConnectivityResult> connectivityResult) async {
     if (connectivityResult.contains(ConnectivityResult.none)) {
       Get.closeAllSnackbars();
       _showSnackbar(
@@ -98,7 +100,8 @@ class NetworkController extends GetxService {
   }
 
   void checkForInReview() {
-    FirebaseDatabase.instance.ref().child("inReview").onValue.listen((DatabaseEvent event) {
+    FirebaseDatabase.instance.ref().child("inReview").onValue.listen(
+        (DatabaseEvent event) {
       final snapshot = event.snapshot;
 
       final data = snapshot.value;

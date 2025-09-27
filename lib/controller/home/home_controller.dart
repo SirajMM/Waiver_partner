@@ -93,7 +93,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
       getVersionInfo();
       ProfileController.to.getProfile();
       isAssinged.value = await hasAssigned();
-
+      recenter();
       pickUpLocation1 = TripsLocations(
           latitude: Rx(currentPosition.value?.latitude),
           longitude: Rx(currentPosition.value?.longitude),
@@ -105,10 +105,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         (value) => pickUpLocation1?.name.value = value ?? '',
       );
 
-      _positionSyncTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-        _loadCurrentPositionFromStorage();
-        log("⏳ Synced currentPosition: ${currentPosition.value}");
-      });
+      // _positionSyncTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      //   _loadCurrentPositionFromStorage();
+      //   log("⏳ Synced currentPosition: ${currentPosition.value}");
+      // });
       recenter();
 
       isError.value = false;
@@ -252,6 +252,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           // Tell service to start
           log("locationTrackingService!.updateOnlineStatus(true)CALLED isOnline*************");
           await locationTrackingService!.updateOnlineStatus(true);
+          sendLiveLocation();
           // sendLiveLocation();
 
           final service = FlutterBackgroundService();
@@ -1139,6 +1140,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   Future<String?> getLocationDetails(double latitude, double longitude) async {
+    log("getLocationDetails() called >>>>>> $latitude ,$longitude");
     GoogleLocationResponse response =
         await ApiServices.getCurrentLocation(latitude, longitude);
 
@@ -1155,12 +1157,20 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   }
 
   void recenter() {
+    log("recenter() called ......");
     if (!recenterLoading.value) {
       recenterLoading.value = true;
       loc.Location().getLocation().then(
         (newLoc) {
           recenterLoading.value = false;
           saveLocationData(newLoc);
+          currentPosition.value = convertToPosition(newLoc);
+          getLocationDetails(currentPosition.value?.latitude ?? 0.0,
+                  currentPosition.value?.longitude ?? 0.0)
+              .then(
+            (value) => pickUpLocation1?.name.value = value ?? '',
+          );
+          log("${pickUpLocation1?.name} && ${newLoc.latitude}, ${newLoc.longitude}");
           googleMapController?.animateCamera(CameraUpdate.newCameraPosition(
             CameraPosition(
               zoom: cameraZoom.value,
@@ -1219,9 +1229,13 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   Future<void> paymentInitiated() async {
     driverState.value = DriverState.loading;
+    recenter();
     getFinalDropLocation();
     log("mobilityContext?.stops");
     log("${mobilityContext?.stops}");
+    if (currentPosition.value == null) {
+      _loadCurrentPositionFromStorage();
+    }
     try {
       ChangeRideStatusModel response =
           await ApiServices.changeRideStatus(body: {
@@ -1244,6 +1258,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
             passengerId: passengerId,
           );
         }
+        recenter();
       }
     } catch (error, s) {
       AppConstants.handleError(error, s: s);
