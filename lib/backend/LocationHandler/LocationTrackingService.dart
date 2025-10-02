@@ -10,6 +10,7 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:location/location.dart' as loc;
@@ -154,6 +155,10 @@ Future<void> onStart(ServiceInstance service) async {
   try {
     WidgetsFlutterBinding.ensureInitialized();
     DartPluginRegistrant.ensureInitialized();
+
+    // CRITICAL: Initialize GetStorage in the background isolate
+    await GetStorage.init();
+
     print("onStert CALLED **************");
     await _createNotificationChannelInBackground();
 
@@ -352,10 +357,10 @@ class BackgroundLocationService {
   }
 
   void _saveLocationToMemory(Position position) async {
-  // final box = GetStorage(); // or SharedPreferences
-  await box.write("last_latBG", position.latitude);
-  await box.write("last_lngGB", position.longitude);
-}
+    // final box = GetStorage(); // or SharedPreferences
+    await box.write("last_latBG", position.latitude);
+    await box.write("last_lngGB", position.longitude);
+  }
 
   void saveLocationData(loc.LocationData locationData) {
     box.write(BoxKeys.lastLocation, {

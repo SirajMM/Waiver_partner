@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -287,7 +288,132 @@ class AadharCardController extends GetxController {
   //      );
   //    }
   //  }
+// @@@@@@@@@@@@@@@@@@@@@@@@
+  // uploadPhoto({required ImageSource source}) async {
+  //   isUploading.value = true;
 
+  //   try {
+  //     XFile? imageFile = await ImagePicker().pickImage(source: source);
+
+  //     if (imageFile != null) {
+  //       final File file1 = File(imageFile.path);
+  //       final int fileSize = await file1.length();
+  //       print("File size before cropping: ${fileSize} bytes");
+
+  //       // Option 1: Use the simple custom cropper (Recommended)
+  //       CroppedFile? croppedFile = await showCustomImageCropper(
+  //         imagePath: imageFile.path,
+  //         aspectRatio: aspectRatio,
+  //       );
+
+  //       // Option 2: Use dialog wrapper for more control
+  //       // CroppedFile? croppedFile = await showDialog<CroppedFile>(
+  //       //   context: Get.context!,
+  //       //   barrierDismissible: false,
+  //       //   builder: (context) => CropperDialog(
+  //       //     imagePath: imageFile.path,
+  //       //     aspectRatio: aspectRatio,
+  //       //   ),
+  //       // );
+
+  //       // Exit if user cancels cropping
+  //       if (croppedFile == null) {
+  //         isUploading.value = false;
+  //         return;
+  //       }
+
+  //       http.MultipartFile file = await http.MultipartFile.fromPath(
+  //         "file",
+  //         croppedFile.path,
+  //       );
+
+  //       try {
+  //         UploadFileResponseModel response =
+  //             await ApiServices.uploadFile(files: file, fields: fields);
+
+  //         if (response.data != null) {
+  //           String imagePath = response.data?.file ?? "";
+  //           imagePathShow.value = imagePath;
+  //           imageList.insert(0, FileElement(file: imagePath));
+  //         } else {
+  //           print("Upload successful but no file data returned");
+  //           throw Exception("No file data in response");
+  //         }
+  //         Get.back();
+  //       } catch (uploadError) {
+  //         print("Error during file upload process: $uploadError");
+  //         Get.back();
+  //         Future.delayed(Duration(milliseconds: 100), () {
+  //           Get.snackbar(
+  //             "Upload Failed",
+  //             "Unable to upload image. Please try again later.",
+  //             snackPosition: SnackPosition.BOTTOM,
+  //             backgroundColor: AppColors.red176,
+  //             colorText: AppColors.white,
+  //           );
+  //         });
+
+  //         isUploading.value = false;
+  //         return;
+  //       }
+  //     }
+
+  //     isUploading.value = false;
+  //   } catch (e) {
+  //     print("Unexpected error in uploadPhoto: $e");
+  //     isUploading.value = false;
+
+  //     Get.snackbar(
+  //       "Error",
+  //       "An unexpected error occurred. Please try again.",
+  //       snackPosition: SnackPosition.BOTTOM,
+  //       backgroundColor: AppColors.red176,
+  //       colorText: AppColors.white,
+  //     );
+  //   }
+  // }
+
+  // Future<CroppedFile?> showCustomImageCropper({
+  //   required String imagePath,
+  //   CropAspectRatio? aspectRatio,
+  // }) async {
+  //   return await ImageCropper().cropImage(
+  //     sourcePath: imagePath,
+  //     aspectRatio: aspectRatio,
+  //     compressQuality: 85,
+  //     maxWidth: 1200,
+  //     maxHeight: 1200,
+  //     uiSettings: [
+  //       AndroidUiSettings(
+  //         toolbarTitle: 'Crop Image',
+  //         toolbarColor: Colors.black,
+  //         toolbarWidgetColor: Colors.white,
+  //         activeControlsWidgetColor: Colors.orange,
+  //         backgroundColor: Colors.black,
+  //         cropFrameColor: Colors.white,
+  //         cropGridColor: Colors.white.withOpacity(0.5),
+  //         cropFrameStrokeWidth: 2,
+  //         cropGridStrokeWidth: 1,
+  //         initAspectRatio: CropAspectRatioPreset.original,
+  //         lockAspectRatio: aspectRatio != null,
+  //         hideBottomControls: false,
+  //         // Add these properties:
+  //         showCropGrid: true,
+  //         dimmedLayerColor: Colors.black.withOpacity(0.8),
+  //       ),
+  //       IOSUiSettings(
+  //         title: 'Crop Image',
+  //         aspectRatioLockEnabled: aspectRatio != null,
+  //         resetAspectRatioEnabled: false,
+  //         aspectRatioPickerButtonHidden: true,
+  //         rotateButtonsHidden: false,
+  //         doneButtonTitle: 'Done',
+  //         cancelButtonTitle: 'Cancel',
+  //       ),
+  //     ],
+  //   );
+  // }
+  // @@@@@@@@@@@@@@@@@@@@@@@@@
   uploadPhoto({required ImageSource source}) async {
     isUploading.value = true;
 
@@ -297,33 +423,30 @@ class AadharCardController extends GetxController {
       if (imageFile != null) {
         final File file1 = File(imageFile.path);
         final int fileSize = await file1.length();
-        print("File size before cropping: ${fileSize} bytes");
+        print("File size before cropping: $fileSize bytes");
 
-        // Option 1: Use the simple custom cropper (Recommended)
-        CroppedFile? croppedFile = await showCustomImageCropper(
-          imagePath: imageFile.path,
-          aspectRatio: aspectRatio,
+        // Use custom cropper with bottom buttons for better UX
+        String? croppedPath = await showDialog<String>(
+          context: Get.context!,
+          barrierDismissible: false,
+          builder: (context) => CustomImageCropperDialog(
+            imagePath: imageFile.path,
+            aspectRatio:
+                aspectRatio?.ratioX != null && aspectRatio?.ratioY != null
+                    ? aspectRatio!.ratioX / aspectRatio!.ratioY
+                    : null,
+          ),
         );
 
-        // Option 2: Use dialog wrapper for more control
-        // CroppedFile? croppedFile = await showDialog<CroppedFile>(
-        //   context: Get.context!,
-        //   barrierDismissible: false,
-        //   builder: (context) => CropperDialog(
-        //     imagePath: imageFile.path,
-        //     aspectRatio: aspectRatio,
-        //   ),
-        // );
-
         // Exit if user cancels cropping
-        if (croppedFile == null) {
+        if (croppedPath == null) {
           isUploading.value = false;
           return;
         }
 
         http.MultipartFile file = await http.MultipartFile.fromPath(
           "file",
-          croppedFile.path,
+          croppedPath,
         );
 
         try {
@@ -334,13 +457,21 @@ class AadharCardController extends GetxController {
             String imagePath = response.data?.file ?? "";
             imagePathShow.value = imagePath;
             imageList.insert(0, FileElement(file: imagePath));
+            log("image uploaded");
+            // Clean up temporary cropped file
+            try {
+              await File(croppedPath).delete();
+            } catch (e) {
+              print("Could not delete temp file: $e");
+            }
           } else {
             print("Upload successful but no file data returned");
             throw Exception("No file data in response");
           }
+          Get.back();
         } catch (uploadError) {
           print("Error during file upload process: $uploadError");
-
+          Get.back();
           Future.delayed(Duration(milliseconds: 100), () {
             Get.snackbar(
               "Upload Failed",
@@ -370,46 +501,6 @@ class AadharCardController extends GetxController {
       );
     }
   }
-
-  Future<CroppedFile?> showCustomImageCropper({
-    required String imagePath,
-    CropAspectRatio? aspectRatio,
-  }) async {
-    return await ImageCropper().cropImage(
-      sourcePath: imagePath,
-      aspectRatio: aspectRatio,
-      compressQuality: 85,
-      maxWidth: 1200,
-      maxHeight: 1200,
-      uiSettings: [
-        AndroidUiSettings(
-          toolbarTitle: 'Crop Image',
-          toolbarColor: Colors.black,
-          toolbarWidgetColor: Colors.white,
-          activeControlsWidgetColor: Colors.orange,
-          backgroundColor: Colors.black,
-          cropFrameColor: Colors.white,
-          cropGridColor: Colors.white.withOpacity(0.5),
-          cropFrameStrokeWidth: 2,
-          cropGridStrokeWidth: 1,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: aspectRatio != null,
-          hideBottomControls: false, // Keep controls visible
-          // The toolbar naturally appears at a more accessible position
-        ),
-        IOSUiSettings(
-          title: 'Crop Image',
-          aspectRatioLockEnabled: aspectRatio != null,
-          resetAspectRatioEnabled: false,
-          aspectRatioPickerButtonHidden: true,
-          rotateButtonsHidden: false,
-          doneButtonTitle: 'Done',
-          cancelButtonTitle: 'Cancel',
-        ),
-      ],
-    );
-  }
-
 // uploadPhoto({required ImageSource source}) async {
 //   // Set loading state to true at the beginning
 //   isUploading.value = true;
