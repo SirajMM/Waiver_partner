@@ -64,6 +64,7 @@ class OtpController extends GetxController {
         "code": mobileCode ?? "",
         "user_type": userTypeCode,
       };
+      log("otp body $body ***************");
       SendPhoneOtpResponseModel response =
           await ApiServices.sendPhoneOtp(body: body);
       OtpController.to.showTimer.value = ShowTimerState.timer;
@@ -89,7 +90,7 @@ class OtpController extends GetxController {
           // "fcm_token": DateTime.now().toIso8601String()
           "fcm_token": await (FirebaseMessaging.instance.getToken()) ?? ""
         };
-
+        log("validate otp body $body ***************");
         VerifyOtpResponseModel response =
             await ApiServices.phoneAuth(body: body);
 
@@ -114,7 +115,7 @@ class OtpController extends GetxController {
             }
           } else {
             box.write(BoxKeys.token, response.data?.accessToken);
-          
+
             // 🔥 Safe location service initialization
             await _initializeLocationService();
 

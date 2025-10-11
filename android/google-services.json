@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "999943752611",
+    "firebase_url": "https://waiver-partner-cdc85-default-rtdb.firebaseio.com",
     "project_id": "waiver-partner-cdc85",
     "storage_bucket": "waiver-partner-cdc85.firebasestorage.app"
   },

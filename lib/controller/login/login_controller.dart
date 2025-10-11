@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sms_autofill/sms_autofill.dart';
+import 'dart:developer';
 
 import 'package:waiver_driver/backend/model/login/login_model.dart';
 import 'package:waiver_driver/backend/parser/Login/login_parser.dart';
@@ -49,10 +50,10 @@ class LoginController extends GetxController {
         Map<String, String> body = {
           "phone": controllerPhoneNumber.text.trim(),
           "code": selectedCountry?.mobileCode ?? "",
-          "hash_key": await SmsAutoFill().getAppSignature,
           "user_type": box.read(BoxKeys.userTypeCode),
+          "hash_key": await SmsAutoFill().getAppSignature,
         };
-
+        log("Send otp screen bodyss $body");
         SendPhoneOtpResponseModel response =
             await ApiServices.sendPhoneOtp(body: body);
 
