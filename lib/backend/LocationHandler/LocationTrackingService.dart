@@ -17,6 +17,7 @@ import 'package:location/location.dart' as loc;
 import '../../controller/home/home_controller.dart';
 import '../../core/constants/get_storage_constants.dart';
 import '../../main.dart';
+import '../api/api_services/api_services.dart';
 import '../api/api_services/urls.dart';
 
 class LocationTrackingService extends GetxController {
@@ -270,6 +271,7 @@ class BackgroundLocationService {
     await _loadConfig();
     if (_isOnline) {
       _startLocationTracking();
+      // _startHeartbeat();
     }
   }
 
@@ -310,6 +312,32 @@ class BackgroundLocationService {
       _webSocketService.initialize(baseUrl, path, token);
     }
   }
+
+  Timer? _heartbeatTimer;
+
+  // void _startHeartbeat() {
+  //   _heartbeatTimer?.cancel();
+  //   _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (_) async {
+  //     try {
+  //       if (!_isOnline) return;
+
+  //       final lastLat = box.read("last_latBG");
+  //       final lastLng = box.read("last_lngGB");
+
+  //       if (lastLat == null || lastLng == null) return;
+
+  //       await ApiServices.driverHeartbeat(body: {
+  //         "latitude": lastLat,
+  //         "longitude": lastLng,
+  //         "status": "online",
+  //       });
+
+  //       log("💓 Heartbeat sent: ($lastLat, $lastLng)");
+  //     } catch (e) {
+  //       log("❌ Heartbeat failed: $e");
+  //     }
+  //   });
+  // }
 
   StreamSubscription<Position>? positionSubscription;
 
@@ -458,6 +486,7 @@ class BackgroundLocationService {
     _locationTimer?.cancel();
     positionSubscription?.cancel();
     positionSubscription = null;
+    await _webSocketService.disconnect();
     await _webSocketService.dispose();
   }
 }
@@ -477,7 +506,22 @@ class BackgroundWebSocketService {
     _connect();
   }
 
-  void _connect() {
+  Future<void> disconnect() async {
+    try {
+      if (_channel != null) {
+        log("🔌 Closing WebSocket manually...");
+        await _channel!.sink.close();
+        _channel = null;
+        _connected = false;
+      }
+    } catch (e) {
+      log("⚠️ Error while closing WebSocket: $e");
+    }
+  }
+
+  bool _hasConnectedBefore = false;
+
+  void _connect() async {
     if (_baseUrl == null || _path == null || _token == null) return;
 
     final url = Uri.parse("$_baseUrl$_path" + "token=$_token");
@@ -486,6 +530,20 @@ class BackgroundWebSocketService {
     _channel = WebSocketChannel.connect(url);
     _connected = true;
 
+    final prefs = await SharedPreferences.getInstance();
+    final isOnline = prefs.getBool('is_online') ?? false;
+    if (_hasConnectedBefore && !isOnline) {
+      try {
+        await ApiServices.changeOnlineStatus(body: {"is_online": 1});
+        await prefs.setBool('is_online', true);
+        log("🔄 Reconnected — driver re-synced online");
+      } catch (e) {
+        log("⚠️ Reconnect sync failed: $e");
+      }
+    } else {
+      log("🆕 Initial WebSocket connection or already online — skipping sync");
+      _hasConnectedBefore = true;
+    }
     _channel!.stream.listen(
       (data) {
         log('📨 WebSocket received: $data');

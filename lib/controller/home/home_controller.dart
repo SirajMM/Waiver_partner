@@ -227,6 +227,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
       // Continue with regular location stream (for UI updates)
       // sendLiveLocation();
+      _startServiceHealthCheck();
 
       getVersionInfo();
       ProfileController.to.getProfile();
@@ -284,6 +285,42 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
   //   isOnline.value = prefs.getBool('isOnline') ?? false;
   // }
+
+  void _startServiceHealthCheck() {
+    // Stop any existing timer first
+    _serviceHealthTimer?.cancel();
+
+    // Run every 1 minute (tweak as needed)
+    _serviceHealthTimer = Timer.periodic(const Duration(minutes: 1), (_) async {
+      try {
+        log("🩺 Running service health check...");
+
+        final response = await ApiServices.getOnlineStatus();
+        final serverOnline = response.data?.isOnline ?? false;
+        final localOnline = box.read(BoxKeys.isOnline) ?? false;
+
+        // If server shows offline but app says online → resync
+        if (localOnline && !serverOnline) {
+          log("⚠️ Server shows offline but app says online → re-syncing online status...");
+          await ApiServices.changeOnlineStatus(body: {"is_online": 1});
+        }
+
+        // If app shows offline but server says online → fix local cache
+        if (!localOnline && serverOnline) {
+          log("⚠️ App offline but server online → syncing local storage...");
+          box.write(BoxKeys.isOnline, true);
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('is_online', true);
+          isOnline.value = true;
+        }
+      } catch (e, s) {
+        AppConstants.handleError(e, s: s);
+        log("❌ Error in service health check: $e");
+      }
+    });
+
+    log("✅ Service health check started");
+  }
 
 // FIX 5: Enhanced changeDriverOnlineStatus method
 
@@ -1364,37 +1401,63 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     recenter();
   }
 
-// FIX 3: Enhanced app termination handler
   Future<void> _handleAppTermination() async {
     try {
-      // Use a completer with timeout to prevent hanging
-      final completer = Completer<void>();
+      log("🧹 Handling app termination cleanup...");
 
-      // Start cleanup
-      _performCleanup().then((_) {
-        if (!completer.isCompleted) {
-          completer.complete();
-        }
-      }).catchError((e) {
-        log('Error during cleanup: $e');
-        if (!completer.isCompleted) {
-          completer.complete(); // Complete even on error
-        }
-      });
+      // 1️⃣ Mark driver offline via API
+      await ApiServices.changeOnlineStatus(body: {"is_online": 0});
+      log("📴 Driver marked offline due to app termination");
 
-      // Wait for cleanup with timeout
-      await completer.future.timeout(
-        const Duration(seconds: 3),
-        onTimeout: () {
-          log('Cleanup timed out - app will terminate anyway');
-        },
-      );
+      // 2️⃣ Stop background service and WebSocket
+      final service = FlutterBackgroundService();
+      final isRunning = await service.isRunning();
+      if (isRunning) {
+        service.invoke("stop_service"); // triggers disposal in background
+        log("🛑 Background service stopped on termination");
+      }
 
-      log('App termination cleanup completed');
+      // 3️⃣ Update local state
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('is_online', false);
+      box.write(BoxKeys.isOnline, false);
+      isOnline.value = false;
     } catch (e) {
-      log('Error during app termination cleanup: $e');
+      log("❌ Error during termination cleanup: $e");
     }
   }
+
+// FIX 3: Enhanced app termination handler
+  // Future<void> _handleAppTermination() async {
+  //   try {
+  //     // Use a completer with timeout to prevent hanging
+  //     final completer = Completer<void>();
+
+  //     // Start cleanup
+  //     _performCleanup().then((_) {
+  //       if (!completer.isCompleted) {
+  //         completer.complete();
+  //       }
+  //     }).catchError((e) {
+  //       log('Error during cleanup: $e');
+  //       if (!completer.isCompleted) {
+  //         completer.complete(); // Complete even on error
+  //       }
+  //     });
+
+  //     // Wait for cleanup with timeout
+  //     await completer.future.timeout(
+  //       const Duration(seconds: 3),
+  //       onTimeout: () {
+  //         log('Cleanup timed out - app will terminate anyway');
+  //       },
+  //     );
+
+  //     log('App termination cleanup completed');
+  //   } catch (e) {
+  //     log('Error during app termination cleanup: $e');
+  //   }
+  // }
 
   Future<void> _performCleanup() async {
     // Stop location tracking with timeout
