@@ -85,5 +85,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'waiver-partner-cdc85.firebasestorage.app',
     measurementId: 'G-T277CMQBPP',
   );
-
 }

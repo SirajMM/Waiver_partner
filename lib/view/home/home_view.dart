@@ -173,12 +173,12 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                       },
-                      onCameraIdle: () async => controller
-                              .pickUpLocation1?.name.value =
-                          await controller.getLocationDetails(
+                      onCameraIdle: () async => controller.pickUpLocation1?.name
+                          .value = await controller.getLocationDetails(
                               controller.currentPosition.value?.latitude ?? 0,
                               controller.currentPosition.value?.longitude ??
-                                  0.0),
+                                  0.0) ??
+                          "",
                       initialCameraPosition: CameraPosition(
                         target: LatLng(
                           controller.currentPosition.value?.latitude ?? 0,
@@ -1356,16 +1356,41 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
         decoration: BoxDecoration(
             color: AppConstants.getColor(),
             borderRadius: BorderRadius.circular(50.sp)),
-        padding: EdgeInsets.symmetric(vertical: 8.sp, horizontal: 30.sp),
+        padding: EdgeInsets.symmetric(vertical: 8.sp, horizontal: 20.sp),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // SizedBox(width: 5.w),
+            Obx(() => AnimatedOpacity(
+                  opacity: HomeController.to.isOnline.value ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Container(
+                    width: 10.sp,
+                    height: 10.sp,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.green.withOpacity(0.6),
+                          blurRadius: 6,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                  ),
+                )),
+            SizedBox(width: 7.w),
             Image.asset(
               AppIcons.wallet,
               color: Get.theme.primaryColor,
               height: 18.sp,
             ),
             SizedBox(width: 2.w),
+
+            // ✅ Online indicator (visible only when online)
+
+            SizedBox(width: 4.w),
             Obx(() {
               return Text(
                 " ₹ ${HomeController.to.walletBalance.value ?? 0.0}",

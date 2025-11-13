@@ -284,6 +284,7 @@ import 'package:get/get.dart';
 import 'package:location/location.dart';
 import 'package:app_settings/app_settings.dart'; // Add this package to pubspec.yaml
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants/get_storage_constants.dart';
 import '../../main.dart';
@@ -292,10 +293,10 @@ class SplashController extends GetxController implements GetxService {
   @override
   void onInit() async {
     super.onInit();
-
+    _syncTokenToSharedPreferences();
     // Delayed execution for splash screen
     await Future.delayed(const Duration(seconds: 3));
-    
+
     final token = box.read(BoxKeys.token);
     log('Token: ${token ?? "No Token"}');
 
@@ -304,7 +305,8 @@ class SplashController extends GetxController implements GetxService {
 
   Future<void> _checkLocationPermissionAndProceed(String? token) async {
     try {
-      final PermissionStatus permissionGranted = await Location().hasPermission();
+      final PermissionStatus permissionGranted =
+          await Location().hasPermission();
       bool serviceEnabled = await Location().serviceEnabled();
 
       log('Permission Status: $permissionGranted');
@@ -333,7 +335,7 @@ class SplashController extends GetxController implements GetxService {
             return;
           }
         }
-        
+
         // Both permission and service are enabled
         log('All permissions granted and service enabled. Proceeding...');
         AppConstants.locationData = getLocationData();
@@ -342,7 +344,6 @@ class SplashController extends GetxController implements GetxService {
         log('Unexpected state. Redirecting to permission screen...');
         _redirectToLocationPermissionScreen();
       }
-
     } catch (e) {
       log('Error checking location permission: $e');
       _redirectToLocationPermissionScreen();
@@ -362,7 +363,7 @@ class SplashController extends GetxController implements GetxService {
     try {
       // First request permission if not granted
       var permissionGranted = await Location().hasPermission();
-      
+
       if (permissionGranted == PermissionStatus.denied) {
         // Request permission
         permissionGranted = await Location().requestPermission();
@@ -386,7 +387,7 @@ class SplashController extends GetxController implements GetxService {
             return;
           }
         }
-        
+
         // Both permission and service are enabled, proceed
         log('Both permission and service enabled. Proceeding...');
         final token = box.read(BoxKeys.token);
@@ -458,6 +459,20 @@ class SplashController extends GetxController implements GetxService {
           Get.offAllNamed(AppRoutes1.getDriverTypeSelectionRoute());
         }
       }
+    }
+  }
+
+  Future<void> _syncTokenToSharedPreferences() async {
+    try {
+      final token = box.read(BoxKeys.token);
+
+      if (token != null && token.isNotEmpty) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', token);
+        log('✅ Token synced in SplashController');
+      }
+    } catch (e) {
+      log('❌ Error syncing token in SplashController: $e');
     }
   }
 

@@ -25,7 +25,7 @@ android {
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion "28.0.12433566"
     compileOptions {
-        coreLibraryDesugaringEnabled true
+        coreLibraryDesugaringEnabled true  
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -40,10 +40,16 @@ android {
 
     defaultConfig {
         applicationId "com.waiver.driver"
-        minSdkVersion 23
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a'
+        }
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutter.versionCode
         versionName flutter.versionName
+
+        // FunTouch OS Fix - Disable multiDex for compatibility
+        multiDexEnabled true
     }
 
     signingConfigs {
@@ -58,7 +64,13 @@ android {
     buildTypes {
         release {
             shrinkResources false
+            minifyEnabled false
             signingConfig signingConfigs.release
+        }
+        debug {
+            // FunTouch OS Fix - Ensure debug builds work properly
+            shrinkResources false
+            minifyEnabled false
         }
     }
 }
@@ -72,4 +84,8 @@ dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.work:work-runtime:2.9.0")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+
+       // FunTouch OS Fix - Add explicit Firebase BOM for version management
+    implementation platform('com.google.firebase:firebase-bom:32.7.0')
+    implementation 'com.google.firebase:firebase-messaging'
 }

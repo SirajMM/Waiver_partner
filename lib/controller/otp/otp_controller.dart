@@ -10,7 +10,8 @@ import 'package:waiver_driver/backend/model/otp/otp_model.dart';
 import 'package:waiver_driver/backend/parser/otp/otp_parser.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../backend/LocationHandler/LocationTrackingService.dart';
 import '../../backend/api/api_services/api_services.dart';
 import '../../core/constants/get_storage_constants.dart';
 import '../../helper/router/app_routes/app_routes.dart';
@@ -63,6 +64,7 @@ class OtpController extends GetxController {
         "code": mobileCode ?? "",
         "user_type": userTypeCode,
       };
+      log("otp body $body ***************");
       SendPhoneOtpResponseModel response =
           await ApiServices.sendPhoneOtp(body: body);
       OtpController.to.showTimer.value = ShowTimerState.timer;
@@ -73,6 +75,7 @@ class OtpController extends GetxController {
   }
 
   validateOtp() async {
+    final prefs = await SharedPreferences.getInstance();
     try {
       log("mobileCode:$mobileCode");
       isButtonLoading.value = true;
@@ -87,7 +90,7 @@ class OtpController extends GetxController {
           // "fcm_token": DateTime.now().toIso8601String()
           "fcm_token": await (FirebaseMessaging.instance.getToken()) ?? ""
         };
-
+        log("validate otp body $body ***************");
         VerifyOtpResponseModel response =
             await ApiServices.phoneAuth(body: body);
 
@@ -113,6 +116,9 @@ class OtpController extends GetxController {
           } else {
             box.write(BoxKeys.token, response.data?.accessToken);
 
+            // 🔥 Safe location service initialization
+            await _initializeLocationService();
+
             if (isVerifed ?? false) {
               Get.offAllNamed(AppRoutes1.getHomeInRoute());
             } else if (isRegistered ?? false) {
@@ -129,6 +135,32 @@ class OtpController extends GetxController {
       AppConstants.handleError(error, s: s);
     } finally {
       isButtonLoading.value = false;
+    }
+  }
+
+  Future<void> _initializeLocationService() async {
+    try {
+      LocationTrackingService locationService;
+
+      // Check if service is already registered
+      if (Get.isRegistered<LocationTrackingService>()) {
+        locationService = Get.find<LocationTrackingService>();
+        log('✅ LocationTrackingService found');
+      } else {
+        // Register it if not found
+        locationService = Get.put(LocationTrackingService(), permanent: true);
+        log('✅ LocationTrackingService registered');
+
+        // Give it a moment to initialize
+        await Future.delayed(Duration(milliseconds: 500));
+      }
+
+      // Initialize the service
+
+      log('✅ Location service initialized successfully');
+    } catch (e) {
+      log('❌ Error initializing location service: $e');
+      // Don't throw error - let login continue
     }
   }
 }

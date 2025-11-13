@@ -1,7 +1,7 @@
 name: waiver_driver
 description: "Waiver Driver App"
 publish_to: 'none'
-version: 3.1.2+47
+version: 3.1.2+51
 
 environment:
   sdk: ^3.6.0
@@ -14,7 +14,7 @@ dependencies:
   get_storage: ^2.1.1
   flutter_svg: ^2.0.16
   google_fonts: ^6.2.1
-  google_maps_flutter: ^2.12.1
+  google_maps_flutter: ^2.13.1
   geolocator: ^14.0.1
   sms_autofill: ^2.4.1
   flutter_screenutil: ^5.9.3
@@ -25,24 +25,25 @@ dependencies:
   audioplayers: ^6.4.0
   cached_network_image: ^3.4.1
   package_info_plus: ^8.3.0
+  # flutter_foreground_task: ^9.1.0
  
   connectivity_plus: ^6.1.4
   internet_connection_checker: ^3.0.1
   flutter_callkit_incoming:
     path: lib/core/packages/flutter_callkit_incoming-master
 
-  workmanager: ^0.9.0
+  workmanager: ^0.9.0+3
   flutter_background_service: ^5.1.0
   flutter_local_notifications: ^19.4.0
-  in_app_update: ^4.2.3
+  # in_app_update: ^4.2.3
   crop_your_image: ^2.0.0
 
 
-  share_plus: ^11.0.0
-  firebase_core: ^3.13.0
-  firebase_messaging: ^15.2.5
+  share_plus: ^12.0.0
+  firebase_core: ^4.1.0
+  firebase_messaging: ^16.0.1
   awesome_notifications: ^0.10.1
-  google_sign_in: ^6.1.4
+  google_sign_in: ^7.1.1
   web_socket_channel: ^3.0.3
   url_launcher: ^6.3.1
   flutter_custom_utils: ^0.4.33
@@ -57,7 +58,7 @@ dependencies:
   logger: ^2.5.0
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  firebase_database: ^11.3.7
+  firebase_database: ^12.0.1
   razorpay_flutter: ^1.4.0
   app_settings: ^6.1.1
   lottie: ^3.3.1

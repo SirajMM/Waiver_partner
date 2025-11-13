@@ -16,3 +16,7 @@
 -keepclasseswithmembers class * {
   public void onPayment*(...);
 }
+
+# Keep background service classes
+-keep class id.flutter.flutter_background_service.** { *; }
+-keep class androidx.work.impl.background.systemjob.SystemJobService { *; }

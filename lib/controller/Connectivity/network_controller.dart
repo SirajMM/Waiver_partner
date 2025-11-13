@@ -13,24 +13,19 @@ import '../../core/constants/get_storage_constants.dart';
 class NetworkController extends GetxService {
   final Connectivity _connectivity = Connectivity();
   @override
-  void onInit() async {
+  void onInit() {
     super.onInit();
     _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
     Geolocator.getServiceStatusStream().listen(_requestPermission);
     checkForInReview();
-    try {
-      final perMissionStatus = await Location().hasPermission();
-      if (perMissionStatus == PermissionStatus.granted) {
-        Location().getLocation().then((value) => AppConstants.locationData = value);
-      }
-    } catch (e) {
-      log('Error getting location: $e');
-    }
+    Location().getLocation().then((value) => AppConstants.locationData = value);
+    log("AppConstants.locationData $AppConstants.locationData >>>>>>>");
   }
 
   RxBool inReview = false.obs;
 
-  Future<void> _updateConnectionStatus(List<ConnectivityResult> connectivityResult) async {
+  Future<void> _updateConnectionStatus(
+      List<ConnectivityResult> connectivityResult) async {
     if (connectivityResult.contains(ConnectivityResult.none)) {
       Get.closeAllSnackbars();
       _showSnackbar(
@@ -98,15 +93,15 @@ class NetworkController extends GetxService {
   }
 
   Future<void> _requestPermission(ServiceStatus status) async {
-    final perMissionStatus = await Location().hasPermission();
-    if (status == ServiceStatus.disabled && perMissionStatus == PermissionStatus.granted) {
+    if (status == ServiceStatus.disabled) {
       bool isEnabled = await Location().requestService();
       if (!isEnabled) _requestPermission(status);
     }
   }
 
   void checkForInReview() {
-    FirebaseDatabase.instance.ref().child("inReview").onValue.listen((DatabaseEvent event) {
+    FirebaseDatabase.instance.ref().child("inReview").onValue.listen(
+        (DatabaseEvent event) {
       final snapshot = event.snapshot;
 
       final data = snapshot.value;

@@ -1606,7 +1606,7 @@ class EarningSummaryWeekly extends StatelessWidget {
               EarningItemDistance(item: controller.weeklyDistance),
             ],
           ),
-          GetX<EarningController>(builder: (controller) {
+          Obx(() {
             return controller.isGraphLoading.value
                 ? LoadingAnimationDots()
                 : ExpansionTile(
@@ -1619,23 +1619,19 @@ class EarningSummaryWeekly extends StatelessWidget {
                           TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                     ),
                     children: [
-                      Obx(() {
-                        return DetailsItemView(
-                          text: "Your earnings",
-                          value: "₹ ${controller.weeklyTripFare.value ?? 0}",
-                        );
-                      }),
-                      Obx(() => DetailsItemView(
-                            text: "Incentives",
-                            value: "- ₹ ${controller.weeklyIncentives ?? 0}",
-                          )),
-                      Obx(() => DetailsItemView(
-                            text: "Refer Earnings",
-                            value: "₹ ${controller.weeklyReferEarnings ?? 0}",
-                          )),
-                      SizedBox(
-                        height: 10.sp,
+                      DetailsItemView(
+                        text: "Your earnings",
+                        value: "₹ ${controller.weeklyTripFare.value ?? 0}",
                       ),
+                      DetailsItemView(
+                        text: "Incentives",
+                        value: "- ₹ ${controller.weeklyIncentives ?? 0}",
+                      ),
+                      DetailsItemView(
+                        text: "Refer Earnings",
+                        value: "₹ ${controller.weeklyReferEarnings ?? 0}",
+                      ),
+                      SizedBox(height: 10.sp),
                     ],
                   );
           }),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +15,8 @@ import '../../backend/api/api_services/api_services.dart';
 import '../../helper/router/app_routes/app_routes.dart';
 
 import '../../view/loading_animation/loading_animation.dart';
+import '../home/home_controller.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // class SettingControllerBinding extends Bindings {
 //   @override
@@ -91,9 +95,44 @@ class SettingController extends GetxController {
 
   deleteAccount() async {
     try {
+      try {
+        if (HomeController.to.isOnline.value) {
+          await HomeController.to.changeDriverOnlineStatus();
+        }
+        log("Deleted isOnline ${HomeController.to.isOnline}");
+
+        // Use the correct method from LocationTrackingService
+        if (HomeController.to.locationTrackingService != null) {
+          await HomeController.to.locationTrackingService!
+              .updateOnlineStatus(false)
+              .timeout(
+            const Duration(seconds: 3),
+            onTimeout: () {
+              log('⚠️ Location service stop timed out, continuing with deleted');
+            },
+          );
+        }
+      } catch (e) {
+        log('❌ Error stopping location service: $e');
+      }
       var response = await ApiServices.deleteAccount(body: {});
       if (response.status == 200) {
         await FirebaseMessaging.instance.deleteToken();
+        try {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.remove('auth_token');
+          await prefs.remove('driver_state');
+          await prefs.remove('passenger_id');
+          await prefs.remove('is_online');
+          await prefs.remove('websocket_base_url');
+          await prefs.remove('websocket_live_location_path');
+          await prefs.remove(
+              'isOnline'); // Also remove this key used in HomeController
+
+          log('✅ SharedPreferences cleared successfully');
+        } catch (e) {
+          log('❌ Error clearing SharedPreferences: $e');
+        }
         await box.erase();
         // Clear entire navigation stack
         Get.offAllNamed(AppRoutes1.getDriverTypeSelectionRoute());
