@@ -29,6 +29,7 @@ import 'package:uuid/uuid.dart';
 
 import 'backend/LocationHandler/LocationTrackingService.dart'
     show LocationTrackingService, onStart, onIosBackground;
+import 'backend/facebook_sdk_service/facebook_sdk_services.dart';
 import 'backend/model/home/home_model.dart';
 import 'backend/notificaton_services/notification_service/notification_service.dart';
 import 'core/constants/enums/enums.dart';
@@ -44,8 +45,7 @@ void startReceivePort() {
   IsolateNameServer.removePortNameMapping('main_send_port');
 
   _receivePort ??= ReceivePort();
-  IsolateNameServer.registerPortWithName(
-      _receivePort!.sendPort, 'main_send_port');
+  IsolateNameServer.registerPortWithName(_receivePort!.sendPort, 'main_send_port');
 
   _receivePort!.listen((message) async {
     if (message is Map<String, dynamic>) {
@@ -85,8 +85,7 @@ void startReceivePort() {
 
 void _startLocationUpdates({int interval = 10}) {
   _locationTimer?.cancel();
-  _locationTimer =
-      Timer.periodic(Duration(seconds: interval), (_) => _sendLocationNow());
+  _locationTimer = Timer.periodic(Duration(seconds: interval), (_) => _sendLocationNow());
 }
 
 void _stopLocationUpdates() {
@@ -109,10 +108,7 @@ void _sendLocationNow() {
 @pragma('vm:entry-point')
 void sendLocationUpdateFromBackground() {
   final sendPort = IsolateNameServer.lookupPortByName('main_send_port');
-  sendPort?.send({
-    'title': 'send_live_location',
-    'timestamp': DateTime.now().millisecondsSinceEpoch
-  });
+  sendPort?.send({'title': 'send_live_location', 'timestamp': DateTime.now().millisecondsSinceEpoch});
 }
 
 @pragma('vm:entry-point')
@@ -218,8 +214,7 @@ Future<void> main() async {
   await Hive.initFlutter();
 
   // Initialize Firebase
-  await Firebase.initializeApp(
-      name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
 
   // Initialize Awesome Notifications BEFORE any other services
   // ✅ REMOVED: Now handled by NotificationService.onInit() to avoid conflicts
@@ -244,17 +239,17 @@ Future<void> main() async {
 
   // Firebase Messaging Listeners
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  FirebaseMessaging.onMessage
-      .listen((msg) => NotificationService.onMessage(notification: msg));
-  FirebaseMessaging.onMessageOpenedApp.listen(
-      (msg) => NotificationService.onMessageOpenedApp(notification: msg));
+  FirebaseMessaging.onMessage.listen((msg) => NotificationService.onMessage(notification: msg));
+  FirebaseMessaging.onMessageOpenedApp
+      .listen((msg) => NotificationService.onMessageOpenedApp(notification: msg));
 
   // Orientation
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // Start Receive Port
   startReceivePort();
-
+  await FacebookAnalyticsService.initialize();
+  await FacebookAnalyticsService.logAppLaunch();
   // HTTP Overrides
   HttpOverrides.global = MyHttpOverrides();
 
@@ -363,8 +358,7 @@ Future<void> _createNotificationChannels() async {
     );
 
     await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
     log('✅ Flutter Local notification channel created');
@@ -414,7 +408,6 @@ Future<void> requestPermissions() async {
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback = (cert, host, port) => true;
+    return super.createHttpClient(context)..badCertificateCallback = (cert, host, port) => true;
   }
 }

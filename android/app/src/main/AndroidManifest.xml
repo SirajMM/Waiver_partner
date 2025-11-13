@@ -50,13 +50,18 @@
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
 
     <application
-        android:label="Waiver Partner"
+        android:label="@string/app_name"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
         android:allowBackup="false"
         android:fullBackupOnly="false"
         android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true">
+
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id"/>
+        <meta-data android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token"/>
 
         <!-- Default Firebase notification icon -->
         <meta-data

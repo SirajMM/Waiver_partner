@@ -26,10 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<string>NO</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>ITSAppUsesNonExemptEncryption</key>
-    <false/>
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires access to the camera to verify your identity through valid documents.</string>
 	<key>NSLocalNetworkUsageDescription</key>
@@ -46,11 +46,18 @@
 	<array>
 		<string>fetch</string>
 		<string>remote-notification</string>
+		<string>location</string>
 	</array>
 	<key>UIDeviceFamily</key>
 	<array>
 		<integer>1</integer>
 	</array>
+	<key>FacebookAppID</key>
+    <string>1980268039415980</string>
+    <key>FacebookClientToken</key>
+    <string>cbe0c97b40737ed7063bbe4bc6dfe1cc</string>
+    <key>FacebookDisplayName</key>
+    <string>Waiver Partner</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
