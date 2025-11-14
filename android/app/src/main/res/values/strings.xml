@@ -1,6 +1,7 @@
-<!-- res/values/strings.xml -->
-
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="basic_notification_channel">High Importance Channel</string>
+    <string name="facebook_app_id">1980268039415980</string>
+    <string name="facebook_client_token">cbe0c97b40737ed7063bbe4bc6dfe1cc</string>
+    <string name="app_name">Waiver Partner</string>
 </resources>
