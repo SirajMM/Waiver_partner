@@ -24,6 +24,7 @@ import 'package:waiver_driver/main.dart';
 import 'package:waiver_driver/view/home/Widget/GoingToDestinationWidget.dart';
 import 'package:waiver_driver/view/home/Widget/LoadingStateWidget.dart';
 import 'package:waiver_driver/view/home/Widget/ReadyToGoToDestinationWidget.dart';
+import 'package:waiver_driver/view/home/Widget/SafeGoogleMap.dart';
 import 'package:waiver_driver/view/home/Widget/goingToPickUpWidget.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
@@ -145,54 +146,55 @@ class HomeScreen extends StatelessWidget {
                 body: SizedBox(
                   width: Get.width,
                   height: Get.height,
-                  child: GetX<HomeController>(builder: (controller) {
-                    return GoogleMap(
-                      mapType: MapType.normal,
-                      // myLocationEnabled: true,
-                      myLocationButtonEnabled: true,
-                      zoomControlsEnabled: false,
-                      markers: {
-                        Marker(
-                          markerId: const MarkerId("1"),
-                          icon: BitmapDescriptor.defaultMarker,
-                          position: LatLng(
-                            controller.currentPosition.value?.latitude ?? 0.0,
-                            controller.currentPosition.value?.longitude ?? 0.0,
-                          ),
-                        ),
-                        if (controller.startLocationLatMarker != null &&
-                            controller.startLocationLongMarker != null &&
-                            controller.startLocationLatMarker != 0.0 &&
-                            controller.startLocationLongMarker != 0.0)
-                          Marker(
-                            icon: BitmapDescriptor.defaultMarker,
-                            markerId: const MarkerId("User"),
-                            position: LatLng(
-                              controller.startLocationLatMarker!.toDouble(),
-                              controller.startLocationLongMarker!.toDouble(),
-                            ),
-                          ),
-                      },
-                      onCameraIdle: () async => controller.pickUpLocation1?.name
-                          .value = await controller.getLocationDetails(
-                              controller.currentPosition.value?.latitude ?? 0,
-                              controller.currentPosition.value?.longitude ??
-                                  0.0) ??
-                          "",
-                      initialCameraPosition: CameraPosition(
-                        target: LatLng(
-                          controller.currentPosition.value?.latitude ?? 0,
-                          controller.currentPosition.value?.longitude ?? 0,
-                        ),
-                        zoom: 15,
-                      ),
-                      onMapCreated:
-                          (GoogleMapController googleMapController) async {
-                        controller.googleMapController = googleMapController;
-                        await controller.onMapCreate();
-                      },
-                    );
-                  }),
+                  child: const SafeGoogleMap(),
+                  // GetX<HomeController>(builder: (controller) {
+                  //   return GoogleMap(
+                  //     mapType: MapType.normal,
+                  //     // myLocationEnabled: true,
+                  //     myLocationButtonEnabled: true,
+                  //     zoomControlsEnabled: false,
+                  //     markers: {
+                  //       Marker(
+                  //         markerId: const MarkerId("1"),
+                  //         icon: BitmapDescriptor.defaultMarker,
+                  //         position: LatLng(
+                  //           controller.currentPosition.value?.latitude ?? 0.0,
+                  //           controller.currentPosition.value?.longitude ?? 0.0,
+                  //         ),
+                  //       ),
+                  //       if (controller.startLocationLatMarker != null &&
+                  //           controller.startLocationLongMarker != null &&
+                  //           controller.startLocationLatMarker != 0.0 &&
+                  //           controller.startLocationLongMarker != 0.0)
+                  //         Marker(
+                  //           icon: BitmapDescriptor.defaultMarker,
+                  //           markerId: const MarkerId("User"),
+                  //           position: LatLng(
+                  //             controller.startLocationLatMarker!.toDouble(),
+                  //             controller.startLocationLongMarker!.toDouble(),
+                  //           ),
+                  //         ),
+                  //     },
+                  //     onCameraIdle: () async => controller.pickUpLocation1?.name
+                  //         .value = await controller.getLocationDetails(
+                  //             controller.currentPosition.value?.latitude ?? 0,
+                  //             controller.currentPosition.value?.longitude ??
+                  //                 0.0) ??
+                  //         "",
+                  //     initialCameraPosition: CameraPosition(
+                  //       target: LatLng(
+                  //         controller.currentPosition.value?.latitude ?? 0,
+                  //         controller.currentPosition.value?.longitude ?? 0,
+                  //       ),
+                  //       zoom: 15,
+                  //     ),
+                  //     onMapCreated:
+                  //         (GoogleMapController googleMapController) async {
+                  //       controller.googleMapController = googleMapController;
+                  //       await controller.onMapCreate();
+                  //     },
+                  //   );
+                  // }),
                 ));
       }),
     );
