@@ -42,7 +42,7 @@ class AddDriverScreen extends StatelessWidget {
                                     controller: AddDriverController
                                         .to.controllerDriverName,
                                     header: "Driver Full Name",
-                                    placeHolder: "e.g. #25254565",
+                                    placeHolder: "e.g. ALEX JHON",
                                     textCapitalization:
                                         TextCapitalization.characters,
                                     validator: (value) =>

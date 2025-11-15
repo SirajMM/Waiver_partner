@@ -33,8 +33,11 @@ import '../../backend/model/earning/earning_model.dart';
 import '../../core/colors/app_colors.dart';
 import '../../core/constants/enums/enums.dart';
 import '../../core/constants/get_storage_constants.dart';
+import '../../view/home/Widget/update_widget.dart';
 import '../profile/profile_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:smart_app_update_flutter/smart_app_update_flutter.dart' as sm;
 
 class HomeController extends GetxController with WidgetsBindingObserver {
   HomeController({required this.parser});
@@ -181,6 +184,13 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     // });
 
     super.onClose();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    UpdateChecker.checkForUpdate();
+    // checkForUpdate();
   }
 
   @override
@@ -1549,6 +1559,23 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     } catch (e) {
       log('❌ Error syncing token: $e');
     }
+  }
+
+  Future<void> checkForUpdate() async {
+    log("Check upatte####################");
+    final remoteConfig = FirebaseRemoteConfig.instance;
+    await remoteConfig.setConfigSettings(RemoteConfigSettings(
+      minimumFetchInterval: Duration.zero,
+      fetchTimeout: Duration(seconds: 10),
+    ));
+    await remoteConfig.fetchAndActivate();
+    bool isForceUpdate = false;
+    isForceUpdate = FirebaseRemoteConfig.instance.getBool("force_update");
+    log("Check update $isForceUpdate####################");
+    await sm.AppUpdateManager.checkAndPrompt(
+      forceUpdate: isForceUpdate,
+      repeat_totalminutes: isForceUpdate ? 0 : 60,
+    );
   }
 
   void _loadCurrentPositionFromStorage() {
