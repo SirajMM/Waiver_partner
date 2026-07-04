@@ -9,7 +9,7 @@ import 'package:waiver_driver/backend/parser/ChauffeurProof/ChauffeurProof_parse
 import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+// import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 
 import '../../backend/api/api_services/api_services.dart';
@@ -67,27 +67,26 @@ class ChauffeurProofController extends GetxController {
 //   return false;
 // }
 
-  Future<bool> isConnectedToInternet() async {
-    subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((List<ConnectivityResult> result) async {
-      bool isConnected =
-          await InternetConnectionChecker.createInstance().hasConnection;
-
-      isInternetConnected.value = isConnected;
-    });
-    return isInternetConnected.value;
-  }
+  // Future<bool> isConnectedToInternet() async {
+  //   subscription = Connectivity()
+  //       .onConnectivityChanged
+  //       .listen((List<ConnectivityResult> result) async {
+  //     bool isConnected =
+  //         await InternetConnectionChecker.createInstance().hasConnection;
+  //
+  //     isInternetConnected.value = isConnected;
+  //   });
+  //   return isInternetConnected.value;
+  // }
 
   RxBool isAgreedToTermsAndConditions = false.obs;
   RxBool showTermsAndConditionsError = false.obs;
   GetProfilePhotoResponseModel? profilePhotoResponse;
   Future<void> getProfileImage() async {
     profilePhotoResponse = await ApiServices.getProfileImage();
-    profilePhoto.status.value =
-        profilePhotoResponse?.data?.profileImage?.isNotEmpty ?? false
-            ? ApprovalStatus.waitingForApproval
-            : ApprovalStatus.notUpload;
+    profilePhoto.status.value = profilePhotoResponse?.data?.profileImage?.isNotEmpty ?? false
+        ? ApprovalStatus.waitingForApproval
+        : ApprovalStatus.notUpload;
   }
 
   GetBankAccountResponseModel? bankAccountResponse;
@@ -104,17 +103,14 @@ class ChauffeurProofController extends GetxController {
     GetDocumentsResponseModel response = await ApiServices.getDocument();
 
     profilePhoto.images.value = response.data
-            ?.firstWhereOrNull(
-                (element) => element.documentType == DocumentType.profilePhoto)
+            ?.firstWhereOrNull((element) => element.documentType == DocumentType.profilePhoto)
             ?.files ??
         [];
-    profilePhoto.status.value = checkApprovalStatus(
-        proofDocument: response.data ?? [],
-        documentType: DocumentType.profilePhoto);
+    profilePhoto.status.value =
+        checkApprovalStatus(proofDocument: response.data ?? [], documentType: DocumentType.profilePhoto);
 
     aadharCard.images.value = response.data
-            ?.firstWhereOrNull(
-                (element) => element.documentType == DocumentType.aadhar)
+            ?.firstWhereOrNull((element) => element.documentType == DocumentType.aadhar)
             ?.files ??
         [];
     aadharCard.status.value = checkApprovalStatus(
@@ -123,28 +119,25 @@ class ChauffeurProofController extends GetxController {
     );
 
     drivingLicense.images.value = response.data
-            ?.firstWhereOrNull(
-                (element) => element.documentType == DocumentType.license)
+            ?.firstWhereOrNull((element) => element.documentType == DocumentType.license)
             ?.files ??
         [];
-    drivingLicense.status.value = checkApprovalStatus(
-        proofDocument: response.data ?? [], documentType: DocumentType.license);
+    drivingLicense.status.value =
+        checkApprovalStatus(proofDocument: response.data ?? [], documentType: DocumentType.license);
 
     policeClearanceCertificate.images.value = response.data
-            ?.firstWhereOrNull((element) =>
-                element.documentType == DocumentType.policeClearanceCertificate)
+            ?.firstWhereOrNull(
+                (element) => element.documentType == DocumentType.policeClearanceCertificate)
             ?.files ??
         [];
     policeClearanceCertificate.status.value = checkApprovalStatus(
-        proofDocument: response.data ?? [],
-        documentType: DocumentType.policeClearanceCertificate);
+        proofDocument: response.data ?? [], documentType: DocumentType.policeClearanceCertificate);
   }
 
   ApprovalStatus checkApprovalStatus(
-      {required List<ProofDocument> proofDocument,
-      required String documentType}) {
-    ProofDocument? document = proofDocument
-        .firstWhereOrNull((element) => element.documentType == documentType);
+      {required List<ProofDocument> proofDocument, required String documentType}) {
+    ProofDocument? document =
+        proofDocument.firstWhereOrNull((element) => element.documentType == documentType);
     return document?.status == ChauffeurProofApprovalType.approved
         ? ApprovalStatus.approved
         : document?.status == ChauffeurProofApprovalType.waitingForApproval
@@ -156,8 +149,7 @@ class ChauffeurProofController extends GetxController {
 
   ProofModel aadharCard = ProofModel(
     text: "Aadhar Card",
-    subText:
-        "Please upload the specified document with consideration of the below given instructions",
+    subText: "Please upload the specified document with consideration of the below given instructions",
     images: <FileElement>[].obs,
     status: ApprovalStatus.notUpload.obs,
     type: DocumentType.aadhar,
@@ -168,8 +160,7 @@ class ChauffeurProofController extends GetxController {
 
   ProofModel profilePhoto = ProofModel(
     text: "Profile Photo",
-    subText:
-        "Please upload the specified document with consideration of the below given instructions",
+    subText: "Please upload the specified document with consideration of the below given instructions",
     images: <FileElement>[].obs,
     status: ApprovalStatus.notUpload.obs,
     type: DocumentType.profilePhoto,
@@ -179,8 +170,7 @@ class ChauffeurProofController extends GetxController {
   );
   ProofModel drivingLicense = ProofModel(
     text: "Driving License",
-    subText:
-        "Please upload the specified document with consideration of the below given instructions",
+    subText: "Please upload the specified document with consideration of the below given instructions",
     images: <FileElement>[].obs,
     status: ApprovalStatus.notUpload.obs,
     type: DocumentType.license,
@@ -192,8 +182,7 @@ class ChauffeurProofController extends GetxController {
     text: "Police Clearance Certificate/"
         "\nOnline platform ID/"
         "\nPan Card",
-    subText:
-        "Please upload the specified document with consideration of the below given instructions",
+    subText: "Please upload the specified document with consideration of the below given instructions",
     images: <FileElement>[].obs,
     status: ApprovalStatus.notUpload.obs,
     type: DocumentType.policeClearanceCertificate,
@@ -204,8 +193,7 @@ class ChauffeurProofController extends GetxController {
 
   ProofModel bankAccount = ProofModel(
     text: "Bank Account",
-    subText:
-        "Please upload the specified document with consideration of the below given instructions",
+    subText: "Please upload the specified document with consideration of the below given instructions",
     images: <FileElement>[].obs,
     status: ApprovalStatus.waitingForApproval.obs,
     type: DocumentType.none,
@@ -221,12 +209,10 @@ class ChauffeurProofController extends GetxController {
           policeClearanceCertificate.status.value == ApprovalStatus.approved &&
           bankAccount.status.value == ApprovalStatus.approved) {
         Get.toNamed(AppRoutes.home);
-      } else if (profilePhoto.status.value ==
-              ApprovalStatus.waitingForApproval &&
+      } else if (profilePhoto.status.value == ApprovalStatus.waitingForApproval &&
           aadharCard.status.value == ApprovalStatus.waitingForApproval &&
           drivingLicense.status.value == ApprovalStatus.waitingForApproval &&
-          policeClearanceCertificate.status.value ==
-              ApprovalStatus.waitingForApproval &&
+          policeClearanceCertificate.status.value == ApprovalStatus.waitingForApproval &&
           bankAccount.status.value == ApprovalStatus.waitingForApproval) {
         Get.toNamed(AppRoutes.waitingForAuthorization);
         // Get.toNamed(AppRoutes.home);
@@ -236,8 +222,7 @@ class ChauffeurProofController extends GetxController {
             backgroundColor: Colors.transparent,
             padding: EdgeInsets.zero,
             messageText: AppSnackBar(
-              text:
-                  " The document must be verified by Authority Please wait for approval, Thank you",
+              text: " The document must be verified by Authority Please wait for approval, Thank you",
             ),
           ),
         );
@@ -248,8 +233,7 @@ class ChauffeurProofController extends GetxController {
             backgroundColor: Colors.transparent,
             padding: EdgeInsets.zero,
             messageText: AppSnackBar(
-              text:
-                  "All documents  must be uploaded and approved before you can proceed, Please wait",
+              text: "All documents  must be uploaded and approved before you can proceed, Please wait",
             ),
           ),
         );

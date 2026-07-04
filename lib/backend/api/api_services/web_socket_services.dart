@@ -8,11 +8,11 @@ import '../../../core/constants/get_storage_constants.dart';
 import '../../../main.dart';
 
 class WebSocketServices {
-  static Uri url = Uri.parse(
-      "${WebSocketUrl.base}${WebSocketUrl.liveLocation}token=${box.read(BoxKeys.token)}");
+  static Uri url =
+      Uri.parse("${WebSocketUrl.base}${WebSocketUrl.liveLocation}token=${box.read(BoxKeys.token)}");
   static final channel = WebSocketChannel.connect(url);
 
-  static sendLiveLocation({required Map<String, dynamic> body}) {
+  static void sendLiveLocation({required Map<String, dynamic> body}) {
     log("$url");
     log("json.encode(body)");
     log(json.encode(body));

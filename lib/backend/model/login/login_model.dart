@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:google_sign_in/google_sign_in.dart';
-
 class CountryModel {
   String image;
   String name;
@@ -21,8 +19,7 @@ class CountryModel {
 SendPhoneOtpResponseModel sendPhoneOtpResponseModelFromJson(String str) =>
     SendPhoneOtpResponseModel.fromJson(json.decode(str));
 
-String sendPhoneOtpResponseModelToJson(SendPhoneOtpResponseModel data) =>
-    json.encode(data.toJson());
+String sendPhoneOtpResponseModelToJson(SendPhoneOtpResponseModel data) => json.encode(data.toJson());
 
 class SendPhoneOtpResponseModel {
   int? status;
@@ -35,12 +32,10 @@ class SendPhoneOtpResponseModel {
     this.error,
   });
 
-  factory SendPhoneOtpResponseModel.fromJson(Map<String, dynamic> json) =>
-      SendPhoneOtpResponseModel(
+  factory SendPhoneOtpResponseModel.fromJson(Map<String, dynamic> json) => SendPhoneOtpResponseModel(
         status: json["status"],
         message: json["message"],
-        error:
-            json["error"] != null ? ErrorDetails.fromJson(json["error"]) : null,
+        error: json["error"] != null ? ErrorDetails.fromJson(json["error"]) : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -64,9 +59,8 @@ class ErrorDetails {
       );
 
   Map<String, dynamic> toJson() => {
-        "non_field_errors": nonFieldErrors != null
-            ? List<dynamic>.from(nonFieldErrors!.map((x) => x))
-            : null,
+        "non_field_errors":
+            nonFieldErrors != null ? List<dynamic>.from(nonFieldErrors!.map((x) => x)) : null,
       };
 }
 
@@ -75,9 +69,5 @@ class ErrorDetails {
 class ArgumentModelForOtpPage {
   String mobilePhoneNumber;
   String mobileCode;
-  GoogleSignInAccount? user;
-  ArgumentModelForOtpPage(
-      {required this.mobileCode,
-      required this.user,
-      required this.mobilePhoneNumber});
+  ArgumentModelForOtpPage({required this.mobileCode, required this.mobilePhoneNumber});
 }

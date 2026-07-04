@@ -1,5 +1,6 @@
 class WebSocketUrl {
-  static String base = "wss://api.waiverapp.in";
+  // static String base = "wss://api.waiverapp.in";
+  static String base = "wss://testwaiverapp.xyz";
   static String liveLocation = "/ws/live-location/?";
 }
 
@@ -7,13 +8,12 @@ class AppUrls {
   // static String base = "waiver-api.ajmalk.com";
   // static String base = "165.22.221.172";
   static String base = "api.waiverapp.in";
+  // static String base = "testwaiverapp.xyz";
   // static String base = "165.22.221.172:8000";
 
-  static String baseUrlForImage = "https://waiver-api.ajmalk.com";
-  static String googleLocationUrl =
-      "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
-  static String googleApiKeyUrl =
-      "&key=AIzaSyC1x7klS50K1WXb6p8D7BcbqkCKm2wrrYU";
+  static String baseUrlForImage = "https://testwaiverapp.xyz";
+  static String googleLocationUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
+  static String googleApiKeyUrl = "&key=AIzaSyC1x7klS50K1WXb6p8D7BcbqkCKm2wrrYU";
   static String sendPhoneOtp = "/api/v1/core/send-phone-otp/";
   static String rideOrderDetails = "/api/v1/ride/ride-details/";
   static String phoneAuth = "/api/v1/core/phone-auth/";
@@ -40,8 +40,7 @@ class AppUrls {
   static String logout = "/api/v1/core/logout/";
   static String deleteAccount = "/api/v1/core/delete-account/";
   static String uploadFile = "/api/v1/core/upload-file/";
-  static String documentRejectionResponse =
-      "/api/v1/core/document-rejection-response/";
+  static String documentRejectionResponse = "/api/v1/core/document-rejection-response/";
 
   static String earningStatus = "/api/v1/home/earnings-stat";
   static String vehicles = "/api/v1/fleet/vehicles/";

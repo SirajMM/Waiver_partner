@@ -3,7 +3,6 @@ import 'dart:developer';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:waiver_driver/backend/model/login/login_model.dart';
 import 'package:waiver_driver/backend/model/otp/otp_model.dart';
@@ -47,7 +46,6 @@ class OtpController extends GetxController {
 
   Rx<ShowTimerState> showTimer = ShowTimerState.timer.obs;
 
-  GoogleSignInAccount? user;
   static OtpController get to => Get.find();
   String userTypeCode = box.read(BoxKeys.userTypeCode);
   String mobileNumber = "";
@@ -65,8 +63,7 @@ class OtpController extends GetxController {
         "user_type": userTypeCode,
       };
       log("otp body $body ***************");
-      SendPhoneOtpResponseModel response =
-          await ApiServices.sendPhoneOtp(body: body);
+      SendPhoneOtpResponseModel response = await ApiServices.sendPhoneOtp(body: body);
       OtpController.to.showTimer.value = ShowTimerState.timer;
       AppConstants.handleError(response.message ?? "");
     } catch (error, s) {
@@ -91,16 +88,13 @@ class OtpController extends GetxController {
           "fcm_token": await (FirebaseMessaging.instance.getToken()) ?? ""
         };
         log("validate otp body $body ***************");
-        VerifyOtpResponseModel response =
-            await ApiServices.phoneAuth(body: body);
+        VerifyOtpResponseModel response = await ApiServices.phoneAuth(body: body);
 
         bool? isRegistered = response.data?.isRegistered;
         bool? isVerifed = response.data?.isVerifed;
         box.write(BoxKeys.userID, response.data?.userId ?? "");
-        box.write(BoxKeys.isRegistered,
-            response.data?.isRegistered ?? false ? "1" : "0");
-        box.write(
-            BoxKeys.isVerified, response.data?.isVerifed ?? false ? "1" : "0");
+        box.write(BoxKeys.isRegistered, response.data?.isRegistered ?? false ? "1" : "0");
+        box.write(BoxKeys.isVerified, response.data?.isVerifed ?? false ? "1" : "0");
         if (response.status == 200) {
           if (userTypeCode != (response.data?.userType ?? "")) {
             userTypeCode = response.data?.userType ?? "";
@@ -111,7 +105,7 @@ class OtpController extends GetxController {
               Get.offAllNamed(AppRoutes1.getFleetHomePageInRoute());
             } else {
               box.write(BoxKeys.token, response.data?.accessToken);
-              Get.toNamed(AppRoutes.registration, arguments: user ?? "");
+              Get.toNamed(AppRoutes.registration);
             }
           } else {
             box.write(BoxKeys.token, response.data?.accessToken);
@@ -122,10 +116,9 @@ class OtpController extends GetxController {
             if (isVerifed ?? false) {
               Get.offAllNamed(AppRoutes1.getHomeInRoute());
             } else if (isRegistered ?? false) {
-              Get.toNamed(AppRoutes1.getChauffeurProofInRoute(),
-                  arguments: user ?? "");
+              Get.toNamed(AppRoutes1.getChauffeurProofInRoute());
             } else {
-              Get.toNamed(AppRoutes1.registration, arguments: user ?? "");
+              Get.toNamed(AppRoutes1.registration);
             }
           }
         }

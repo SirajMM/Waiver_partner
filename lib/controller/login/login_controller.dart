@@ -54,8 +54,7 @@ class LoginController extends GetxController {
           "hash_key": await SmsAutoFill().getAppSignature,
         };
         log("Send otp screen bodyss $body");
-        SendPhoneOtpResponseModel response =
-            await ApiServices.sendPhoneOtp(body: body);
+        SendPhoneOtpResponseModel response = await ApiServices.sendPhoneOtp(body: body);
 
         errorResponse.value = response;
 
@@ -66,8 +65,7 @@ class LoginController extends GetxController {
             response.error!.nonFieldErrors!.isNotEmpty) {
           displayMessage = response.error!.nonFieldErrors![0];
 
-          AppConstants.handleError(
-              displayMessage ?? "OOPS Something went Wrong");
+          AppConstants.handleError(displayMessage ?? "OOPS Something went Wrong");
         }
         if (response.status == 200) {
           Get.toNamed(
@@ -75,7 +73,6 @@ class LoginController extends GetxController {
             arguments: ArgumentModelForOtpPage(
               mobileCode: selectedCountry?.mobileCode ?? "",
               mobilePhoneNumber: controllerPhoneNumber.text.trim(),
-              user: Get.arguments,
             ),
           );
         }
