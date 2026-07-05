@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,7 +9,6 @@ import 'package:sms_autofill/sms_autofill.dart';
 import 'package:waiver_driver/backend/model/login/login_model.dart';
 import 'package:waiver_driver/backend/model/otp/otp_model.dart';
 import 'package:waiver_driver/backend/parser/otp/otp_parser.dart';
-import 'package:waiver_driver/core/widgets/snackbar/snackbar.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../backend/LocationHandler/LocationTrackingService.dart';
@@ -59,7 +60,7 @@ class OtpController extends GetxController {
     try {
       Map<String, String> body = {
         "phone": mobileNumber.trim(),
-        "code": mobileCode ?? "",
+        "code": mobileCode,
         "user_type": userTypeCode,
       };
       log("otp body $body ***************");
@@ -71,8 +72,10 @@ class OtpController extends GetxController {
     }
   }
 
-  validateOtp() async {
+  Future<void> validateOtp() async {
     final prefs = await SharedPreferences.getInstance();
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
     try {
       log("mobileCode:$mobileCode");
       isButtonLoading.value = true;
@@ -82,10 +85,13 @@ class OtpController extends GetxController {
           "phone": mobileNumber,
           "otp": code.text,
           "code": mobileCode,
-          "device_type": "android",
+          "device_type": Platform.isAndroid ? "android" : "ios",
           "user_type": userTypeCode,
           // "fcm_token": DateTime.now().toIso8601String()
-          "fcm_token": await (FirebaseMessaging.instance.getToken()) ?? ""
+          "fcm_token": await (FirebaseMessaging.instance.getToken()) ?? "",
+          "device_id": Platform.isAndroid
+              ? ((await deviceInfo.androidInfo).id)
+              : ((await deviceInfo.iosInfo).utsname.machine)
         };
         log("validate otp body $body ***************");
         VerifyOtpResponseModel response = await ApiServices.phoneAuth(body: body);

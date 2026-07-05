@@ -1,4 +1,6 @@
+import 'dart:isolate';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
@@ -15,6 +17,14 @@ import 'package:waiver_driver/helper/init/init.dart';
 import 'package:waiver_driver/main.dart';
 
 class NotificationService {
+  /// Fixed id for the iOS ride "call" notification so it can be cancelled
+  /// once the driver taps Accept/Reject.
+  static const int rideCallNotificationId = 1122;
+
+  /// Action button keys for the iOS ride "call" notification.
+  static const String acceptRideActionKey = "ACCEPT_RIDE";
+  static const String rejectRideActionKey = "REJECT_RIDE";
+
   static Future<void> onInit() async {
     await MainBinding().dependencies();
     await AwesomeNotifications().initialize(
@@ -54,7 +64,47 @@ class NotificationService {
     debugPrint("AwesomeNotifications channel created");
   }
 
-  static Future<void> onActionReceivedMethod(ReceivedAction action) async {}
+  /// Handles taps on the iOS ride "call" notification (Accept / Reject).
+  ///
+  /// This mirrors the Android CallKit flow in [CallFunctionality]: instead of
+  /// touching [HomeController] directly (which may not be registered in the
+  /// notification-action isolate), it forwards the decision to the main isolate
+  /// through the existing `main_send_port`. `startReceivePort` in main.dart then
+  /// runs the exact same downstream logic used by the Android accept/decline
+  /// events (`onCallAccepted` / `orderTimeOut`).
+  @pragma('vm:entry-point')
+  static Future<void> onActionReceivedMethod(ReceivedAction action) async {
+    // Only react to our ride-call action buttons.
+    if (action.buttonKeyPressed != acceptRideActionKey &&
+        action.buttonKeyPressed != rejectRideActionKey) {
+      return;
+    }
+
+    final Map<String, String?> payload = action.payload ?? {};
+    final String? rideId = payload["rideId"];
+    final String? rideStatus = payload["rideStatus"];
+    final String? paymentType = payload["paymentType"];
+
+    final SendPort? sendPort =
+        IsolateNameServer.lookupPortByName('main_send_port');
+
+    if (action.buttonKeyPressed == acceptRideActionKey) {
+      sendPort?.send({
+        'title': 'accepted',
+        'callId': '',
+        'rideStatus': rideStatus,
+        'rideId': rideId,
+        'paymentType': paymentType,
+      });
+    } else {
+      sendPort?.send({
+        'title': 'cancelled',
+        'rideId': rideId,
+      });
+    }
+
+    await AwesomeNotifications().cancel(rideCallNotificationId);
+  }
 
   static Future<void> onDismissActionReceivedMethod(
       ReceivedNotification notification) async {}
@@ -207,6 +257,51 @@ class NotificationService {
     // } else {
     //   HomeController.to.driverState.value = DriverState.idle;
     // }
+  }
+
+  /// iOS replacement for the Android CallKit incoming-call screen.
+  ///
+  /// Shows a high-priority notification with Accept / Reject action buttons for
+  /// a new ride request (rideStatus RED/FRED). Because iOS CallKit requires
+  /// VoIP/PushKit (not used in this app), this is the closest experience that
+  /// works from a normal FCM push while the app is in the foreground or
+  /// background (not force-terminated).
+  static Future<void> showRideCallNotification(
+      {required OrderDetailsModel data}) async {
+    await AwesomeNotifications().cancelAll();
+    await AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: rideCallNotificationId,
+        channelKey: "basic_notification_channel",
+        icon: "resource://drawable/ic_stat_applogo_removebg_preview",
+        backgroundColor: AppColors.white,
+        title: data.title ?? "New Ride Request",
+        body: data.body ?? "Tap Accept to view the ride details",
+        category: NotificationCategory.Call,
+        wakeUpScreen: true,
+        fullScreenIntent: true,
+        autoDismissible: false,
+        payload: {
+          "rideId": data.rideId ?? "",
+          "rideStatus": data.rideStatus ?? "",
+          "paymentType": data.paymentType ?? "",
+        },
+      ),
+      actionButtons: [
+        NotificationActionButton(
+          key: acceptRideActionKey,
+          label: "Accept",
+          actionType: ActionType.Default,
+          color: AppColors.green40,
+        ),
+        NotificationActionButton(
+          key: rejectRideActionKey,
+          label: "Reject",
+          actionType: ActionType.SilentAction,
+          isDangerousOption: true,
+        ),
+      ],
+    );
   }
 
   static Future<void> showNotification(

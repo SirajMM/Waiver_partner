@@ -163,9 +163,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   final data = OrderDetailsModel.fromJson(message.data);
 
   if (data.rideStatus == "RED" || data.rideStatus == "FRED") {
-    CallFunctionality.onInit();
-    CallFunctionality().listenCallEvents();
-    CallFunctionality().showCallkitIncoming(const Uuid().v4(), message);
+    if (Platform.isIOS) {
+      // iOS: CallKit incoming-call UI needs VoIP/PushKit, which this app does
+      // not use. Show an Accept/Reject action-button notification instead.
+      // (Works in foreground/background; not while force-terminated.)
+      await NotificationService.onInit();
+      await NotificationService.showRideCallNotification(data: data);
+    } else {
+      CallFunctionality.onInit();
+      CallFunctionality().listenCallEvents();
+      CallFunctionality().showCallkitIncoming(const Uuid().v4(), message);
+    }
   } else {
     await NotificationService.showNotification(data: data);
 
