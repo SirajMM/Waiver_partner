@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:get/get.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:waiver_driver/backend/model/login/login_model.dart';
@@ -108,13 +109,16 @@ class OtpController extends GetxController {
           if (userTypeCode == UserTypeCode.fleet) {
             if (isRegistered ?? false) {
               box.write(BoxKeys.token, response.data?.accessToken);
+              _registerVoipTokenIfAvailable();
               Get.offAllNamed(AppRoutes1.getFleetHomePageInRoute());
             } else {
               box.write(BoxKeys.token, response.data?.accessToken);
+              _registerVoipTokenIfAvailable();
               Get.toNamed(AppRoutes.registration);
             }
           } else {
             box.write(BoxKeys.token, response.data?.accessToken);
+            _registerVoipTokenIfAvailable();
 
             // 🔥 Safe location service initialization
             await _initializeLocationService();
@@ -134,6 +138,18 @@ class OtpController extends GetxController {
       AppConstants.handleError(error, s: s);
     } finally {
       isButtonLoading.value = false;
+    }
+  }
+
+  Future<void> _registerVoipTokenIfAvailable() async {
+    if (!Platform.isIOS) return;
+    try {
+      final voipToken = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
+      if (voipToken is String && voipToken.isNotEmpty) {
+        await ApiServices.registerVoipToken(token: voipToken);
+      }
+    } catch (e) {
+      log('❌ Error registering VoIP token: $e');
     }
   }
 

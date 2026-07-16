@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:waiver_driver/core/colors/app_colors.dart';
 import 'package:waiver_driver/core/themes/assets/images.dart';
 import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
@@ -12,12 +13,10 @@ class WaitingForAuthorizationScreen extends StatefulWidget {
   const WaitingForAuthorizationScreen({super.key});
 
   @override
-  State<WaitingForAuthorizationScreen> createState() =>
-      _WaitingForAuthorizationScreenState();
+  State<WaitingForAuthorizationScreen> createState() => _WaitingForAuthorizationScreenState();
 }
 
-class _WaitingForAuthorizationScreenState
-    extends State<WaitingForAuthorizationScreen> {
+class _WaitingForAuthorizationScreenState extends State<WaitingForAuthorizationScreen> {
   // Flag to prevent multiple navigation attempts
   bool _isNavigating = false;
 
@@ -75,9 +74,12 @@ class _WaitingForAuthorizationScreenState
               height: 70.sp,
             ),
             BlueButton(
-              text: "Back to login",
-              onTap:
-                  _navigateToDriverSelection, // Use the same navigation function
+              text: "Help",
+              onTap: () {
+                final Uri whatsapp = Uri.parse('https://wa.me/+918714034112');
+                launchUrl(whatsapp);
+              },
+              // onTap: _navigateToDriverSelection,
             )
           ],
         ),

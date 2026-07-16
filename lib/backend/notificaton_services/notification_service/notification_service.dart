@@ -1,6 +1,4 @@
-import 'dart:isolate';
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
@@ -11,20 +9,9 @@ import 'package:waiver_driver/backend/model/home/home_model.dart';
 import 'package:waiver_driver/controller/home/home_controller.dart';
 import 'package:waiver_driver/core/colors/app_colors.dart';
 import 'package:waiver_driver/core/constants/enums/enums.dart';
-import 'package:waiver_driver/core/constants/get_storage_constants.dart';
 import 'package:waiver_driver/helper/init/init.dart';
 
-import 'package:waiver_driver/main.dart';
-
 class NotificationService {
-  /// Fixed id for the iOS ride "call" notification so it can be cancelled
-  /// once the driver taps Accept/Reject.
-  static const int rideCallNotificationId = 1122;
-
-  /// Action button keys for the iOS ride "call" notification.
-  static const String acceptRideActionKey = "ACCEPT_RIDE";
-  static const String rejectRideActionKey = "REJECT_RIDE";
-
   static Future<void> onInit() async {
     await MainBinding().dependencies();
     await AwesomeNotifications().initialize(
@@ -33,8 +20,7 @@ class NotificationService {
           NotificationChannel(
             channelKey: "basic_notification_channel",
             channelName: "Waiver Driver notification channel",
-            channelDescription:
-                "Notification channel for Waiver Driver man app",
+            channelDescription: "Notification channel for Waiver Driver man app",
             importance: NotificationImportance.Max,
             channelShowBadge: true,
             onlyAlertOnce: true,
@@ -50,8 +36,7 @@ class NotificationService {
         debug: true);
 
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    if (isAllowed) {
-      // <-- FIXED: Only request if NOT allowed
+    if (!isAllowed) {
       await AwesomeNotifications().requestPermissionToSendNotifications();
     }
 
@@ -64,71 +49,21 @@ class NotificationService {
     debugPrint("AwesomeNotifications channel created");
   }
 
-  /// Handles taps on the iOS ride "call" notification (Accept / Reject).
-  ///
-  /// This mirrors the Android CallKit flow in [CallFunctionality]: instead of
-  /// touching [HomeController] directly (which may not be registered in the
-  /// notification-action isolate), it forwards the decision to the main isolate
-  /// through the existing `main_send_port`. `startReceivePort` in main.dart then
-  /// runs the exact same downstream logic used by the Android accept/decline
-  /// events (`onCallAccepted` / `orderTimeOut`).
   @pragma('vm:entry-point')
-  static Future<void> onActionReceivedMethod(ReceivedAction action) async {
-    // Only react to our ride-call action buttons.
-    if (action.buttonKeyPressed != acceptRideActionKey &&
-        action.buttonKeyPressed != rejectRideActionKey) {
-      return;
-    }
+  static Future<void> onActionReceivedMethod(ReceivedAction action) async {}
 
-    final Map<String, String?> payload = action.payload ?? {};
-    final String? rideId = payload["rideId"];
-    final String? rideStatus = payload["rideStatus"];
-    final String? paymentType = payload["paymentType"];
+  static Future<void> onDismissActionReceivedMethod(ReceivedNotification notification) async {}
 
-    final SendPort? sendPort =
-        IsolateNameServer.lookupPortByName('main_send_port');
+  static Future<void> onNotificationCreatedMethod(ReceivedNotification notification) async {}
 
-    if (action.buttonKeyPressed == acceptRideActionKey) {
-      sendPort?.send({
-        'title': 'accepted',
-        'callId': '',
-        'rideStatus': rideStatus,
-        'rideId': rideId,
-        'paymentType': paymentType,
-      });
-    } else {
-      sendPort?.send({
-        'title': 'cancelled',
-        'rideId': rideId,
-      });
-    }
+  static Future<void> onNotificationDisplayedMethod(ReceivedNotification notification) async {}
 
-    await AwesomeNotifications().cancel(rideCallNotificationId);
-  }
-
-  static Future<void> onDismissActionReceivedMethod(
-      ReceivedNotification notification) async {}
-
-  static Future<void> onNotificationCreatedMethod(
-      ReceivedNotification notification) async {}
-
-  static Future<void> onNotificationDisplayedMethod(
-      ReceivedNotification notification) async {}
-
-  static handleNotificationOnBackGround(
-      {required RemoteMessage notification}) {}
 
   static Future<void> onMessage({required RemoteMessage notification}) async {
+    debugPrint(
+        "📩 RemoteMessage payload -> notification: ${notification.notification?.title} / ${notification.notification?.body} | data: ${notification.data}");
     OrderDetailsModel data = OrderDetailsModel.fromJson(notification.data);
     await showNotification(data: data);
-    print(notification.notification);
-    HomeController.to.driverState.value = DriverState.loading;
-    print("notification.data");
-    print(notification.data ?? "No message");
-    print(notification.notification?.body);
-    print(notification.notification?.title);
-    box.write(BoxKeys.paymentType, data.paymentType);
-    print("***********************${data.rideStatus}");
 
     switch (data.rideStatus) {
       case "RED":
@@ -193,14 +128,11 @@ class NotificationService {
     // }
   }
 
-  static Future<void> onMessageOpenedApp(
-      {required RemoteMessage notification}) async {
+  static Future<void> onMessageOpenedApp({required RemoteMessage notification}) async {
+    // No showNotification() here: this fires when the driver taps a
+    // notification that's already been displayed (by the OS or by CallKit),
+    // so showing another one is redundant.
     OrderDetailsModel data = OrderDetailsModel.fromJson(notification.data);
-    showNotification(data: data);
-    print(
-        "############################notification.data#################################");
-    print(notification.data);
-    print(notification.notification);
 
     switch (data.rideStatus) {
       case "RED" || "FRED":
@@ -259,53 +191,7 @@ class NotificationService {
     // }
   }
 
-  /// iOS replacement for the Android CallKit incoming-call screen.
-  ///
-  /// Shows a high-priority notification with Accept / Reject action buttons for
-  /// a new ride request (rideStatus RED/FRED). Because iOS CallKit requires
-  /// VoIP/PushKit (not used in this app), this is the closest experience that
-  /// works from a normal FCM push while the app is in the foreground or
-  /// background (not force-terminated).
-  static Future<void> showRideCallNotification(
-      {required OrderDetailsModel data}) async {
-    await AwesomeNotifications().cancelAll();
-    await AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: rideCallNotificationId,
-        channelKey: "basic_notification_channel",
-        icon: "resource://drawable/ic_stat_applogo_removebg_preview",
-        backgroundColor: AppColors.white,
-        title: data.title ?? "New Ride Request",
-        body: data.body ?? "Tap Accept to view the ride details",
-        category: NotificationCategory.Call,
-        wakeUpScreen: true,
-        fullScreenIntent: true,
-        autoDismissible: false,
-        payload: {
-          "rideId": data.rideId ?? "",
-          "rideStatus": data.rideStatus ?? "",
-          "paymentType": data.paymentType ?? "",
-        },
-      ),
-      actionButtons: [
-        NotificationActionButton(
-          key: acceptRideActionKey,
-          label: "Accept",
-          actionType: ActionType.Default,
-          color: AppColors.green40,
-        ),
-        NotificationActionButton(
-          key: rejectRideActionKey,
-          label: "Reject",
-          actionType: ActionType.SilentAction,
-          isDangerousOption: true,
-        ),
-      ],
-    );
-  }
-
-  static Future<void> showNotification(
-      {required OrderDetailsModel data}) async {
+  static Future<void> showNotification({required OrderDetailsModel data}) async {
     AwesomeNotifications().cancelAll();
     AwesomeNotifications().createNotification(
       content: NotificationContent(

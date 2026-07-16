@@ -34,8 +34,7 @@ class GoingToDestinationWidget extends StatelessWidget {
                       spreadRadius: 5)
                 ],
                 borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20.sp),
-                    topRight: Radius.circular(20.sp))),
+                    topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
             child: Column(
               // shrinkWrap: true,
               // physics: NeverScrollableScrollPhysics(),
@@ -44,8 +43,7 @@ class GoingToDestinationWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      AppConstants.formatSecondsToHrAndMin(
-                          HomeController.to.timeToDropOffLocation ?? 0),
+                      AppConstants.formatSecondsToHrAndMin(HomeController.to.timeToDropOffLocation ?? 0),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20.sp,
@@ -86,12 +84,9 @@ class GoingToDestinationWidget extends StatelessWidget {
                       onTap: () => HomeController.to.rideType == "RND"
                           ? HomeController.to.openRoundTripMap(
                               startLatitude: HomeController.to.startLocationLat,
-                              startLongitude:
-                                  HomeController.to.startLocationLong,
-                              destinationLatitude:
-                                  HomeController.to.endLocationLat,
-                              destinationLongitude:
-                                  HomeController.to.endLocationLong)
+                              startLongitude: HomeController.to.startLocationLong,
+                              destinationLatitude: HomeController.to.endLocationLat,
+                              destinationLongitude: HomeController.to.endLocationLong)
                           : HomeController.to.openMap(
                               latitude: HomeController.to.endLocationLat,
                               longitude: HomeController.to.endLocationLong),
@@ -119,7 +114,7 @@ class GoingToDestinationWidget extends StatelessWidget {
                   height: 20.sp,
                 ),
                 BlueButton(
-                  text: "Arrived at Destination",
+                  text: "End Trip",
                   onTap: () {
                     Get.defaultDialog(
                         backgroundColor: Colors.white,

@@ -43,7 +43,7 @@ class LoginController extends GetxController {
   ];
   Rx<SendPhoneOtpResponseModel> errorResponse =
       Rx<SendPhoneOtpResponseModel>(SendPhoneOtpResponseModel());
-  sendPhoneOtp() async {
+  Future<void> sendPhoneOtp() async {
     if (formKeyForLoginPage.currentState?.validate() ?? false) {
       try {
         isButtonLoading.value = true;

@@ -107,6 +107,18 @@ class ApiServices {
     }
   }
 
+  static Future<void> registerVoipToken({required String token}) async {
+    https.Response response = await https.post(
+      Uri.https(AppUrls.base, AppUrls.registerVoipToken),
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": getToken()
+      },
+      body: json.encode({"voip_token": token, "device_type": "ios"}),
+    );
+    log("${Uri.https(AppUrls.base, AppUrls.registerVoipToken)}===============>${response.statusCode}");
+  }
+
   static Future<GetAllStatesResponseModel> getAllStates() async {
     https.Response response = await https.get(
       Uri.https(AppUrls.base, AppUrls.states),

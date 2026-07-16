@@ -279,6 +279,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:location/location.dart';
@@ -286,6 +287,7 @@ import 'package:app_settings/app_settings.dart'; // Add this package to pubspec.
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../backend/api/api_services/api_services.dart';
 import '../../core/constants/get_storage_constants.dart';
 import '../../main.dart';
 
@@ -294,6 +296,7 @@ class SplashController extends GetxController implements GetxService {
   void onInit() async {
     super.onInit();
     _syncTokenToSharedPreferences();
+    _registerVoipTokenIfAvailable();
     // Delayed execution for splash screen
     await Future.delayed(const Duration(seconds: 3));
 
@@ -305,8 +308,7 @@ class SplashController extends GetxController implements GetxService {
 
   Future<void> _checkLocationPermissionAndProceed(String? token) async {
     try {
-      final PermissionStatus permissionGranted =
-          await Location().hasPermission();
+      final PermissionStatus permissionGranted = await Location().hasPermission();
       bool serviceEnabled = await Location().serviceEnabled();
 
       log('Permission Status: $permissionGranted');
@@ -453,8 +455,7 @@ class SplashController extends GetxController implements GetxService {
         if (isVerified) {
           Get.offAllNamed(AppRoutes1.getHomeInRoute());
         } else if (isRegistered) {
-          Get.offAllNamed(AppRoutes1.getChauffeurProofInRoute(),
-              arguments: userTypeCode);
+          Get.offAllNamed(AppRoutes1.getChauffeurProofInRoute(), arguments: userTypeCode);
         } else {
           Get.offAllNamed(AppRoutes1.getDriverTypeSelectionRoute());
         }
@@ -473,6 +474,21 @@ class SplashController extends GetxController implements GetxService {
       }
     } catch (e) {
       log('❌ Error syncing token in SplashController: $e');
+    }
+  }
+
+  Future<void> _registerVoipTokenIfAvailable() async {
+    if (!Platform.isIOS) return;
+    try {
+      final token = box.read(BoxKeys.token);
+      if (token == null || token.isEmpty) return;
+
+      final voipToken = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
+      if (voipToken is String && voipToken.isNotEmpty) {
+        // await ApiServices.registerVoipToken(token: voipToken);
+      }
+    } catch (e) {
+      log('❌ Error registering VoIP token in SplashController: $e');
     }
   }
 

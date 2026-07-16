@@ -9,7 +9,6 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -27,15 +26,12 @@ import 'package:waiver_driver/helper/init/init.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
 import 'package:uuid/uuid.dart';
 
-import 'backend/LocationHandler/LocationTrackingService.dart'
-    show LocationTrackingService, onStart, onIosBackground;
+import 'backend/LocationHandler/LocationTrackingService.dart';
 import 'backend/facebook_sdk_service/facebook_sdk_services.dart';
 import 'backend/model/home/home_model.dart';
 import 'backend/notificaton_services/notification_service/notification_service.dart';
 import 'core/constants/enums/enums.dart';
-import 'core/constants/get_storage_constants.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
-import 'package:smart_app_update_flutter/smart_app_update_flutter.dart' as sm;
 
 final box = GetStorage();
 Timer? _locationTimer;
@@ -129,54 +125,20 @@ void stopLocationTrackingFromBackground() {
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-
-  // Initialize Awesome Notifications in background handler
-  // ✅ Use consistent channel name
-  // await AwesomeNotifications().initialize(
-  //   'resource://drawable/ic_stat_applogo_removebg_preview',
-  //   [
-  //     NotificationChannel(
-  //       channelGroupKey: 'basic_notification_channels',
-  //       channelKey:
-  //           'basic_notification_channel', // ← Use your preferred channel
-  //       channelName: 'Waiver Driver notification channel',
-  //       channelDescription: 'Notification channel for Waiver Driver man app',
-  //       importance: NotificationImportance.Max,
-  //       channelShowBadge: true,
-  //       onlyAlertOnce: true,
-  //       playSound: true,
-  //       criticalAlerts: true,
-  //     ),
-  //   ],
-  //   channelGroups: [
-  //     NotificationChannelGroup(
-  //       channelGroupKey: 'basic_notification_channels',
-  //       channelGroupName: 'Waiver Driver notification channel',
-  //     ),
-  //   ],
-  // );
-
-  log("Background handler triggered!");
-  log("Message data: ${message.data}");
 
   final data = OrderDetailsModel.fromJson(message.data);
 
   if (data.rideStatus == "RED" || data.rideStatus == "FRED") {
-    if (Platform.isIOS) {
-      // iOS: CallKit incoming-call UI needs VoIP/PushKit, which this app does
-      // not use. Show an Accept/Reject action-button notification instead.
-      // (Works in foreground/background; not while force-terminated.)
-      await NotificationService.onInit();
-      await NotificationService.showRideCallNotification(data: data);
-    } else {
-      CallFunctionality.onInit();
-      CallFunctionality().listenCallEvents();
-      CallFunctionality().showCallkitIncoming(const Uuid().v4(), message);
-    }
+    CallFunctionality.onInit();
+    CallFunctionality().listenCallEvents();
+    CallFunctionality().showCallkitIncoming(const Uuid().v4(), message);
   } else {
-    await NotificationService.showNotification(data: data);
-
+    // No local notification here: when the app is backgrounded, iOS/Android
+    // already auto-display the FCM payload's own `notification` block as a
+    // system banner. Building another one via awesome_notifications produced
+    // a duplicate banner. `NotificationService.showNotification` is still
+    // used in the foreground path (`onMessage`), where nothing is
+    // auto-displayed and the app must build the banner itself.
     if (Get.isRegistered<HomeController>()) {
       switch (data.rideStatus) {
         case "CAD":
@@ -208,14 +170,6 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   }
 }
 
-/// ------------------- Initialize Awesome Notifications -------------------
-Future<void> _initializeAwesomeNotifications() async {
-  // ✅ REMOVED: Initialization now handled in NotificationService.onInit()
-  // This prevents duplicate channel creation
-  log('✅ Awesome Notifications will be initialized by NotificationService');
-}
-
-/// ------------------- Main -------------------
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -234,25 +188,17 @@ Future<void> main() async {
   ));
 
   await remoteConfig.fetchAndActivate();
-  // Initialize Awesome Notifications BEFORE any other services
-  // ✅ REMOVED: Now handled by NotificationService.onInit() to avoid conflicts
 
-  // Request notification permissions early
   await _requestNotificationPermissions();
 
-  // Create notification channel for background service
   await _createNotificationChannels();
 
-  // Configure Background Service
   await _configureBackgroundService();
 
-  // Initialize Dependencies
   await MainBinding().dependencies();
 
-  // Request other permissions
   await requestPermissions();
 
-  // Notification Service
   await NotificationService.onInit();
 
   // Firebase Messaging Listeners
@@ -261,20 +207,16 @@ Future<void> main() async {
   FirebaseMessaging.onMessageOpenedApp
       .listen((msg) => NotificationService.onMessageOpenedApp(notification: msg));
 
-  // Orientation
-  // await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
-  // Start Receive Port
   startReceivePort();
+
+  await CallFunctionality.onInit();
+  CallFunctionality().listenCallEvents();
+
   await FacebookAnalyticsService.initialize();
   await FacebookAnalyticsService.logAppLaunch();
-  // HTTP Overrides
+
   HttpOverrides.global = MyHttpOverrides();
 
-  // Initialize LocationTrackingService
-  // await _initializeLocationServiceIfNeeded();
-
-  // Run App
   runApp(const MyApp());
 }
 
@@ -341,24 +283,6 @@ Future<void> _configureBackgroundService() async {
   }
 }
 
-/// ------------------- Initialize Location Service -------------------
-Future<void> _initializeLocationServiceIfNeeded() async {
-  try {
-    final wasOnline = box.read(BoxKeys.isOnline) ?? false;
-    final hasToken = box.read(BoxKeys.token) != null;
-
-    if (wasOnline && hasToken) {
-      Get.put(LocationTrackingService());
-      await FlutterBackgroundService().startService();
-      log('✅ LocationTrackingService initialized & background service started');
-    } else {
-      log('Skipping LocationTrackingService initialization for new/offline user');
-    }
-  } catch (e) {
-    log('❌ Error checking user status: $e');
-  }
-}
-
 /// ------------------- Notification Channels -------------------
 Future<void> _createNotificationChannels() async {
   if (Platform.isAndroid) {
@@ -408,6 +332,10 @@ Future<void> requestPermissions() async {
   try {
     var locationPermission = await Geolocator.checkPermission();
     if (locationPermission == LocationPermission.denied) {
+      locationPermission = await Geolocator.requestPermission();
+    }
+
+    if (Platform.isIOS && locationPermission == LocationPermission.whileInUse) {
       locationPermission = await Geolocator.requestPermission();
     }
 

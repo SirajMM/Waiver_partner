@@ -97,6 +97,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   // Keep all your existing methods unchanged...
   final player = AudioPlayer();
+  // Bumped whenever the ride this sound belongs to gets resolved
+  // (accepted/timed out) before the delayed iOS playback in
+  // _playIncomingRideSound fires, so that delayed call knows to skip it.
+  int _rideSoundToken = 0;
 
   DashBoardItemModel rating = DashBoardItemModel(
       icon: Icon(Icons.star, color: AppColors.white),
@@ -288,6 +292,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           "current_loc_lat": position.latitude,
         });
       }
+    }, onError: (error) {
+      log('❌ Error in sendLiveLocation position stream: $error');
     });
   }
 
@@ -335,12 +341,57 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 // FIX 5: Enhanced changeDriverOnlineStatus method
 
 // Update your changeDriverOnlineStatus method:
+
+  // Entry point for the GO / Stop button.
+  // Keeps the loading spinner up for the WHOLE flow (profile fetch +
+  // assignment check + toggle) and blocks duplicate taps while running.
+  Future<void> onGoButtonTapped() async {
+    if (isOnlineButtonLoading.value) return;
+    isOnlineButtonLoading.value = true;
+    try {
+      await ProfileController.to.getProfile();
+      isAssinged.value = await hasAssigned();
+
+      final useTypeCode = box.read(BoxKeys.userTypeCode) ?? "";
+      if (isAssinged.value == false && useTypeCode == UserTypeCode.driver) {
+        Get.showSnackbar(
+          const GetSnackBar(
+            duration: Duration(seconds: 3),
+            backgroundColor: Colors.transparent,
+            padding: EdgeInsets.zero,
+            messageText: AppSnackBar(
+              text: "You have no assinged vehicles",
+            ),
+          ),
+        );
+        return;
+      }
+      await _toggleOnlineStatus();
+    } catch (error, s) {
+      debugPrint("Error in onGoButtonTapped: $error");
+      AppConstants.handleError("error", s: s);
+    } finally {
+      isOnlineButtonLoading.value = false;
+    }
+  }
+
+  // Public entry used by the side menu / settings. Manages the loading
+  // flag itself so those callers also block duplicate taps.
   Future<void> changeDriverOnlineStatus() async {
+    if (isOnlineButtonLoading.value) return;
+    isOnlineButtonLoading.value = true;
+    try {
+      await _toggleOnlineStatus();
+    } finally {
+      isOnlineButtonLoading.value = false;
+    }
+  }
+
+  // Core toggle logic. Callers are responsible for managing
+  // [isOnlineButtonLoading] around this method.
+  Future<void> _toggleOnlineStatus() async {
     final prefs = await SharedPreferences.getInstance();
     try {
-      if (isOnlineButtonLoading.value) return;
-      isOnlineButtonLoading.value = true;
-
       // 🔹 Call API to toggle online/offline
       LogoutResponseModel response = await ApiServices.changeOnlineStatus(
         body: {
@@ -400,10 +451,8 @@ class HomeController extends GetxController with WidgetsBindingObserver {
         }
       }
     } catch (error, s) {
-      debugPrint("Error in changeDriverOnlineStatus: $error");
+      debugPrint("Error in _toggleOnlineStatus: $error");
       AppConstants.handleError("error", s: s);
-    } finally {
-      isOnlineButtonLoading.value = false;
     }
   }
 
@@ -436,6 +485,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     try {
       isButtonLoading.value = true;
       driverState.value = DriverState.loading;
+      _rideSoundToken++;
       player.stop();
       ChangeRideStatusModel response = await ApiServices.changeRideStatus(
           body: {"ride_id": rideId, "ride_status": RideStatus.accepted});
@@ -508,8 +558,10 @@ class HomeController extends GetxController with WidgetsBindingObserver {
           );
         }
 
-        await MobilityFeatures()
-            .startListening(Geolocator.getPositionStream().map((location) {
+        await MobilityFeatures().startListening(
+            Geolocator.getPositionStream().handleError((error, stack) {
+          log('❌ Error in mobility features position stream: $error');
+        }).map((location) {
           log("mobility features");
           log("${mobilityContext?.distanceTraveled}");
           log(location.toString());
@@ -603,6 +655,7 @@ class HomeController extends GetxController with WidgetsBindingObserver {
   // Update orderTimeOut method
   Future<void> orderTimeOut() async {
     try {
+      _rideSoundToken++;
       player.stop();
       rideIsActive = false;
       box.remove(BoxKeys.rideId);
@@ -816,11 +869,39 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   Future<void> getAndShowOrderDetails(
       {required String id, bool? fromBackGroundCall}) async {
-    player.play(AssetSource(AppAudio.notification));
+    _playIncomingRideSound();
     GetRideDetailsResponseModel response =
         await ApiServices.rideOrderDetails(queryParameters: {"ride_id": id});
     getOrderDetails(response: response);
     showMyBottomSheet(IncomingOrderBottomSheet(data: response.data));
+  }
+
+  Future<void> _playIncomingRideSound() async {
+    final token = ++_rideSoundToken;
+    if (Platform.isIOS) {
+      // CallFunctionality.listenCallEvents() ends the CallKit call ~1s after
+      // accept, and iOS itself tears down the CallKit audio session around
+      // that same moment. Starting playback any earlier means this sound
+      // gets cut off mid-way (or never audibly starts) as CallKit's session
+      // teardown steps on the shared AVAudioSession. Wait for that to settle
+      // before grabbing the session for ourselves.
+      await Future.delayed(const Duration(milliseconds: 1300));
+      // The ride was accepted/timed out while we were waiting - don't play
+      // a stale ring for a dialog that's no longer on screen.
+      if (token != _rideSoundToken) return;
+      // Force the `playback` category so this is audible even if the phone's
+      // ring/silent switch is on.
+      await player.setAudioContext(AudioContext(
+        iOS: AudioContextIOS(
+          category: AVAudioSessionCategory.playback,
+          options: {
+            AVAudioSessionOptions.mixWithOthers,
+            AVAudioSessionOptions.duckOthers,
+          },
+        ),
+      ));
+    }
+    player.play(AssetSource(AppAudio.notification));
   }
 
   void showMyBottomSheet(Widget bottom) {
@@ -1114,30 +1195,40 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     return null;
   }
 
-  void recenter() {
+  Future<void> recenter() async {
     log("recenter() called ......");
-    if (!recenterLoading.value) {
-      recenterLoading.value = true;
-      loc.Location().getLocation().then(
-        (newLoc) {
-          recenterLoading.value = false;
-          saveLocationData(newLoc);
-          currentPosition.value = convertToPosition(newLoc);
-          getLocationDetails(currentPosition.value?.latitude ?? 0.0,
-                  currentPosition.value?.longitude ?? 0.0)
-              .then(
-            (value) => pickUpLocation1?.name.value = value ?? '',
-          );
-          log("${pickUpLocation1?.name} && ${newLoc.latitude}, ${newLoc.longitude}");
-          googleMapController?.animateCamera(CameraUpdate.newCameraPosition(
-            CameraPosition(
-              zoom: cameraZoom.value,
-              target: LatLng(newLoc.latitude ?? 0.0, newLoc.longitude ?? 0.0),
-            ),
-          ));
-        },
+    if (recenterLoading.value) return;
+    recenterLoading.value = true;
+    cameraZoom.value = 15.0;
+    try {
+      // On iOS, location.getLocation() can hang indefinitely while waiting
+      // for a GPS fix (or throw if permission/services aren't ready). Guard
+      // it with a timeout so the "Fetching current location" spinner always
+      // stops.
+      final newLoc = await loc.Location()
+          .getLocation()
+          .timeout(const Duration(seconds: 15));
+
+      saveLocationData(newLoc);
+      currentPosition.value = convertToPosition(newLoc);
+      getLocationDetails(currentPosition.value?.latitude ?? 0.0,
+              currentPosition.value?.longitude ?? 0.0)
+          .then(
+        (value) => pickUpLocation1?.name.value = value ?? '',
       );
-      cameraZoom.value = 15.0;
+      log("${pickUpLocation1?.name} && ${newLoc.latitude}, ${newLoc.longitude}");
+      googleMapController?.animateCamera(CameraUpdate.newCameraPosition(
+        CameraPosition(
+          zoom: cameraZoom.value,
+          target: LatLng(newLoc.latitude ?? 0.0, newLoc.longitude ?? 0.0),
+        ),
+      ));
+    } catch (e) {
+      // Timeout or platform error while fetching location. Swallow it so the
+      // spinner is cleared by finally; the map just stays where it is.
+      log("recenter() failed to fetch location: $e");
+    } finally {
+      recenterLoading.value = false;
     }
   }
 
@@ -1270,6 +1361,22 @@ class HomeController extends GetxController with WidgetsBindingObserver {
 
   Future<void> openMap(
       {required double? latitude, required double? longitude}) async {
+    if (Platform.isIOS) {
+      var googleMapsUri =
+          Uri.parse("comgooglemaps://?daddr=$latitude,$longitude&directionsmode=driving");
+      if (await canLaunch(googleMapsUri.toString())) {
+        await launch(googleMapsUri.toString());
+        return;
+      }
+      var appleMapsUri =
+          Uri.parse("https://maps.apple.com/?daddr=$latitude,$longitude&dirflg=d");
+      if (await canLaunch(appleMapsUri.toString())) {
+        await launch(appleMapsUri.toString());
+        return;
+      }
+      throw 'Could not launch maps';
+    }
+
     var uri = Uri.parse("google.navigation:q=$latitude,$longitude&mode=d");
     if (await canLaunch(uri.toString())) {
       await launch(uri.toString());
@@ -1285,6 +1392,26 @@ class HomeController extends GetxController with WidgetsBindingObserver {
     required double? destinationLongitude,
   }) async {
     log("round trip@@@@@@@@@@@@$rideType");
+
+    if (Platform.isIOS) {
+      var googleMapsUri = Uri.parse(
+          "comgooglemaps://?daddr=$destinationLatitude,$destinationLongitude"
+          "&waypoints=$startLatitude,$startLongitude"
+          "&directionsmode=driving");
+      if (await canLaunch(googleMapsUri.toString())) {
+        await launch(googleMapsUri.toString());
+        return;
+      }
+      var appleMapsUri = Uri.parse(
+          "https://maps.apple.com/?daddr=$destinationLatitude,$destinationLongitude"
+          "&saddr=$startLatitude,$startLongitude&dirflg=d");
+      if (await canLaunch(appleMapsUri.toString())) {
+        await launch(appleMapsUri.toString());
+        return;
+      }
+      throw 'Could not launch maps';
+    }
+
     // Create a round trip by adding the starting point as the final waypoint
     var uri = Uri.parse(
         "google.navigation:q=$destinationLatitude,$destinationLongitude"

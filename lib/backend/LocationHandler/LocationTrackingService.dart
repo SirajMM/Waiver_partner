@@ -14,7 +14,6 @@ import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:location/location.dart' as loc;
-import '../../controller/home/home_controller.dart';
 import '../../core/constants/get_storage_constants.dart';
 import '../../main.dart';
 import '../api/api_services/api_services.dart';
@@ -114,8 +113,7 @@ class LocationTrackingService extends GetxController {
       );
 
       await flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>()
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
           ?.createNotificationChannel(channel);
 
       log('✅ Notification channel created successfully');
@@ -228,8 +226,7 @@ Future<void> onStart(ServiceInstance service) async {
 
 Future<void> _createNotificationChannelInBackground() async {
   if (Platform.isAndroid) {
-    final FlutterLocalNotificationsPlugin plugin =
-        FlutterLocalNotificationsPlugin();
+    final FlutterLocalNotificationsPlugin plugin = FlutterLocalNotificationsPlugin();
 
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
       'bg_service_channel',
@@ -242,8 +239,7 @@ Future<void> _createNotificationChannelInBackground() async {
     );
 
     await plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
   }
 }
@@ -305,10 +301,7 @@ class BackgroundLocationService {
     final token = prefs.getString('auth_token')!;
     debugPrint(" $baseUrl + $path + $token");
     print(" $baseUrl + $path + $token  +++++++++++++++++++++++++++++");
-    if (_isOnline &&
-        baseUrl.isNotEmpty &&
-        path.isNotEmpty &&
-        token.isNotEmpty) {
+    if (_isOnline && baseUrl.isNotEmpty && path.isNotEmpty && token.isNotEmpty) {
       _webSocketService.initialize(baseUrl, path, token);
     }
   }
@@ -353,8 +346,7 @@ class BackgroundLocationService {
 
     final locationSettings = LocationSettings(
       accuracy: accuracy,
-      distanceFilter:
-          0, // set >0 if you only want updates after moving certain meters
+      distanceFilter: 0, // set >0 if you only want updates after moving certain meters
       timeLimit: null,
       // optional: on Android you can also set `intervalDuration`
       // intervalDuration: interval,
@@ -366,8 +358,7 @@ class BackgroundLocationService {
       try {
         final shouldSend = _shouldSendUpdate(position);
 
-        debugPrint(
-            '$shouldSend _startLocationTracking _shouldSendUpdate **************');
+        debugPrint('$shouldSend _startLocationTracking _shouldSendUpdate **************');
         log('$shouldSend _startLocationTracking _shouldSendUpdate **************');
         saveLocationData(convertPositionToLocationData(position));
         _saveLocationToMemory(position);
@@ -381,6 +372,8 @@ class BackgroundLocationService {
       } catch (e) {
         log('❌ Error in location stream: $e');
       }
+    }, onError: (error) {
+      log('❌ Error in background position stream: $error');
     });
   }
 
@@ -428,9 +421,7 @@ class BackgroundLocationService {
     final speedKmh = (position.speed) * 3.6;
     final timeSinceLast = DateTime.now().difference(_lastSentTime);
 
-    return distance > 5 ||
-        speedKmh > 10 ||
-        timeSinceLast > const Duration(minutes: 1);
+    return distance > 5 || speedKmh > 10 || timeSinceLast > const Duration(minutes: 1);
   }
 
   void _sendLiveLocation(Position position) {

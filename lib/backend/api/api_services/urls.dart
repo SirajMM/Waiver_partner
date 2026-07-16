@@ -1,6 +1,6 @@
 class WebSocketUrl {
-  // static String base = "wss://api.waiverapp.in";
-  static String base = "wss://testwaiverapp.xyz";
+  static String base = "wss://api.waiverapp.in";
+  // static String base = "wss://testwaiverapp.xyz";
   static String liveLocation = "/ws/live-location/?";
 }
 
@@ -66,4 +66,6 @@ class AppUrls {
   static String walletbalance = "/api/v1/ride/partner-wallet/";
   static String paymentCreateOrder = "/api/v2/payment-to-waiver/order/";
   static String paymentSuccess = "/api/v2/payment-to-waiver/success/";
+  // TODO: confirm actual route with backend once implemented there.
+  static String registerVoipToken = "/api/v1/core/register-voip-token/";
 }

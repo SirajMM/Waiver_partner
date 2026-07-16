@@ -28,8 +28,6 @@ import 'package:waiver_driver/view/home/Widget/SafeGoogleMap.dart';
 import 'package:waiver_driver/view/home/Widget/goingToPickUpWidget.dart';
 import 'package:waiver_driver/view/loading_animation/loading_animation.dart';
 
-import '../../controller/profile/profile_controller.dart';
-import '../../core/widgets/snackbar/snackbar.dart';
 import '../left_menu_driver/left_menu_driver_view.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -1063,36 +1061,16 @@ class ChangeOnlineStatusButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = HomeController.to;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        GetBuilder<HomeController>(builder: (controller) {
+        Obx(() {
           return GestureDetector(
             onTap: controller.isOnlineButtonLoading.value
                 ? null
-                : () async {
-                    await ProfileController.to.getProfile();
-                    controller.isAssinged.value =
-                        await controller.hasAssigned();
-
-                    String useTypeCode = box.read(BoxKeys.userTypeCode) ?? "";
-                    if (controller.isAssinged.value == false &&
-                        useTypeCode == UserTypeCode.driver) {
-                      Get.showSnackbar(
-                        const GetSnackBar(
-                          duration: Duration(seconds: 3),
-                          backgroundColor: Colors.transparent,
-                          padding: EdgeInsets.zero,
-                          messageText: AppSnackBar(
-                            text: "You have no assinged vehicles",
-                          ),
-                        ),
-                      );
-                    } else {
-                      await controller.changeDriverOnlineStatus();
-                    }
-                  },
-            child: GetX<HomeController>(builder: (controller) {
+                : controller.onGoButtonTapped,
+            child: Builder(builder: (context) {
               return Container(
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,

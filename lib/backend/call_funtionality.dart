@@ -127,6 +127,7 @@ import 'package:flutter_callkit_incoming/entities/notification_params.dart';
 
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 
+import 'package:waiver_driver/backend/api/api_services/api_services.dart';
 import 'package:waiver_driver/backend/model/home/home_model.dart';
 
 import 'package:waiver_driver/controller/home/home_controller.dart';
@@ -150,8 +151,7 @@ class CallFunctionality {
     // listenCallEvents(); // Ensure call events are always being listened to
   }
 
-  Future<void> showCallkitIncoming(
-      String uuid, RemoteMessage notification) async {
+  Future<void> showCallkitIncoming(String uuid, RemoteMessage notification) async {
     data = OrderDetailsModel.fromJson(notification.data);
 
     final params = CallKitParams(
@@ -164,11 +164,12 @@ class CallFunctionality {
       duration: 15000,
       textAccept: 'Accept',
       textDecline: 'Decline',
-       missedCallNotification: const NotificationParams(
-         showNotification: false,
-         isShowCallback: false,
-         /*subtitle: 'Missed a ride',
-       callbackText: 'Call back',*/),
+      missedCallNotification: const NotificationParams(
+        showNotification: false,
+        isShowCallback: false,
+        /*subtitle: 'Missed a ride',
+       callbackText: 'Call back',*/
+      ),
       extra: <String, dynamic>{
         'userId': '1a2b3c4d',
         'rideStatus': data?.rideStatus,
@@ -181,8 +182,7 @@ class CallFunctionality {
         isShowLogo: false,
         ringtonePath: AppAudio.notification,
         backgroundColor: '#3685e0', // Changed to a dark green color
-        backgroundUrl: AppIcons
-            .appIcon, // Changed to a car icon (replace with your actual icon)
+        backgroundUrl: AppIcons.appIcon, // Changed to a car icon (replace with your actual icon)
         actionColor: '#ffffff', // Changed accept button to blue
         // incomingCallNotificationColor: '#E53935',  // Changed decline button to red
         textColor: '#000000',
@@ -197,6 +197,12 @@ class CallFunctionality {
         audioSessionActive: true,
         audioSessionPreferredSampleRate: 44100.0,
         audioSessionPreferredIOBufferDuration: 0.005,
+        // This is a ride-request "call", not a real VoIP call, so the app
+        // never needs the mic/playAndRecord session CallKit otherwise seizes.
+        // Left enabled, the plugin forces the AVAudioSession back to
+        // .playAndRecord (no mixWithOthers) ~1.2s after answer — exactly when
+        // the ride-accept dialog's countdown sound starts — silencing it.
+        configureAudioSession: false,
         supportsDTMF: true,
         supportsHolding: true,
         supportsGrouping: false,
@@ -219,11 +225,9 @@ class CallFunctionality {
 
       if (event?.event == Event.actionCallAccept) {
         // _onCallAccepted(event?.body['id']);
-        print("call data ${event?.body}");
         final rideStatus = event?.body['extra']['rideStatus'];
         final rideId = event?.body['extra']['rideId'];
         final paymentType = event?.body['extra']['paymentType'];
-        print('notification data $rideStatus $rideId');
 
         if (sendPort != null) {
           sendPort.send({
@@ -234,6 +238,18 @@ class CallFunctionality {
             'paymentType': paymentType
           });
         }
+        // Answering only marks the call "connected" — it never ends on its
+        // own, which is why the OS was left showing an active call. This is
+        // a ride request, not a real call, so end it once accepted. Ending
+        // it *immediately* raced iOS's answer -> foreground-the-app
+        // transition (the app never came forward), so give that a moment to
+        // complete first.
+        final callId = event?.body['id']?.toString();
+        if (callId != null) {
+          Future.delayed(const Duration(seconds: 1), () {
+            FlutterCallkitIncoming.endCall(callId);
+          });
+        }
       }
       if (event?.event == Event.actionCallDecline) {
         final rideId = event?.body['extra']['rideId'];
@@ -242,6 +258,16 @@ class CallFunctionality {
             'title': 'cancelled',
             'rideId': rideId,
           });
+        }
+        final callId = event?.body['id']?.toString();
+        if (callId != null) {
+          FlutterCallkitIncoming.endCall(callId);
+        }
+      }
+      if (event?.event == Event.actionDidUpdateDevicePushTokenVoip) {
+        final token = event?.body['deviceTokenVoIP'] as String?;
+        if (token != null && token.isNotEmpty) {
+          ApiServices.registerVoipToken(token: token);
         }
       }
     });
@@ -268,7 +294,7 @@ class CallFunctionality {
     print("Ride Status: $rideStatus");
 
     switch (rideStatus) {
-      case "RED"|| "FRED":
+      case "RED" || "FRED":
         HomeController.to.getAndShowOrderDetails(id: rideId ?? "");
         break;
       case "cancelled" || "FCAD": // <-- Use string value instead of RideStatus.cancelled
