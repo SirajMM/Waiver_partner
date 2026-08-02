@@ -300,6 +300,18 @@ class SplashController extends GetxController implements GetxService {
     // Delayed execution for splash screen
     await Future.delayed(const Duration(seconds: 3));
 
+    // Startup services and permission dialogs now run after the first frame
+    // (over this splash screen) instead of before runApp. Wait for them to
+    // settle so the permission check below sees the user's answer, but with a
+    // timeout so a hung OEM dialog (Oppo/Vivo battery optimization) can never
+    // strand the splash — on timeout the flow falls through to the dedicated
+    // location-permission screen, which can recover.
+    try {
+      await startupInitDone.timeout(const Duration(seconds: 20));
+    } catch (e) {
+      log('⚠️ Startup init not finished, proceeding: $e');
+    }
+
     final token = box.read(BoxKeys.token);
     log('Token: ${token ?? "No Token"}');
 

@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../../controller/home/home_controller.dart';
+import '../../../helper/logger.dart';
 
 class SafeGoogleMap extends StatefulWidget {
   const SafeGoogleMap({Key? key}) : super(key: key);
@@ -131,11 +132,17 @@ class _SafeGoogleMapState extends State<SafeGoogleMap> {
             _updatePickupMarker();
           },
           onCameraIdle: () async {
-            final pos = controller.currentPosition.value;
-            if (pos != null) {
-              final name = await controller.getLocationDetails(
-                  pos.latitude, pos.longitude);
-              controller.pickUpLocation1?.name.value = name ?? '';
+            // Async void callback: anything thrown here is uncatchable by the
+            // framework, so failures must stay inside this closure.
+            try {
+              final pos = controller.currentPosition.value;
+              if (pos != null) {
+                final name = await controller.getLocationDetails(
+                    pos.latitude, pos.longitude);
+                controller.pickUpLocation1?.name.value = name ?? '';
+              }
+            } catch (e) {
+              ApiLog.error('onCameraIdle location update failed', e);
             }
           },
         ),

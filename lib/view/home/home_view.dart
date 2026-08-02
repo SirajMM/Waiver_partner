@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 
 // import 'package:upgrader/upgrader.dart';
@@ -20,7 +19,6 @@ import 'package:waiver_driver/core/widgets/app_buttons/app_buttons.dart';
 import 'package:waiver_driver/core/widgets/circle_with_gradient/circle_with_gradient.dart';
 import 'package:waiver_driver/core/widgets/count_down/count_down_view.dart';
 import 'package:waiver_driver/helper/router/app_routes/route.dart';
-import 'package:waiver_driver/main.dart';
 import 'package:waiver_driver/view/home/Widget/GoingToDestinationWidget.dart';
 import 'package:waiver_driver/view/home/Widget/LoadingStateWidget.dart';
 import 'package:waiver_driver/view/home/Widget/ReadyToGoToDestinationWidget.dart';
@@ -99,8 +97,7 @@ class HomeScreen extends StatelessWidget {
                       return Going_To_Pick_screen();
 
                     case DriverState.arrivedAtPickUp:
-                      return EnterOtpBottomSheet(
-                          orderStatus: RideStatus.reachedPickUp);
+                      return EnterOtpBottomSheet(orderStatus: RideStatus.reachedPickUp);
 
                     case DriverState.readyToGoToDestination:
                       return ReadyToGoToDestinationWidget();
@@ -109,8 +106,7 @@ class HomeScreen extends StatelessWidget {
                       return GoingToDestinationWidget();
 
                     case DriverState.reachedDestination:
-                      return EnterOtpBottomSheet(
-                          orderStatus: RideStatus.reachedDropOff);
+                      return EnterOtpBottomSheet(orderStatus: RideStatus.reachedDropOff);
 
                     case DriverState.paymentInitiated:
                     // return HomeController.to.rideIsActive
@@ -123,7 +119,7 @@ class HomeScreen extends StatelessWidget {
                         return const MakingPaymentBottomSheet(isPay: false,);*/
                     case DriverState.completed:
                       return HomeController.to.rideIsActive
-                          ? box.read(BoxKeys.paymentType) == "CSH"
+                          ? HomeController.to.isCashPayment
                               ? const MakingPaymentBottomSheet(
                                   isPay: true,
                                   paymentType: "Cash payment",
@@ -203,8 +199,7 @@ class MakingPaymentBottomSheet extends StatelessWidget {
   final bool isPay;
   final String paymentType;
 
-  const MakingPaymentBottomSheet(
-      {super.key, required this.isPay, required this.paymentType});
+  const MakingPaymentBottomSheet({super.key, required this.isPay, required this.paymentType});
 
   @override
   Widget build(BuildContext context) {
@@ -221,9 +216,8 @@ class MakingPaymentBottomSheet extends StatelessWidget {
                     blurRadius: 5,
                     spreadRadius: 5)
               ],
-              borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(13.sp),
-                  topLeft: Radius.circular(13.sp))),
+              borderRadius:
+                  BorderRadius.only(topRight: Radius.circular(13.sp), topLeft: Radius.circular(13.sp))),
           width: Get.width,
           child: ListView(
             padding: EdgeInsets.all(20.sp),
@@ -247,8 +241,7 @@ class MakingPaymentBottomSheet extends StatelessWidget {
               Center(
                 child: Text(
                   paymentType ?? "",
-                  style:
-                      TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w300),
+                  style: TextStyle(fontSize: 15.sp, fontWeight: FontWeight.w300),
                 ),
               ),
               // Container(
@@ -259,8 +252,7 @@ class MakingPaymentBottomSheet extends StatelessWidget {
               Center(
                 child: Text(
                   HomeController.to.total ?? "",
-                  style:
-                      TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
+                  style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
                 ),
               ),
               SizedBox(
@@ -275,8 +267,7 @@ class MakingPaymentBottomSheet extends StatelessWidget {
                   children: [
                     Text(
                       "You've Earned",
-                      style: TextStyle(
-                          fontWeight: FontWeight.w500, fontSize: 16.sp),
+                      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16.sp),
                     ),
                   ],
                 ),
@@ -305,7 +296,7 @@ class MakingPaymentBottomSheet extends StatelessWidget {
               SizedBox(
                 height: 15.sp,
               ),
-              isPay && box.read(BoxKeys.paymentType) == "CSH"
+              isPay && HomeController.to.isCashPayment
                   ? BlueButton(
                       text: "Confirm",
                       onTap: () {
@@ -317,11 +308,10 @@ class MakingPaymentBottomSheet extends StatelessWidget {
                               text: "Yes",
                               width: 100.sp,
                               onTap: () {
-                                box.read(BoxKeys.paymentType) == "CSH"
+                                HomeController.to.isCashPayment
                                     ? HomeController.to.confirmedPayment()
                                     : {
-                                        HomeController.to.driverState.value =
-                                            DriverState.idle,
+                                        HomeController.to.driverState.value = DriverState.idle,
                                         HomeController.to.fetchWalletBalance()
                                       };
                                 // HomeController.to.isButtonLoading.value= false;
@@ -380,16 +370,10 @@ class EnterOtpBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(24.sp),
-      decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-                color: AppColors.black.withOpacity(.1),
-                offset: Offset(3, 3),
-                blurRadius: 5,
-                spreadRadius: 5)
-          ],
-          color: Get.theme.primaryColor,
-          borderRadius: BorderRadius.circular(8.sp)),
+      decoration: BoxDecoration(boxShadow: [
+        BoxShadow(
+            color: AppColors.black.withOpacity(.1), offset: Offset(3, 3), blurRadius: 5, spreadRadius: 5)
+      ], color: Get.theme.primaryColor, borderRadius: BorderRadius.circular(8.sp)),
       child: ListView(
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
@@ -397,9 +381,7 @@ class EnterOtpBottomSheet extends StatelessWidget {
           orderStatus == RideStatus.reachedPickUp
               ? Row(
                   children: [
-                    IconButton(
-                        onPressed: () => Get.bottomSheet(CancelOrder()),
-                        icon: Icon(Icons.close))
+                    IconButton(onPressed: () => Get.bottomSheet(CancelOrder()), icon: Icon(Icons.close))
                   ],
                 )
               : SizedBox(),
@@ -468,8 +450,7 @@ class EnterOtpBottomSheet extends StatelessWidget {
                           margin: EdgeInsets.symmetric(horizontal: 55.sp),
                           child: Text(
                             "Please enter full Otp",
-                            style: TextStyle(
-                                fontSize: 14.sp, color: AppColors.red),
+                            style: TextStyle(fontSize: 14.sp, color: AppColors.red),
                           ),
                         ),
                       ],
@@ -569,7 +550,7 @@ class OrderCompletedBottomSheet extends StatelessWidget {
           BlueButton(
             text: "Complete Ride",
             onTap: () {
-              if (HomeController.to.paymentType == "CSH") {
+              if (HomeController.to.isCashPayment) {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
@@ -584,8 +565,7 @@ class OrderCompletedBottomSheet extends StatelessWidget {
                           children: [
                             Text(
                               "Collect Cash",
-                              style: TextStyle(
-                                  fontSize: 24.sp, fontWeight: FontWeight.w600),
+                              style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
                             ),
                             SizedBox(
                               height: 20.sp,
@@ -623,8 +603,7 @@ class OrderCompletedBottomSheet extends StatelessWidget {
                           children: [
                             Text(
                               "Online Payment",
-                              style: TextStyle(
-                                  fontSize: 24.sp, fontWeight: FontWeight.w600),
+                              style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.w600),
                             ),
                             SizedBox(
                               height: 20.sp,
@@ -673,9 +652,8 @@ class PaymentConfirmationSheetCash extends StatelessWidget {
                 blurRadius: 5,
                 spreadRadius: 5)
           ],
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20.sp),
-              topRight: Radius.circular(20.sp))),
+          borderRadius:
+              BorderRadius.only(topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
       child: ListView(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
@@ -712,9 +690,7 @@ class PaymentConfirmationSheetCash extends StatelessWidget {
           SizedBox(
             height: 20.sp,
           ),
-          BlueButton(
-              text: "Confirm Payment",
-              onTap: () => HomeController.to.confirmedPayment()),
+          BlueButton(text: "Confirm Payment", onTap: () => HomeController.to.confirmedPayment()),
         ],
       ),
     );
@@ -725,8 +701,7 @@ class PaymentConfirmationSheetOnline extends StatelessWidget {
   final String titleText;
   final String text;
 
-  const PaymentConfirmationSheetOnline(
-      {super.key, required this.text, required this.titleText});
+  const PaymentConfirmationSheetOnline({super.key, required this.text, required this.titleText});
 
   @override
   Widget build(BuildContext context) {
@@ -741,9 +716,8 @@ class PaymentConfirmationSheetOnline extends StatelessWidget {
                 blurRadius: 5,
                 spreadRadius: 5)
           ],
-          borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20.sp),
-              topRight: Radius.circular(20.sp))),
+          borderRadius:
+              BorderRadius.only(topLeft: Radius.circular(20.sp), topRight: Radius.circular(20.sp))),
       child: ListView(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
@@ -798,9 +772,8 @@ class CancelTripBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(24.sp),
-      decoration: BoxDecoration(
-          color: Get.theme.primaryColor,
-          borderRadius: BorderRadius.circular(8.sp)),
+      decoration:
+          BoxDecoration(color: Get.theme.primaryColor, borderRadius: BorderRadius.circular(8.sp)),
       child: ListView(
         shrinkWrap: true,
         children: [
@@ -814,8 +787,7 @@ class CancelTripBottomSheet extends StatelessWidget {
           ),
           RedButton(
             text: "Cancel",
-            onTap: () => Get.bottomSheet(const CancelReasonsBottomSheet(),
-                isScrollControlled: true),
+            onTap: () => Get.bottomSheet(const CancelReasonsBottomSheet(), isScrollControlled: true),
           ),
           SizedBox(
             height: 15.sp,
@@ -837,9 +809,8 @@ class CancelReasonsBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20.sp, vertical: 10.sp),
-      decoration: BoxDecoration(
-          color: Get.theme.primaryColor,
-          borderRadius: BorderRadius.circular(8.sp)),
+      decoration:
+          BoxDecoration(color: Get.theme.primaryColor, borderRadius: BorderRadius.circular(8.sp)),
       child: ListView(
         shrinkWrap: true,
         children: [
@@ -919,8 +890,7 @@ class BottomSheetWhileDrivingItem extends StatelessWidget {
   final String text;
   final void Function()? onTap;
 
-  const BottomSheetWhileDrivingItem(
-      {super.key, required this.icon, required this.text, this.onTap});
+  const BottomSheetWhileDrivingItem({super.key, required this.icon, required this.text, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -958,14 +928,11 @@ class TextInsideBox extends StatelessWidget {
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(vertical: 12.sp),
       decoration: BoxDecoration(
-          border: Border.all(color: AppColors.grey155),
-          borderRadius: BorderRadius.circular(8.sp)),
+          border: Border.all(color: AppColors.grey155), borderRadius: BorderRadius.circular(8.sp)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-              padding: EdgeInsets.symmetric(horizontal: 5.sp),
-              child: Icon(icon)),
+          Container(padding: EdgeInsets.symmetric(horizontal: 5.sp), child: Icon(icon)),
           Text(
             text,
             style: TextStyle(
@@ -1016,11 +983,8 @@ class DashBoardData extends StatelessWidget {
                   children: [
                     GetX<HomeController>(builder: (controller) {
                       return Text(
-                        controller.isOnline.value
-                            ? "You’re online"
-                            : "You’re offline",
-                        style: TextStyle(
-                            fontSize: 18.sp, fontWeight: FontWeight.w500),
+                        controller.isOnline.value ? "You’re online" : "You’re offline",
+                        style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.w500),
                         textAlign: TextAlign.center,
                       );
                     }),
@@ -1067,9 +1031,7 @@ class ChangeOnlineStatusButton extends StatelessWidget {
       children: [
         Obx(() {
           return GestureDetector(
-            onTap: controller.isOnlineButtonLoading.value
-                ? null
-                : controller.onGoButtonTapped,
+            onTap: controller.isOnlineButtonLoading.value ? null : controller.onGoButtonTapped,
             child: Builder(builder: (context) {
               return Container(
                 decoration: BoxDecoration(
@@ -1081,18 +1043,14 @@ class ChangeOnlineStatusButton extends StatelessWidget {
                           blurRadius: 5,
                           spreadRadius: 5)
                     ],
-                    color: controller.isOnline.value
-                        ? Get.theme.primaryColor
-                        : AppColors.blue),
+                    color: controller.isOnline.value ? Get.theme.primaryColor : AppColors.blue),
                 child: Container(
                   padding: EdgeInsets.all(15.sp),
                   margin: EdgeInsets.all(5.sp),
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: controller.isOnline.value
-                            ? AppColors.red
-                            : Get.theme.primaryColor,
+                        color: controller.isOnline.value ? AppColors.red : Get.theme.primaryColor,
                       ),
                       color: Colors.transparent),
                   child: controller.isOnlineButtonLoading.value
@@ -1100,9 +1058,7 @@ class ChangeOnlineStatusButton extends StatelessWidget {
                           height: 25.sp,
                           width: 25.sp,
                           child: CircularProgressIndicator(
-                            color: controller.isOnline.value
-                                ? AppColors.red
-                                : Get.theme.primaryColor,
+                            color: controller.isOnline.value ? AppColors.red : Get.theme.primaryColor,
                           ),
                         )
                       : Text(
@@ -1110,9 +1066,7 @@ class ChangeOnlineStatusButton extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 18.sp,
-                            color: controller.isOnline.value
-                                ? AppColors.red
-                                : Get.theme.primaryColor,
+                            color: controller.isOnline.value ? AppColors.red : Get.theme.primaryColor,
                           ),
                         ),
                 ),
@@ -1152,9 +1106,7 @@ class DashBoardItem extends StatelessWidget {
         return '${doubleValue.toStringAsFixed(1)}%';
       } else if (_isRatingType(textLower)) {
         // For ratings, show with decimal if needed, otherwise as integer
-        return doubleValue % 1 == 0
-            ? doubleValue.toInt().toString()
-            : doubleValue.toStringAsFixed(1);
+        return doubleValue % 1 == 0 ? doubleValue.toInt().toString() : doubleValue.toStringAsFixed(1);
       } else {
         // For acceptance count, cancellation count, etc. - show as integer
         return doubleValue.toInt().toString();
@@ -1170,16 +1122,12 @@ class DashBoardItem extends StatelessWidget {
         text.contains('percent') ||
         text.contains('rate') ||
         text.contains('ratio') ||
-        text.contains(
-            'acceptance') || // Acceptance rate is usually shown as percentage
-        text.contains(
-            'cancellation'); // Cancellation rate is usually shown as percentage
+        text.contains('acceptance') || // Acceptance rate is usually shown as percentage
+        text.contains('cancellation'); // Cancellation rate is usually shown as percentage
   }
 
   bool _isRatingType(String text) {
-    return text.contains('rating') ||
-        text.contains('score') ||
-        text.contains('star');
+    return text.contains('rating') || text.contains('score') || text.contains('star');
   }
 
   @override
@@ -1333,9 +1281,8 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       centerTitle: true,
       title: Container(
-        decoration: BoxDecoration(
-            color: AppConstants.getColor(),
-            borderRadius: BorderRadius.circular(50.sp)),
+        decoration:
+            BoxDecoration(color: AppConstants.getColor(), borderRadius: BorderRadius.circular(50.sp)),
         padding: EdgeInsets.symmetric(vertical: 8.sp, horizontal: 20.sp),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -1385,8 +1332,7 @@ class HomePageAppBar extends StatelessWidget implements PreferredSizeWidget {
                     }
                   },
                   child: AnimatedRotation(
-                    turns:
-                        HomeController.to.isRefreshingWallet.value ? 1.0 : 0.0,
+                    turns: HomeController.to.isRefreshingWallet.value ? 1.0 : 0.0,
                     duration: const Duration(milliseconds: 1000),
                     curve: Curves.linear,
                     child: Icon(
@@ -1446,13 +1392,9 @@ class IncomingOrderBottomSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextInsideBox(
-                  text: AppConstants.formatSecondsToHrAndMin(
-                      data?.duration ?? 0)),
+              TextInsideBox(text: AppConstants.formatSecondsToHrAndMin(data?.duration ?? 0)),
               TextInsideBox(text: "${data?.distance} Km"),
-              TextInsideBox(
-                  text: (data?.customerRating ?? 0.0).toString(),
-                  icon: Icons.star),
+              TextInsideBox(text: (data?.customerRating ?? 0.0).toString(), icon: Icons.star),
             ],
           ),
           SizedBox(
@@ -1563,19 +1505,15 @@ class AcceptButton extends StatelessWidget {
                 child: TweenAnimationBuilder(
                     onEnd: onEnd,
                     tween: Tween(
-                        begin: DateTime.now()
-                            .add(const Duration(seconds: 15))
-                            .difference(DateTime.now()),
+                        begin:
+                            DateTime.now().add(const Duration(seconds: 15)).difference(DateTime.now()),
                         end: Duration.zero),
-                    duration: DateTime.now()
-                        .add(const Duration(seconds: 15))
-                        .difference(DateTime.now()),
+                    duration: DateTime.now().add(const Duration(seconds: 15)).difference(DateTime.now()),
                     builder: (context, Duration date, child) {
                       return Text(
                         "${date.inSeconds}",
                         textAlign: TextAlign.center,
-                        style:
-                            TextStyle(color: AppColors.white, fontSize: 15.sp),
+                        style: TextStyle(color: AppColors.white, fontSize: 15.sp),
                       );
                     }))
           ],
@@ -1644,10 +1582,7 @@ class AddStopBottomSheet extends StatelessWidget {
         children: [
           Text(
             "Add Stop ?",
-            style: TextStyle(
-                color: AppColors.black,
-                fontWeight: FontWeight.w600,
-                fontSize: 20.sp),
+            style: TextStyle(color: AppColors.black, fontWeight: FontWeight.w600, fontSize: 20.sp),
             textAlign: TextAlign.center,
           ),
           SizedBox(
@@ -1690,9 +1625,7 @@ class Recenter extends StatelessWidget {
         return Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            controller.recenterLoading.value
-                ? TooltipContainer()
-                : SizedBox.shrink(),
+            controller.recenterLoading.value ? TooltipContainer() : SizedBox.shrink(),
             GestureDetector(
               onTap: controller.recenter,
               child: Container(

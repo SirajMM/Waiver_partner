@@ -37,6 +37,12 @@ final box = GetStorage();
 Timer? _locationTimer;
 ReceivePort? _receivePort;
 
+/// Completes when the post-first-frame initialization (remote config,
+/// permission requests, services) has finished, so the splash flow can wait
+/// for permissions to settle before deciding where to route.
+final Completer<void> _startupInitCompleter = Completer<void>();
+Future<void> get startupInitDone => _startupInitCompleter.future;
+
 /// ------------------- ReceivePort -------------------
 @pragma('vm:entry-point')
 void startReceivePort() {
@@ -140,6 +146,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     // used in the foreground path (`onMessage`), where nothing is
     // auto-displayed and the app must build the banner itself.
     if (Get.isRegistered<HomeController>()) {
+      HomeController.to.updatePaymentType(data.paymentType);
       switch (data.rideStatus) {
         case "CAD":
         case "FCAD":
@@ -173,64 +180,95 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize storage first
   await GetStorage.init();
   await Hive.initFlutter();
 
-  // Initialize Firebase
   await Firebase.initializeApp(name: 'partner', options: DefaultFirebaseOptions.currentPlatform);
-
-  final remoteConfig = FirebaseRemoteConfig.instance;
-
-  await remoteConfig.setConfigSettings(RemoteConfigSettings(
-    minimumFetchInterval: Duration.zero,
-    fetchTimeout: Duration(seconds: 10),
-  ));
-
-  await remoteConfig.fetchAndActivate();
-
-  await _requestNotificationPermissions();
-
-  await _createNotificationChannels();
-
-  await _configureBackgroundService();
 
   await MainBinding().dependencies();
 
-  await requestPermissions();
-
-  await NotificationService.onInit();
-
-  // Firebase Messaging Listeners
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  FirebaseMessaging.onMessage.listen((msg) => NotificationService.onMessage(notification: msg));
-  FirebaseMessaging.onMessageOpenedApp
-      .listen((msg) => NotificationService.onMessageOpenedApp(notification: msg));
 
   startReceivePort();
-
-  await CallFunctionality.onInit();
-  CallFunctionality().listenCallEvents();
-
-  await FacebookAnalyticsService.initialize();
-  await FacebookAnalyticsService.logAppLaunch();
 
   HttpOverrides.global = MyHttpOverrides();
 
   runApp(const MyApp());
+
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    _initializeDeferredServices();
+  });
+}
+
+/// Runs after the first frame: the splash screen is already visible, so
+/// permission dialogs appear over it and a slow/failed network fetch can no
+/// longer block or kill startup.
+Future<void> _initializeDeferredServices() async {
+  try {
+    await _fetchRemoteConfig();
+
+    await _requestNotificationPermissions();
+
+    await _createNotificationChannels();
+
+    await _configureBackgroundService();
+
+    await requestPermissions();
+
+    try {
+      await NotificationService.onInit();
+    } catch (e) {
+      log('❌ Error initializing NotificationService: $e');
+    }
+
+    FirebaseMessaging.onMessage.listen((msg) => NotificationService.onMessage(notification: msg));
+    FirebaseMessaging.onMessageOpenedApp
+        .listen((msg) => NotificationService.onMessageOpenedApp(notification: msg));
+
+    try {
+      await CallFunctionality.onInit();
+      CallFunctionality().listenCallEvents();
+    } catch (e) {
+      log('❌ Error initializing call functionality: $e');
+    }
+
+    try {
+      await FacebookAnalyticsService.initialize();
+      await FacebookAnalyticsService.logAppLaunch();
+    } catch (e) {
+      log('❌ Error initializing Facebook analytics: $e');
+    }
+  } finally {
+    if (!_startupInitCompleter.isCompleted) {
+      _startupInitCompleter.complete();
+    }
+  }
+}
+
+Future<void> _fetchRemoteConfig() async {
+  try {
+    final remoteConfig = FirebaseRemoteConfig.instance;
+
+    await remoteConfig.setConfigSettings(RemoteConfigSettings(
+      minimumFetchInterval: Duration.zero,
+      fetchTimeout: Duration(seconds: 10),
+    ));
+
+    await remoteConfig.fetchAndActivate();
+    log('✅ Remote config fetched and activated');
+  } catch (e) {
+    log('❌ Error fetching remote config: $e');
+  }
 }
 
 /// ------------------- Request Notification Permissions -------------------
 Future<void> _requestNotificationPermissions() async {
   try {
-    // Request permission for Awesome Notifications
-    bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
-    if (!isAllowed) {
-      await AwesomeNotifications().requestPermissionToSendNotifications();
-    }
-
-    // For Android 13+ (API level 33+), request POST_NOTIFICATIONS permission
     if (Platform.isAndroid) {
+      // Exactly one plugin may request POST_NOTIFICATIONS: firing both
+      // awesome_notifications and permission_handler trips Android's
+      // "Can request only one set of permissions at a time" limit and the
+      // dropped request comes back denied before the user can answer.
       final status = await Permission.notification.request();
       log('Notification permission status: $status');
 
@@ -240,8 +278,12 @@ Future<void> _requestNotificationPermissions() async {
       }
     }
 
-    // For iOS, request Firebase messaging permissions
     if (Platform.isIOS) {
+      bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
+      if (!isAllowed) {
+        await AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+
       await FirebaseMessaging.instance.requestPermission(
         alert: true,
         badge: true,
@@ -285,25 +327,29 @@ Future<void> _configureBackgroundService() async {
 
 /// ------------------- Notification Channels -------------------
 Future<void> _createNotificationChannels() async {
-  if (Platform.isAndroid) {
-    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-        FlutterLocalNotificationsPlugin();
+  try {
+    if (Platform.isAndroid) {
+      final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+          FlutterLocalNotificationsPlugin();
 
-    const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'bg_service_channel',
-      'Location Tracking Service',
-      description: 'Background location tracking for rides',
-      importance: Importance.low,
-      enableVibration: false,
-      playSound: false,
-      showBadge: false,
-    );
+      const AndroidNotificationChannel channel = AndroidNotificationChannel(
+        'bg_service_channel',
+        'Location Tracking Service',
+        description: 'Background location tracking for rides',
+        importance: Importance.low,
+        enableVibration: false,
+        playSound: false,
+        showBadge: false,
+      );
 
-    await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(channel);
 
-    log('✅ Flutter Local notification channel created');
+      log('✅ Flutter Local notification channel created');
+    }
+  } catch (e) {
+    log('❌ Error creating notification channels: $e');
   }
 }
 

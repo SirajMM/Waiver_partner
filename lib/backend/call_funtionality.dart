@@ -289,7 +289,7 @@ class CallFunctionality {
     // }
 
     HomeController.to.driverState.value = DriverState.loading;
-    box.write(BoxKeys.paymentType, paymentType);
+    HomeController.to.updatePaymentType(paymentType);
 
     print("Ride Status: $rideStatus");
 

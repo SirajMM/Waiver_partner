@@ -57,7 +57,7 @@ class OtpController extends GetxController {
   RxBool showIsOtpValid = false.obs;
   RxBool isButtonLoading = false.obs;
 
-  resendOtp() async {
+  Future<void> resendOtp() async {
     try {
       Map<String, String> body = {
         "phone": mobileNumber.trim(),

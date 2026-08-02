@@ -75,6 +75,7 @@ class OrderDetails {
   String? passenger;
   String? passengerName;
   dynamic userVehicle;
+  String? paymentType;
 
   OrderDetails({
     this.id,
@@ -102,6 +103,7 @@ class OrderDetails {
     this.passenger,
     this.passengerPhone,
     this.userVehicle,
+    this.paymentType,
   });
 
   factory OrderDetails.fromJson(Map<String, dynamic> json) => OrderDetails(
@@ -136,6 +138,7 @@ class OrderDetails {
         driver: json["driver"],
         passenger: json["passenger"],
         userVehicle: json["user_vehicle"],
+        paymentType: json["payment_type"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -166,6 +169,7 @@ class OrderDetails {
         "driver": driver,
         "passenger": passenger,
         "user_vehicle": userVehicle,
+        "payment_type": paymentType,
       };
 }
 

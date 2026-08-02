@@ -4,6 +4,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import 'package:waiver_driver/backend/model/home/home_model.dart';
 import 'package:waiver_driver/controller/home/home_controller.dart';
@@ -58,12 +59,18 @@ class NotificationService {
 
   static Future<void> onNotificationDisplayedMethod(ReceivedNotification notification) async {}
 
-
   static Future<void> onMessage({required RemoteMessage notification}) async {
     debugPrint(
         "📩 RemoteMessage payload -> notification: ${notification.notification?.title} / ${notification.notification?.body} | data: ${notification.data}");
     OrderDetailsModel data = OrderDetailsModel.fromJson(notification.data);
     await showNotification(data: data);
+
+    // Any push can carry a changed payment_type (user switched cash/online
+    // mid-ride); refresh it before acting on the ride status so open payment
+    // UI rebuilds with the right type.
+    if (Get.isRegistered<HomeController>()) {
+      HomeController.to.updatePaymentType(data.paymentType);
+    }
 
     switch (data.rideStatus) {
       case "RED":
@@ -133,6 +140,10 @@ class NotificationService {
     // notification that's already been displayed (by the OS or by CallKit),
     // so showing another one is redundant.
     OrderDetailsModel data = OrderDetailsModel.fromJson(notification.data);
+
+    if (Get.isRegistered<HomeController>()) {
+      HomeController.to.updatePaymentType(data.paymentType);
+    }
 
     switch (data.rideStatus) {
       case "RED" || "FRED":
